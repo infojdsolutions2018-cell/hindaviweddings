@@ -1,12 +1,10 @@
 import React from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { BUSINESS_CONFIG } from "@/config/business";
 import { Button } from "@/components/ui/Button";
 import { Section, SectionHeading } from "@/components/ui/Section";
 import { ServiceCard } from "@/components/ui/ServiceCard";
 import { GalleryCard } from "@/components/ui/GalleryCard";
-import { Divider } from "@/components/ui/Divider";
 import { HeroRotation } from "@/components/ui/HeroRotation";
 import { EnquiryCTASection } from "@/components/ui/EnquiryCTASection";
 

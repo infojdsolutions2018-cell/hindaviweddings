@@ -4,15 +4,7 @@ import React, { useState } from "react";
 import { FormField } from "@/components/ui/FormField";
 import { Button } from "@/components/ui/Button";
 import { BUSINESS_CONFIG } from "@/config/business";
-import { Mail, CheckCircle2, MessageSquare, Loader2 } from "lucide-react";
-
-const EVENT_TYPE_OPTIONS = [
-  { value: "wedding", label: "Wedding Ceremony & Reception" },
-  { value: "sangeet-haldi", label: "Pre-Wedding (Sangeet / Haldi / Mehendi)" },
-  { value: "reception", label: "Wedding Reception Only" },
-  { value: "corporate-social", label: "Social / Corporate Event" },
-  { value: "other", label: "Other Celebration" },
-];
+import { CheckCircle2, MessageSquare, Loader2 } from "lucide-react";
 
 const TENTATIVE_MONTH_YEAR_OPTIONS = [
   { value: "November 2026 - December 2026", label: "November 2026 - December 2026" },
@@ -143,7 +135,7 @@ export function EnquiryForm({
             "Unable to deliver automatically. You can confirm directly via WhatsApp or Email."
         );
       }
-    } catch (err) {
+    } catch {
       setSubmitError(
         "Network connection error. Please connect directly with our planning team."
       );

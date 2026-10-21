@@ -172,7 +172,7 @@ export async function GET() {
       reelsCount: reels.length,
       imagesCount: images.length,
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { success: false, error: "Failed to read media library" },
       { status: 500 }

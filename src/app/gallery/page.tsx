@@ -8,7 +8,7 @@ import { BUSINESS_CONFIG } from "@/config/business";
 import { InstagramIcon } from "@/components/ui/InstagramIcon";
 import { ThreadsIcon } from "@/components/ui/ThreadsIcon";
 import { FacebookIcon } from "@/components/ui/FacebookIcon";
-import { Play, Volume2, VolumeX, Eye, Heart, Film, Grid, X } from "lucide-react";
+import { Play, Eye, Film, Grid, X } from "lucide-react";
 
 interface MediaItem {
   id: string;
@@ -40,7 +40,6 @@ export default function GalleryPage() {
   const [mediaList, setMediaList] = useState<MediaItem[]>(FALLBACK_MEDIA);
   const [activeFilter, setActiveFilter] = useState<"all" | "images" | "reels">("all");
   const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null);
-  const [hoveredReelId, setHoveredReelId] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/gallery")
@@ -50,7 +49,7 @@ export default function GalleryPage() {
           setMediaList(data.data);
         }
       })
-      .catch((err) => {
+      .catch(() => {
         // Fallback already preloaded
       });
   }, []);
@@ -178,8 +177,6 @@ export default function GalleryPage() {
               <div
                 key={item.id}
                 onClick={() => setSelectedMedia(item)}
-                onMouseEnter={() => isReel && setHoveredReelId(item.id)}
-                onMouseLeave={() => isReel && setHoveredReelId(null)}
                 className="break-inside-avoid relative overflow-hidden cursor-pointer group bg-charcoal/5"
               >
                 {/* Pure media display - natural aspect ratio, no card borders or white frames */}
@@ -277,6 +274,7 @@ export default function GalleryPage() {
               />
             ) : (
               <div className="relative max-h-[90vh] sm:max-h-[92vh] max-w-[94vw] w-auto h-auto">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={selectedMedia.src}
                   alt={selectedMedia.title}

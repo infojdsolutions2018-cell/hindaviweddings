@@ -4,7 +4,6 @@ import Image from "next/image";
 import { Section } from "@/components/ui/Section";
 import { EnquiryForm } from "@/components/forms/EnquiryForm";
 import { BUSINESS_CONFIG } from "@/config/business";
-import { Divider } from "@/components/ui/Divider";
 import { Mail, MapPin, Phone, Clock } from "lucide-react";
 import { InstagramIcon } from "@/components/ui/InstagramIcon";
 import { ThreadsIcon } from "@/components/ui/ThreadsIcon";

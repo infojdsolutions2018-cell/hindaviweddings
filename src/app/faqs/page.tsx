@@ -1,7 +1,7 @@
 import React from "react";
 import type { Metadata } from "next";
 import Image from "next/image";
-import { Section, SectionHeading } from "@/components/ui/Section";
+import { Section } from "@/components/ui/Section";
 import { EnquiryCTASection } from "@/components/ui/EnquiryCTASection";
 import { BUSINESS_CONFIG } from "@/config/business";
 import { HelpCircle, ChevronRight } from "lucide-react";
