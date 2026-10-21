@@ -31,11 +31,6 @@ export function GalleryCard({
               className="object-cover transition-transform duration-500 group-hover:scale-105"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-charcoal/70 via-transparent to-transparent opacity-40 group-hover:opacity-60 transition-opacity" />
-            <div className="absolute bottom-2 right-2">
-              <span className="text-[10px] text-white/90 uppercase tracking-widest font-sans bg-charcoal/60 backdrop-blur-xs px-2 py-0.5 rounded-xs">
-                Illustrative
-              </span>
-            </div>
           </>
         ) : (
           <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center space-y-3">

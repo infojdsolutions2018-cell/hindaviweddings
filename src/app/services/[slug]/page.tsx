@@ -25,7 +25,7 @@ const SERVICE_REGISTRY: Record<string, ServiceData> = {
     title: "Wedding Planning & Coordination",
     slug: "wedding-planning",
     category: "Full Service Planning",
-    heroImage: "/images/service_planning.jpg",
+    heroImage: "/other-images/wedding_planning.jpg",
     imageAlt: "Illustrative wedding stationery, planning notebook, and consultation palette",
     summary:
       "A complete planning partnership guiding you through budget allocation, vendor discovery, timeline drafting, and on-ground coordination during your wedding celebrations.",
@@ -46,7 +46,7 @@ const SERVICE_REGISTRY: Record<string, ServiceData> = {
     title: "Event Production & Fabrication",
     slug: "event-production",
     category: "Technical Production",
-    heroImage: "/images/service_production.jpg",
+    heroImage: "/other-images/event_production.jpg",
     imageAlt: "Illustrative open-air stage production, structural rigging, and ambient lighting",
     summary:
       "Professional structural engineering, trussing, ambient audio-visual systems, and synchronized stage setups built to host your guests flawlessly.",
@@ -67,7 +67,7 @@ const SERVICE_REGISTRY: Record<string, ServiceData> = {
     title: "Event Decor Design & Styling",
     slug: "event-decor-design",
     category: "Decor & Floral Design",
-    heroImage: "/images/service_decor.jpg",
+    heroImage: "/other-images/event_decor_design.jpg",
     imageAlt: "Illustrative royal wedding mandap with cascading roses and traditional brass lamps",
     summary:
       "Bespoke spatial design bringing together sacred mandaps, breathtaking entrance archways, floral installations, and delicate color stories.",
@@ -172,12 +172,6 @@ export default function ServiceDetailPage({
           <p className="font-sans text-sm sm:text-base text-ivory-100 max-w-2xl mx-auto leading-relaxed">
             {service.summary}
           </p>
-
-          <div className="pt-2">
-            <span className="text-[10px] text-ivory-300 uppercase tracking-widest font-sans">
-              * Photography shown represents illustrative concept
-            </span>
-          </div>
         </div>
       </section>
 

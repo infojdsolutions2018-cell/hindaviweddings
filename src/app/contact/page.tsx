@@ -7,6 +7,8 @@ import { BUSINESS_CONFIG } from "@/config/business";
 import { Divider } from "@/components/ui/Divider";
 import { Mail, MapPin, Phone, Clock } from "lucide-react";
 import { InstagramIcon } from "@/components/ui/InstagramIcon";
+import { ThreadsIcon } from "@/components/ui/ThreadsIcon";
+import { FacebookIcon } from "@/components/ui/FacebookIcon";
 
 export const metadata: Metadata = {
   title: "Contact & Enquiries",
@@ -29,11 +31,11 @@ export default function ContactPage() {
       {/* ========================================================
           1. EDITORIAL CONTACT HERO
           ======================================================== */}
-      <section className="relative min-h-[45vh] sm:min-h-[50vh] flex items-center justify-center overflow-hidden bg-charcoal text-white">
+      <section className="relative min-h-[38vh] sm:min-h-[44vh] flex items-center justify-center overflow-hidden bg-charcoal text-white">
         <div className="absolute inset-0 z-0">
           <Image
-            src="/images/hero_wedding.jpg"
-            alt="Illustrative wedding venue illumination in Pune"
+            src="/hello-images/service_entrance.jpg"
+            alt="Majestic floral wedding gateway and entrance archway"
             fill
             priority
             sizes="100vw"
@@ -42,16 +44,16 @@ export default function ContactPage() {
           <div className="absolute inset-0 bg-gradient-to-t from-charcoal via-charcoal/70 to-black/30" />
         </div>
 
-        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center space-y-5">
-          <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white text-xs uppercase tracking-[0.25em] font-sans font-bold">
+        <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 py-10 sm:py-14 text-center space-y-3 sm:space-y-4">
+          <div className="inline-flex items-center px-3.5 py-1 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white text-[11px] uppercase tracking-[0.25em] font-sans font-bold">
             <span>Direct Planning Liaison</span>
           </div>
 
-          <h1 className="font-serif text-4xl sm:text-6xl md:text-7xl font-normal text-white tracking-tight leading-[1.1]">
+          <h1 className="font-serif text-3xl sm:text-5xl md:text-6xl font-normal text-white tracking-tight leading-[1.1]">
             Connect With Our Team
           </h1>
 
-          <p className="font-sans text-base sm:text-lg text-white/90 max-w-2xl mx-auto leading-relaxed font-light">
+          <p className="font-sans text-xs sm:text-sm md:text-base text-white/90 max-w-xl mx-auto leading-relaxed font-light">
             Whether you are envisioning a grand celebration in Pune or a destination wedding across Maharashtra,
             we are here to craft your milestone with grace.
           </p>
@@ -61,10 +63,10 @@ export default function ContactPage() {
       {/* ========================================================
           2. TWO-COLUMN HIGH-END CONSULTATION EXPERIENCE
           ======================================================== */}
-      <Section background="white">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
+      <Section background="white" className="!py-6 sm:!py-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10">
           {/* Left Column: Contact Profile & Office Details (Shaadi Squad style clean card) */}
-          <div className="lg:col-span-5 space-y-8 bg-blush-50/70 p-8 sm:p-10 rounded-2xl border border-blush/60">
+          <div className="lg:col-span-5 space-y-6 bg-blush-50/70 p-6 sm:p-8 rounded-2xl border border-blush/60">
             <div className="space-y-3">
               <span className="text-xs uppercase tracking-[0.25em] text-coral font-sans font-bold">
                 Pune Office
@@ -153,7 +155,7 @@ export default function ContactPage() {
             </div>
 
             {/* Social Channels */}
-            <div className="pt-6 border-t border-blush/60 space-y-3">
+            <div className="pt-4 border-t border-blush/60 space-y-2">
               <span className="font-sans text-xs uppercase tracking-wider text-charcoal/70 block font-bold">
                 Official Channels
               </span>
@@ -167,14 +169,25 @@ export default function ContactPage() {
                   <InstagramIcon className="w-4 h-4" />
                   <span>Instagram</span>
                 </a>
-                <span className="text-ivory-300">•</span>
+                <span className="text-blush-300">•</span>
                 <a
                   href={BUSINESS_CONFIG.socials.threads.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-xs text-burgundy hover:text-burgundy-600 font-semibold transition-colors"
+                  className="inline-flex items-center space-x-1.5 text-xs text-charcoal hover:text-coral font-bold transition-colors"
                 >
-                  Threads
+                  <ThreadsIcon className="w-4 h-4" />
+                  <span>Threads</span>
+                </a>
+                <span className="text-blush-300">•</span>
+                <a
+                  href={BUSINESS_CONFIG.socials.facebook.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center space-x-1.5 text-xs text-charcoal hover:text-coral font-bold transition-colors"
+                >
+                  <FacebookIcon className="w-4 h-4" />
+                  <span>Facebook</span>
                 </a>
               </div>
             </div>

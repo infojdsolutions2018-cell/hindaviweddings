@@ -41,6 +41,15 @@ export const metadata: Metadata = {
   creator: BUSINESS_CONFIG.name,
   publisher: BUSINESS_CONFIG.name,
   metadataBase: new URL(BUSINESS_CONFIG.siteUrl),
+  icons: {
+    icon: [
+      { url: "/logo.jpg", type: "image/jpeg" },
+    ],
+    shortcut: "/logo.jpg",
+    apple: [
+      { url: "/logo.jpg", type: "image/jpeg" },
+    ],
+  },
   alternates: {
     canonical: "/",
   },
@@ -82,6 +91,11 @@ export default function RootLayout({
       lang="en"
       className={`${cormorant.variable} ${montserrat.variable} scroll-smooth`}
     >
+      <head>
+        <link rel="icon" href="/logo.jpg" type="image/jpeg" />
+        <link rel="shortcut icon" href="/logo.jpg" type="image/jpeg" />
+        <link rel="apple-touch-icon" href="/logo.jpg" />
+      </head>
       <body className="min-h-screen flex flex-col font-sans bg-white text-charcoal antialiased selection:bg-blush-200 selection:text-coral-dark">
         <Header />
         <main className="flex-grow">{children}</main>

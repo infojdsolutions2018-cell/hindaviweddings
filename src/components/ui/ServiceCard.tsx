@@ -32,7 +32,7 @@ export function ServiceCard({
           <div className="relative aspect-[16/10] overflow-hidden bg-ivory-100">
             <Image
               src={imageUrl}
-              alt={imageAlt || `${title} illustrative concept`}
+              alt={imageAlt || `${title} visual presentation`}
               fill
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 400px"
               className="object-cover transition-transform duration-500 group-hover:scale-105"
@@ -45,11 +45,6 @@ export function ServiceCard({
                 </Badge>
               </div>
             )}
-            <div className="absolute bottom-2 right-2">
-              <span className="text-[10px] text-white/80 uppercase tracking-widest font-sans bg-charcoal/60 backdrop-blur-xs px-2 py-0.5 rounded-xs">
-                Illustrative Concept
-              </span>
-            </div>
           </div>
         ) : (
           <div className="p-6 pb-0 flex items-center justify-between">

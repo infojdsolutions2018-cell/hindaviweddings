@@ -34,7 +34,7 @@ export function Section({
 
   return (
     <Component
-      className={`py-16 md:py-24 px-4 sm:px-6 lg:px-8 ${bgStyles[background]} ${className}`}
+      className={`py-8 sm:py-10 md:py-14 px-4 sm:px-6 lg:px-8 ${bgStyles[background]} ${className}`}
       {...props}
     >
       <div className={`mx-auto ${containerWidths[containerSize]}`}>
@@ -63,7 +63,7 @@ export function SectionHeading({
 }: SectionHeadingProps) {
   return (
     <div
-      className={`mb-12 md:mb-16 ${centered ? "text-center" : "text-left"} ${className}`}
+      className={`mb-6 md:mb-8 ${centered ? "text-center" : "text-left"} ${className}`}
     >
       {eyebrow && (
         <span

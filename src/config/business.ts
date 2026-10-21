@@ -66,6 +66,11 @@ export const BUSINESS_CONFIG = {
       handle: "@hindavi_weddings_events",
       url: "https://www.threads.com/@hindavi_weddings_events",
     },
+    facebook: {
+      label: "Facebook",
+      handle: "Hindavi Weddings",
+      url: "https://www.facebook.com/profile.php?id=100083758860233",
+    },
   },
   brandColors: {
     ivory: "#F8F0E8",
@@ -80,6 +85,7 @@ export const BUSINESS_CONFIG = {
     { label: "Services", href: "/services" },
     { label: "Gallery", href: "/gallery" },
     { label: "Packages", href: "/packages" },
+    { label: "FAQs", href: "/faqs" },
     { label: "Contact", href: "/contact" },
   ],
 } as const;

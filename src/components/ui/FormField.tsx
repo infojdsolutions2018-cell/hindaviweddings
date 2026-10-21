@@ -18,6 +18,8 @@ interface FormFieldProps {
     >
   ) => void;
   disabled?: boolean;
+  min?: string;
+  max?: string;
   className?: string;
 }
 
@@ -34,6 +36,8 @@ export function FormField({
   value,
   onChange,
   disabled = false,
+  min,
+  max,
   className = "",
 }: FormFieldProps) {
   const inputBaseStyles =
@@ -96,6 +100,8 @@ export function FormField({
           value={value}
           onChange={onChange}
           disabled={disabled}
+          min={min}
+          max={max}
           className={`${inputBaseStyles} ${stateStyles}`}
           aria-invalid={Boolean(error)}
           aria-describedby={error ? `${name}-error` : undefined}

@@ -29,10 +29,10 @@ export default function AboutPage() {
       {/* ========================================================
           1. IMMERSIVE EDITORIAL HERO
           ======================================================== */}
-      <section className="relative min-h-[50vh] sm:min-h-[55vh] flex items-center justify-center overflow-hidden bg-charcoal text-white">
+      <section className="relative min-h-[38vh] sm:min-h-[44vh] flex items-center justify-center overflow-hidden bg-charcoal text-white">
         <div className="absolute inset-0 z-0">
           <Image
-            src="/images/hero_about.jpg"
+            src="/hello-images/hero_about.jpg"
             alt="Illustrative regal palace wedding celebration in Maharashtra"
             fill
             priority
@@ -42,16 +42,16 @@ export default function AboutPage() {
           <div className="absolute inset-0 bg-gradient-to-t from-charcoal via-charcoal/70 to-black/30" />
         </div>
 
-        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center space-y-5">
-          <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white text-xs uppercase tracking-[0.25em] font-sans font-bold">
-            <span>Pune & Maharashtra</span>
+        <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 py-10 sm:py-14 text-center space-y-3 sm:space-y-4">
+          <div className="inline-flex items-center px-3.5 py-1 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white text-[11px] uppercase tracking-[0.25em] font-sans font-bold">
+            <span>Pune &amp; Maharashtra</span>
           </div>
 
-          <h1 className="font-serif text-4xl sm:text-6xl md:text-7xl font-normal text-white tracking-tight leading-[1.1]">
+          <h1 className="font-serif text-3xl sm:text-5xl md:text-6xl font-normal text-white tracking-tight leading-[1.1]">
             Our Story &amp; Heritage
           </h1>
 
-          <p className="font-sans text-base sm:text-lg text-white/90 max-w-2xl mx-auto leading-relaxed font-light">
+          <p className="font-sans text-xs sm:text-sm md:text-base text-white/90 max-w-xl mx-auto leading-relaxed font-light">
             Crafting milestone weddings with cultural reverence, architectural
             mastery, and personalized family care.
           </p>
@@ -106,7 +106,7 @@ export default function AboutPage() {
           <div className="lg:col-span-5 relative">
             <div className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-xl border-4 border-blush-100">
               <Image
-                src="/images/service_planning.jpg"
+                src="/hello-images/service_planning.jpg"
                 alt="Illustrative consultation aesthetic and bespoke wedding stationery"
                 fill
                 sizes="(max-width: 1024px) 100vw, 450px"

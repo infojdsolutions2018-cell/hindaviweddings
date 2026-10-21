@@ -29,7 +29,7 @@ const SERVICES_DATA = [
     slug: "wedding-planning",
     eyebrow: "Comprehensive Choreography",
     tagline: "End-to-end ceremony orchestration so your family can be fully present.",
-    imageUrl: "/images/service_planning.jpg",
+    imageUrl: "/other-images/wedding_planning.jpg",
     imageAlt: "Illustrative wedding consultation invitations and moodboards",
     description:
       "Planning a wedding involves harmonizing dozens of ceremonial customs, venue contracts, and family expectations. Our planning service acts as your personal advocate, designing master run-sheets, coordinating vendor arrivals, and managing on-day rituals with grace.",
@@ -46,7 +46,7 @@ const SERVICES_DATA = [
     slug: "event-production",
     eyebrow: "Technical Infrastructure",
     tagline: "Precision structural fabrication and synchronized lighting architecture.",
-    imageUrl: "/images/service_production.jpg",
+    imageUrl: "/other-images/event_production.jpg",
     imageAlt: "Illustrative open-air stage production and ambient lighting",
     description:
       "Behind every breathtaking visual is solid engineering. We specialize in safe outdoor trussing, custom-built stages, sound architecture that envelops without overpowering, and backup power coordination across private estates and open-lawn banquet venues in Maharashtra.",
@@ -63,7 +63,7 @@ const SERVICES_DATA = [
     slug: "event-decor-design",
     eyebrow: "Bespoke Spatial Aesthetics",
     tagline: "Artisanal floral installations, sacred mandaps, and romantic candlelit environments.",
-    imageUrl: "/images/service_decor.jpg",
+    imageUrl: "/other-images/event_decor_design.jpg",
     imageAlt: "Illustrative royal wedding mandap with cascading florals and brass lamps",
     description:
       "Every love story has its own aesthetic voice. Our decor design studio curates sacred mandap architecture, fragrant floral installations of fresh marigold and velvet roses, thematic entrance gateways, and bespoke tablescapes that transport your guests into an enchanting sanctuary.",
@@ -83,10 +83,10 @@ export default function ServicesPage() {
       {/* ========================================================
           1. EDITORIAL SERVICES HERO
           ======================================================== */}
-      <section className="relative min-h-[50vh] sm:min-h-[55vh] flex items-center justify-center overflow-hidden bg-charcoal text-white">
+      <section className="relative min-h-[38vh] sm:min-h-[44vh] flex items-center justify-center overflow-hidden bg-charcoal text-white">
         <div className="absolute inset-0 z-0">
           <Image
-            src="/images/service_production.jpg"
+            src="/hello-images/service_production.jpg"
             alt="Illustrative luxury event production and staging setup"
             fill
             priority
@@ -96,16 +96,16 @@ export default function ServicesPage() {
           <div className="absolute inset-0 bg-gradient-to-t from-charcoal via-charcoal/70 to-black/30" />
         </div>
 
-        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center space-y-5">
-          <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white text-xs uppercase tracking-[0.25em] font-sans font-bold">
+        <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 py-10 sm:py-14 text-center space-y-3 sm:space-y-4">
+          <div className="inline-flex items-center px-3.5 py-1 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white text-[11px] uppercase tracking-[0.25em] font-sans font-bold">
             <span>Specialized Capabilities</span>
           </div>
 
-          <h1 className="font-serif text-4xl sm:text-6xl md:text-7xl font-normal text-white tracking-tight leading-[1.1]">
+          <h1 className="font-serif text-3xl sm:text-5xl md:text-6xl font-normal text-white tracking-tight leading-[1.1]">
             Our Wedding &amp; Event Services
           </h1>
 
-          <p className="font-sans text-base sm:text-lg text-white/90 max-w-2xl mx-auto leading-relaxed font-light">
+          <p className="font-sans text-xs sm:text-sm md:text-base text-white/90 max-w-xl mx-auto leading-relaxed font-light">
             Three core disciplines orchestrated by {BUSINESS_CONFIG.displayName},
             tailored to elevate every chapter of your celebration.
           </p>
@@ -142,11 +142,6 @@ export default function ServicesPage() {
                       className="object-cover transition-transform duration-700 group-hover:scale-105"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-charcoal/60 via-transparent to-transparent opacity-40 group-hover:opacity-20 transition-opacity" />
-                    <div className="absolute bottom-3 right-3">
-                      <span className="text-[10px] text-white/90 uppercase tracking-widest font-sans bg-charcoal/60 backdrop-blur-xs px-2.5 py-1 rounded-xs">
-                        Illustrative Concept
-                      </span>
-                    </div>
                   </div>
                 </div>
 
@@ -226,28 +221,56 @@ export default function ServicesPage() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {BUSINESS_CONFIG.eventSpecialties.map((spec, i) => (
-              <div
-                key={i}
-                className="p-6 bg-white rounded-sm border border-gold/30 hover:border-gold transition-all duration-300 shadow-xs hover:shadow-md flex flex-col justify-between group"
-              >
-                <div className="space-y-3">
-                  <span className="text-[11px] font-mono tracking-widest text-gold-dark uppercase block">
-                    {`0${i + 1} —`}
-                  </span>
-                  <h3 className="font-serif text-xl text-charcoal-dark group-hover:text-burgundy transition-colors">
-                    {spec.title}
-                  </h3>
-                  <p className="font-sans text-xs text-charcoal-muted leading-relaxed">
-                    {spec.description}
-                  </p>
+            {BUSINESS_CONFIG.eventSpecialties.map((spec, i) => {
+              const specialtyImages = [
+                "/hello-images/service_haldi_decor.jpg",
+                "/hello-images/service_mandap.jpg",
+                "/hello-images/service_entrance.jpg",
+                "/hello-images/service_decor.jpg",
+                "/hello-images/service_entrance.jpg",
+                "/hello-images/service_sangeet_stage.jpg",
+                "/hello-images/service_production.jpg",
+                "/hello-images/hero_wedding.jpg",
+              ];
+              const imgUrl = specialtyImages[i % specialtyImages.length];
+
+              return (
+                <div
+                  key={i}
+                  className="bg-white rounded-xl overflow-hidden border border-blush/60 hover:border-coral transition-all duration-300 shadow-sm hover:shadow-md flex flex-col group"
+                >
+                  <div className="relative aspect-[4/3] w-full overflow-hidden bg-charcoal/5">
+                    <Image
+                      src={imgUrl}
+                      alt={spec.title}
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
+                    <span className="absolute bottom-2.5 left-3 text-[11px] font-mono tracking-widest text-white/90 uppercase font-semibold">
+                      {`0${i + 1} —`}
+                    </span>
+                  </div>
+
+                  <div className="p-5 flex-1 flex flex-col justify-between space-y-3">
+                    <div>
+                      <h3 className="font-serif text-lg font-semibold text-charcoal group-hover:text-coral transition-colors">
+                        {spec.title}
+                      </h3>
+                      <p className="font-sans text-xs text-charcoal/70 leading-relaxed mt-1.5 font-light">
+                        {spec.description}
+                      </p>
+                    </div>
+
+                    <div className="pt-3 border-t border-blush/40 flex items-center justify-between text-xs text-coral font-medium">
+                      <span className="font-sans text-[11px] uppercase tracking-wider font-semibold">Bespoke Curation</span>
+                      <span className="w-1.5 h-1.5 rounded-full bg-coral" />
+                    </div>
+                  </div>
                 </div>
-                <div className="pt-4 mt-4 border-t border-ivory-100 flex items-center justify-between text-xs text-burgundy font-medium">
-                  <span className="font-sans">Curated Styling</span>
-                  <span className="w-1.5 h-1.5 rounded-full bg-gold" />
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </Section>

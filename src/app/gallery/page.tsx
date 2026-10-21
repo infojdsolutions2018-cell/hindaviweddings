@@ -1,232 +1,296 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { Section } from "@/components/ui/Section";
 import { EnquiryCTASection } from "@/components/ui/EnquiryCTASection";
-import { Divider } from "@/components/ui/Divider";
-import { Badge } from "@/components/ui/Badge";
 import { BUSINESS_CONFIG } from "@/config/business";
+import { InstagramIcon } from "@/components/ui/InstagramIcon";
+import { ThreadsIcon } from "@/components/ui/ThreadsIcon";
+import { FacebookIcon } from "@/components/ui/FacebookIcon";
+import { Play, Volume2, VolumeX, Eye, Heart, Film, Grid, X } from "lucide-react";
 
-interface GalleryItem {
+interface MediaItem {
   id: string;
+  type: "image" | "reel";
+  src: string;
   title: string;
-  category: "Decor Design" | "Traditional Rituals" | "Event Production" | "Styling & Ambiance" | "Wedding Planning";
-  imageUrl: string;
-  altText: string;
-  aspect: "wide" | "tall" | "square";
+  aspect: "square" | "tall" | "wide";
+  category?: string;
 }
 
-const GALLERY_DATA: GalleryItem[] = [
-  {
-    id: "1",
-    title: "Sacred Mandap Architecture",
-    category: "Decor Design",
-    imageUrl: "/images/service_decor.jpg",
-    altText: "Illustrative royal wedding mandap with cascading florals and brass lamps",
-    aspect: "tall",
-  },
-  {
-    id: "2",
-    title: "Haldi Courtyard Atmosphere",
-    category: "Traditional Rituals",
-    imageUrl: "/images/gallery_haldi.jpg",
-    altText: "Illustrative vibrant traditional Haldi marigold courtyard decor",
-    aspect: "wide",
-  },
-  {
-    id: "3",
-    title: "Evening Reception Stage",
-    category: "Event Production",
-    imageUrl: "/images/service_production.jpg",
-    altText: "Illustrative illuminated open-air structural staging",
-    aspect: "square",
-  },
-  {
-    id: "4",
-    title: "Reception Dinner Banquet",
-    category: "Styling & Ambiance",
-    imageUrl: "/images/gallery_reception.jpg",
-    altText: "Illustrative luxury dinner banquet with chandeliers and candlelight",
-    aspect: "tall",
-  },
-  {
-    id: "5",
-    title: "Stationery & Planning Flatlay",
-    category: "Wedding Planning",
-    imageUrl: "/images/service_planning.jpg",
-    altText: "Illustrative wedding consultation invitations and moodboards",
-    aspect: "square",
-  },
-  {
-    id: "6",
-    title: "Ceremonial Canopy Illumination",
-    category: "Event Production",
-    imageUrl: "/images/hero_wedding.jpg",
-    altText: "Illustrative warm fairy light canopy over mandap setup",
-    aspect: "wide",
-  },
-  {
-    id: "7",
-    title: "Sangeet Festive Evening Stage",
-    category: "Traditional Rituals",
-    imageUrl: "/images/gallery_sangeet.jpg",
-    altText: "Illustrative lavish Sangeet stage with fairy lights and regal seating",
-    aspect: "wide",
-  },
-  {
-    id: "8",
-    title: "Heritage Palace Celebration Courtyard",
-    category: "Decor Design",
-    imageUrl: "/images/hero_about.jpg",
-    altText: "Illustrative heritage palace arches adorned with red roses and warm lanterns",
-    aspect: "square",
-  },
+const FALLBACK_MEDIA: MediaItem[] = [
+  { id: "work-1", type: "image", src: "/other-images/our_work_mandap.jpg", title: "Sacred Mandap Architecture", aspect: "square", category: "Our Work" },
+  { id: "work-2", type: "image", src: "/other-images/our_work_haldi.jpg", title: "Haldi Courtyard Atmosphere", aspect: "square", category: "Our Work" },
+  { id: "reel-1", type: "reel", src: "/reels/r1.mp4", title: "Wedding Moments • Ceremony Highlights", aspect: "tall", category: "Reels" },
+  { id: "work-3", type: "image", src: "/other-images/our_work_reception.jpg", title: "Reception Dinner Banquet", aspect: "square", category: "Our Work" },
+  { id: "work-4", type: "image", src: "/other-images/event_decor_design.jpg", title: "Royal Floral Mandap Design", aspect: "square", category: "Services" },
+  { id: "reel-2", type: "reel", src: "/reels/r2.mp4", title: "Atmospheric Celebrations & Staging", aspect: "tall", category: "Reels" },
+  { id: "work-5", type: "image", src: "/other-images/event_production.jpg", title: "Concert Trussing & Intelligent Lighting", aspect: "square", category: "Services" },
+  { id: "work-6", type: "image", src: "/other-images/wedding_planning.jpg", title: "Curated Wedding Planning & Stationery", aspect: "square", category: "Services" },
+  { id: "img-1", type: "image", src: "/images/i1.jpg", title: "Royal Mandap Heritage Architecture", aspect: "square" },
+  { id: "img-2", type: "image", src: "/images/i2.jpg", title: "Vibrant Haldi Courtyard Ceremony", aspect: "square" },
+  { id: "img-3", type: "image", src: "/images/i3.jpg", title: "High-Energy Sangeet Concert Stage", aspect: "square" },
+  { id: "img-4", type: "image", src: "/images/i4.jpg", title: "Crystal Chandelier Reception Banquet", aspect: "square" },
+  { id: "img-5", type: "image", src: "/images/i5.jpg", title: "Grand Royal Floral Entrance Avenue", aspect: "square" },
+  { id: "img-6", type: "image", src: "/images/i6.jpg", title: "Romantic Ring Ceremony Styling", aspect: "square" },
 ];
 
-const CATEGORIES = [
-  "All",
-  "Decor Design",
-  "Traditional Rituals",
-  "Event Production",
-  "Styling & Ambiance",
-  "Wedding Planning",
-] as const;
-
 export default function GalleryPage() {
-  const [activeCategory, setActiveCategory] = useState<string>("All");
+  const [mediaList, setMediaList] = useState<MediaItem[]>(FALLBACK_MEDIA);
+  const [activeFilter, setActiveFilter] = useState<"all" | "images" | "reels">("all");
+  const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null);
+  const [hoveredReelId, setHoveredReelId] = useState<string | null>(null);
 
-  const filteredItems =
-    activeCategory === "All"
-      ? GALLERY_DATA
-      : GALLERY_DATA.filter((item) => item.category === activeCategory);
+  useEffect(() => {
+    fetch("/api/gallery")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && Array.isArray(data.data) && data.data.length > 0) {
+          setMediaList(data.data);
+        }
+      })
+      .catch((err) => {
+        // Fallback already preloaded
+      });
+  }, []);
+
+  const filteredItems = mediaList.filter((item) => {
+    if (activeFilter === "images") return item.type === "image";
+    if (activeFilter === "reels") return item.type === "reel";
+    return true;
+  });
 
   return (
     <>
       {/* ========================================================
-          1. EDITORIAL GALLERY HERO
+          1. EDITORIAL GALLERY HERO (Compact & Elegant)
           ======================================================== */}
-      <section className="relative min-h-[50vh] sm:min-h-[55vh] flex items-center justify-center overflow-hidden bg-charcoal text-white">
+      <section className="relative min-h-[38vh] sm:min-h-[44vh] flex items-center justify-center overflow-hidden bg-charcoal text-white">
         <div className="absolute inset-0 z-0">
           <Image
-            src="/images/hero_about.jpg"
-            alt="Illustrative palace wedding decor aesthetic"
+            src="/hello-images/gallery_sangeet.jpg"
+            alt="Palace wedding celebration and stage aesthetic"
             fill
             priority
             sizes="100vw"
             className="object-cover object-center"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-charcoal via-charcoal/70 to-black/30" />
+          <div className="absolute inset-0 bg-gradient-to-t from-charcoal via-charcoal/75 to-black/30" />
         </div>
 
-        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center space-y-5">
-          <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white text-xs uppercase tracking-[0.25em] font-sans font-bold">
+        <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 py-10 sm:py-14 text-center space-y-3 sm:space-y-4">
+          <div className="inline-flex items-center px-3.5 py-1 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white text-[11px] uppercase tracking-[0.25em] font-sans font-bold">
             <span>Visual Portfolio</span>
           </div>
 
-          <h1 className="font-serif text-4xl sm:text-6xl md:text-7xl font-normal text-white tracking-tight leading-[1.1]">
-            Celebrations &amp; Decor Concepts
+          <h1 className="font-serif text-3xl sm:text-5xl md:text-6xl font-normal text-white tracking-tight leading-[1.1]">
+            Gallery &amp; Reels Feed
           </h1>
 
-          <p className="font-sans text-base sm:text-lg text-white/90 max-w-2xl mx-auto leading-relaxed font-light">
-            A curated showcase of sacred mandaps, ambient evening lighting,
-            and grand celebrations orchestrated across Maharashtra.
+          <p className="font-sans text-xs sm:text-sm md:text-base text-white/90 max-w-xl mx-auto leading-relaxed font-light">
+            An Instagram-inspired showcase mixing cinematic reels and captured decor moments curated across Maharashtra.
           </p>
+
+          <div className="flex flex-wrap items-center justify-center gap-2.5 pt-1">
+            <a
+              href={BUSINESS_CONFIG.socials.instagram.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-white/15 hover:bg-white/25 border border-white/30 text-white text-xs font-sans uppercase tracking-wider font-semibold transition-all backdrop-blur-xs"
+            >
+              <InstagramIcon className="w-3.5 h-3.5" />
+              <span>Instagram</span>
+            </a>
+            <a
+              href={BUSINESS_CONFIG.socials.threads.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-white/15 hover:bg-white/25 border border-white/30 text-white text-xs font-sans uppercase tracking-wider font-semibold transition-all backdrop-blur-xs"
+            >
+              <ThreadsIcon className="w-3.5 h-3.5" />
+              <span>Threads</span>
+            </a>
+            <a
+              href={BUSINESS_CONFIG.socials.facebook.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-white/15 hover:bg-white/25 border border-white/30 text-white text-xs font-sans uppercase tracking-wider font-semibold transition-all backdrop-blur-xs"
+            >
+              <FacebookIcon className="w-3.5 h-3.5" />
+              <span>Facebook</span>
+            </a>
+          </div>
         </div>
       </section>
 
       {/* ========================================================
-          2. CATEGORY FILTERS & EDITORIAL ASYMMETRIC MASONRY
+          2. INSTAGRAM-STYLE FEED: MIXED IMAGES & REELS
           ======================================================== */}
-      <Section background="white">
-        {/* Transparency banner */}
-        <div className="mb-12 p-6 rounded-2xl bg-blush-50/70 border border-blush/60 text-center max-w-3xl mx-auto">
-          <p className="font-sans text-xs text-charcoal/80 leading-relaxed">
-            * <strong>Client Privacy &amp; Authenticity Policy:</strong> In alignment
-            with our transparency principles, the photography below displays
-            illustrative aesthetic design concepts. Real client wedding albums
-            will be published only following client consent and guest privacy
-            approvals. You can also view recent work updates on our official{" "}
+      <Section background="white" className="!py-6 sm:!py-10">
+        {/* Instagram Profile-Style Filter Tabs */}
+        <div className="flex items-center justify-center border-b border-blush/60 mb-6 sm:mb-8 pb-3 max-w-md mx-auto space-x-8">
+          <button
+            type="button"
+            onClick={() => setActiveFilter("all")}
+            className={`inline-flex items-center space-x-2 text-xs uppercase tracking-widest font-sans font-bold pb-2 transition-all relative ${
+              activeFilter === "all"
+                ? "text-coral border-b-2 border-coral"
+                : "text-charcoal/60 hover:text-coral"
+            }`}
+          >
+            <Grid className="w-4 h-4" />
+            <span>All Posts ({mediaList.length})</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveFilter("reels")}
+            className={`inline-flex items-center space-x-2 text-xs uppercase tracking-widest font-sans font-bold pb-2 transition-all relative ${
+              activeFilter === "reels"
+                ? "text-coral border-b-2 border-coral"
+                : "text-charcoal/60 hover:text-coral"
+            }`}
+          >
+            <Film className="w-4 h-4" />
+            <span>Reels ({mediaList.filter((m) => m.type === "reel").length})</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveFilter("images")}
+            className={`inline-flex items-center space-x-2 text-xs uppercase tracking-widest font-sans font-bold pb-2 transition-all relative ${
+              activeFilter === "images"
+                ? "text-coral border-b-2 border-coral"
+                : "text-charcoal/60 hover:text-coral"
+            }`}
+          >
+            <span>Photos ({mediaList.filter((m) => m.type === "image").length})</span>
+          </button>
+        </div>
+
+        {/* Instagram Pure Media Grid (No card borders/shadows, tight seamless fit like reference) */}
+        <div className="columns-2 sm:columns-3 gap-1.5 sm:gap-2 md:gap-2.5 max-w-5xl mx-auto space-y-1.5 sm:space-y-2 md:space-y-2.5">
+          {filteredItems.map((item) => {
+            const isReel = item.type === "reel";
+
+            return (
+              <div
+                key={item.id}
+                onClick={() => setSelectedMedia(item)}
+                onMouseEnter={() => isReel && setHoveredReelId(item.id)}
+                onMouseLeave={() => isReel && setHoveredReelId(null)}
+                className="break-inside-avoid relative overflow-hidden cursor-pointer group bg-charcoal/5"
+              >
+                {/* Pure media display - natural aspect ratio, no card borders or white frames */}
+                {isReel ? (
+                  <div className="relative w-full aspect-[9/16] overflow-hidden">
+                    <video
+                      src={item.src}
+                      playsInline
+                      muted
+                      loop
+                      autoPlay
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-102"
+                    />
+                    {/* Reel badge in top right */}
+                    <div className="absolute top-2 right-2 bg-black/50 backdrop-blur-xs text-white rounded p-1">
+                      <Film className="w-3.5 h-3.5 text-white" />
+                    </div>
+                  </div>
+                ) : (
+                  <div className="relative w-full aspect-square overflow-hidden">
+                    <Image
+                      src={item.src}
+                      alt={item.title}
+                      fill
+                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 400px"
+                      className="object-cover transition-transform duration-300 group-hover:scale-102"
+                    />
+                  </div>
+                )}
+
+                {/* Minimal Instagram hover play/view icon without text title */}
+                <div className="absolute inset-0 bg-black/25 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center text-white">
+                  {isReel ? (
+                    <div className="w-10 h-10 rounded-full bg-black/50 backdrop-blur-xs flex items-center justify-center">
+                      <Play className="w-5 h-5 fill-white ml-0.5" />
+                    </div>
+                  ) : (
+                    <div className="w-10 h-10 rounded-full bg-black/50 backdrop-blur-xs flex items-center justify-center">
+                      <Eye className="w-5 h-5" />
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Dynamic Instagram footer link note */}
+        <div className="mt-8 pt-4 text-center">
+          <p className="text-xs text-charcoal/70 font-sans">
+            Follow{" "}
             <a
               href={BUSINESS_CONFIG.socials.instagram.url}
               target="_blank"
               rel="noopener noreferrer"
               className="text-coral font-bold hover:underline"
             >
-              Instagram profile
-            </a>
-            .
+              {BUSINESS_CONFIG.socials.instagram.handle}
+            </a>{" "}
+            on Instagram &amp; Threads for fresh weekly reels and decor updates.
           </p>
-        </div>
-
-        {/* Category Filter Tabs (Shaadi Squad style pill filters) */}
-        <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mb-12">
-          {CATEGORIES.map((cat) => {
-            const isActive = activeCategory === cat;
-            return (
-              <button
-                key={cat}
-                type="button"
-                onClick={() => setActiveCategory(cat)}
-                className={`px-5 py-2.5 rounded-full font-sans text-xs uppercase tracking-wider transition-all duration-200 cursor-pointer focus-visible:outline-coral ${
-                  isActive
-                    ? "bg-coral text-white shadow-sm font-bold"
-                    : "bg-blush-50/80 text-charcoal border border-blush/60 hover:border-coral hover:text-coral font-semibold"
-                }`}
-                aria-pressed={isActive}
-              >
-                {cat}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Asymmetrical Editorial Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredItems.map((item) => (
-            <div
-              key={item.id}
-              className="group relative bg-white border border-ivory-200 rounded-sm overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
-            >
-              <div className="relative aspect-[4/3] bg-ivory-100 overflow-hidden">
-                <Image
-                  src={item.imageUrl}
-                  alt={item.altText}
-                  fill
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  className="object-cover transition-transform duration-700 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-charcoal/70 via-transparent to-transparent opacity-40 group-hover:opacity-60 transition-opacity" />
-
-                <div className="absolute top-3 left-3">
-                  <Badge variant="gold" size="sm" className="backdrop-blur-sm shadow-xs">
-                    {item.category}
-                  </Badge>
-                </div>
-
-                <div className="absolute bottom-2 right-2">
-                  <span className="text-[10px] text-white/90 uppercase tracking-widest font-sans bg-charcoal/60 backdrop-blur-xs px-2 py-0.5 rounded-xs">
-                    Illustrative Concept
-                  </span>
-                </div>
-              </div>
-
-              <div className="p-5 bg-white border-t border-ivory-200 flex items-center justify-between">
-                <h3 className="font-serif text-lg text-charcoal-dark font-medium group-hover:text-burgundy transition-colors">
-                  {item.title}
-                </h3>
-                <span className="font-sans text-xs text-charcoal-muted">
-                  {item.category}
-                </span>
-              </div>
-            </div>
-          ))}
         </div>
       </Section>
 
+      {/* Pure Zoom Overlay for Image or Reel (No borders, headers, or text design) */}
+      {selectedMedia && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-6 bg-black/95 backdrop-blur-md animate-in fade-in duration-200 cursor-zoom-out"
+          onClick={() => setSelectedMedia(null)}
+        >
+          {/* Close button in top-right */}
+          <button
+            type="button"
+            onClick={() => setSelectedMedia(null)}
+            className="absolute top-4 right-4 z-50 p-2.5 rounded-full bg-white/20 hover:bg-white/40 text-white backdrop-blur-md transition-all shadow-lg"
+            aria-label="Close"
+          >
+            <X className="w-6 h-6 text-white" />
+          </button>
+
+          {/* Zoomed Media Container without borders, frames, or text */}
+          <div
+            className="relative max-w-full max-h-[95vh] flex items-center justify-center cursor-default"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {selectedMedia.type === "reel" ? (
+              <video
+                src={selectedMedia.src}
+                controls
+                autoPlay
+                playsInline
+                className="max-h-[90vh] sm:max-h-[92vh] w-auto max-w-full object-contain rounded-none shadow-2xl"
+              />
+            ) : (
+              <div className="relative max-h-[90vh] sm:max-h-[92vh] max-w-[94vw] w-auto h-auto">
+                <img
+                  src={selectedMedia.src}
+                  alt={selectedMedia.title}
+                  className="max-h-[90vh] sm:max-h-[92vh] max-w-[94vw] w-auto h-auto object-contain select-none shadow-2xl"
+                />
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       <EnquiryCTASection
-        title="Envisioning a Unique Aesthetic Theme?"
-        subtitle="Let's bring your personalized floral, lighting, and stage concepts to life."
+        title="Love What You See?"
+        subtitle="Connect with our design team to plan your wedding aesthetics and production."
       />
     </>
   );
