@@ -11,6 +11,21 @@ const config: Config = {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        // Shaadi Squad Inspired Palette
+        blush: {
+          DEFAULT: "#F9CFCA",
+          50: "#FEF7F6",
+          100: "#FDF0EE",
+          200: "#F9CFCA",
+          300: "#F4ABA2",
+          400: "#EE8579",
+        },
+        coral: {
+          DEFAULT: "#F2887B",
+          light: "#F5A196",
+          dark: "#E06D5F",
+          hover: "#D65C4E",
+        },
         ivory: {
           DEFAULT: "#F8F0E8",
           50: "#FCF8F4",
@@ -37,10 +52,11 @@ const config: Config = {
           600: "#B18C44",
         },
         charcoal: {
-          DEFAULT: "#454038",
+          DEFAULT: "#333333", // Shaadi Squad soft charcoal body text
+          soft: "#333333",
           light: "#5A544A",
-          muted: "#766F62",
-          dark: "#2A2722",
+          muted: "#666666",
+          dark: "#222222",
         },
       },
       fontFamily: {

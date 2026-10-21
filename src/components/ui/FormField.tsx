@@ -37,20 +37,20 @@ export function FormField({
   className = "",
 }: FormFieldProps) {
   const inputBaseStyles =
-    "w-full px-4 py-3 rounded-sm border font-sans text-sm bg-white text-charcoal transition-colors focus:outline-none focus:ring-2 focus:ring-gold/50 disabled:bg-ivory-100 disabled:cursor-not-allowed";
+    "w-full px-4 py-3 rounded-lg border font-sans text-sm bg-white text-charcoal transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-coral/40 disabled:bg-blush-50 disabled:cursor-not-allowed shadow-xs";
 
   const stateStyles = error
-    ? "border-red-500 focus:border-red-500"
-    : "border-ivory-200 focus:border-gold hover:border-gold/60";
+    ? "border-red-400 focus:border-red-500"
+    : "border-blush/80 focus:border-coral hover:border-coral/50";
 
   return (
     <div className={`space-y-1.5 ${className}`}>
       <label
         htmlFor={name}
-        className="block font-sans text-xs uppercase tracking-wider font-semibold text-charcoal"
+        className="block font-sans text-xs uppercase tracking-wider font-bold text-charcoal"
       >
         {label}
-        {required && <span className="text-burgundy ml-1">*</span>}
+        {required && <span className="text-coral ml-1">*</span>}
       </label>
 
       {type === "textarea" ? (

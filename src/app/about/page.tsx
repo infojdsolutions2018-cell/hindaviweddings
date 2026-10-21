@@ -29,7 +29,7 @@ export default function AboutPage() {
       {/* ========================================================
           1. IMMERSIVE EDITORIAL HERO
           ======================================================== */}
-      <section className="relative min-h-[65vh] sm:min-h-[75vh] flex items-center justify-center overflow-hidden bg-charcoal text-white">
+      <section className="relative min-h-[50vh] sm:min-h-[55vh] flex items-center justify-center overflow-hidden bg-charcoal text-white">
         <div className="absolute inset-0 z-0">
           <Image
             src="/images/hero_about.jpg"
@@ -39,31 +39,22 @@ export default function AboutPage() {
             sizes="100vw"
             className="object-cover object-center"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-charcoal via-charcoal/70 to-charcoal/40" />
-          <div className="absolute inset-0 bg-burgundy/20 mix-blend-multiply" />
+          <div className="absolute inset-0 bg-gradient-to-t from-charcoal via-charcoal/70 to-black/30" />
         </div>
 
-        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center space-y-6">
-          <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-gold/20 backdrop-blur-md border border-gold/40 text-gold-light text-xs uppercase tracking-[0.25em] font-sans font-semibold">
+        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center space-y-5">
+          <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white text-xs uppercase tracking-[0.25em] font-sans font-bold">
             <span>Pune & Maharashtra</span>
           </div>
 
           <h1 className="font-serif text-4xl sm:text-6xl md:text-7xl font-normal text-white tracking-tight leading-[1.1]">
-            Our Story & Heritage
+            Our Story &amp; Heritage
           </h1>
 
-          <Divider variant="ornate" centered={true} />
-
-          <p className="font-sans text-base sm:text-lg text-ivory-100/90 max-w-2xl mx-auto leading-relaxed font-light">
+          <p className="font-sans text-base sm:text-lg text-white/90 max-w-2xl mx-auto leading-relaxed font-light">
             Crafting milestone weddings with cultural reverence, architectural
             mastery, and personalized family care.
           </p>
-
-          <div className="pt-2">
-            <span className="text-[10px] text-ivory-300 uppercase tracking-widest font-sans">
-              * Photography shown represents illustrative concept
-            </span>
-          </div>
         </div>
       </section>
 
@@ -74,36 +65,35 @@ export default function AboutPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
           {/* Text narrative */}
           <div className="lg:col-span-7 space-y-6">
-            <span className="text-xs uppercase tracking-[0.25em] text-burgundy font-sans font-semibold">
+            <span className="text-xs uppercase tracking-[0.25em] text-coral font-sans font-bold">
               The Hindavi Ethos
             </span>
 
-            <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-charcoal-dark leading-tight">
+            <h2 className="font-sans text-2xl sm:text-3xl lg:text-4xl font-extrabold uppercase tracking-tight text-charcoal leading-tight">
               Honoring traditions while orchestrating timeless celebrations.
             </h2>
+            <div className="w-16 h-1 bg-coral rounded-full" />
 
-            <Divider variant="ornate" centered={false} />
-
-            <p className="font-sans text-charcoal-muted text-base leading-relaxed">
+            <p className="font-sans text-charcoal/80 text-base leading-relaxed">
               At {BUSINESS_CONFIG.displayName}, we view each wedding not merely
               as an event, but as the sacred convergence of two families and
               their heritage. Operating from Pune and across Maharashtra, our mission is to alleviate
               planning stress while amplifying beauty and genuine celebration.
             </p>
 
-            <p className="font-sans text-charcoal-muted text-sm sm:text-base leading-relaxed">
+            <p className="font-sans text-charcoal/80 text-sm sm:text-base leading-relaxed">
               We approach every project with quiet precision: safeguarding
               ceremonial customs, engineering safe venue infrastructure, and
               curating floral and lighting landscapes that leave guests
               spellbound.
             </p>
 
-            {/* Owner Documentation Notice */}
-            <div className="p-6 rounded-sm bg-ivory-50 border border-ivory-200 space-y-2 mt-4">
-              <span className="font-sans text-xs uppercase tracking-wider text-burgundy font-semibold block">
+            {/* Business Profile Notice */}
+            <div className="p-6 rounded-2xl bg-blush-50/80 border border-blush/60 space-y-2 mt-4">
+              <span className="font-sans text-xs uppercase tracking-wider text-coral font-bold block">
                 Official Business Profile
               </span>
-              <p className="font-sans text-xs text-charcoal-muted leading-relaxed">
+              <p className="font-sans text-xs text-charcoal/70 leading-relaxed">
                 Operating headquarters: {BUSINESS_CONFIG.contact.address.fullText}.
                 Founder profiles and expanded heritage milestones will be updated
                 following owner review. We adhere strictly to verified business
@@ -112,9 +102,9 @@ export default function AboutPage() {
             </div>
           </div>
 
-          {/* Asymmetrical Framed Visual */}
+          {/* Framed Visual */}
           <div className="lg:col-span-5 relative">
-            <div className="relative aspect-[3/4] rounded-sm overflow-hidden shadow-2xl border-4 border-ivory">
+            <div className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-xl border-4 border-blush-100">
               <Image
                 src="/images/service_planning.jpg"
                 alt="Illustrative consultation aesthetic and bespoke wedding stationery"
@@ -123,11 +113,11 @@ export default function AboutPage() {
                 className="object-cover"
               />
             </div>
-            <div className="absolute -bottom-6 -left-4 sm:-bottom-8 sm:-left-6 bg-charcoal text-ivory p-6 rounded-sm shadow-xl max-w-xs border border-gold/30">
-              <span className="font-serif text-xl text-gold font-light block">
+            <div className="absolute -bottom-6 -left-4 sm:-bottom-8 sm:-left-6 bg-white text-charcoal p-6 rounded-2xl shadow-xl max-w-xs border border-blush/60">
+              <span className="font-sans text-lg font-bold uppercase text-coral block">
                 Bespoke Curation
               </span>
-              <span className="font-sans text-xs text-ivory-300 block mt-1">
+              <span className="font-sans text-xs text-charcoal/70 block mt-1">
                 Every detail orchestrated with intention
               </span>
             </div>

@@ -11,14 +11,14 @@ import { ArrowRight, CheckCircle2, ShieldCheck } from "lucide-react";
 export const metadata: Metadata = {
   title: "Services & Specializations",
   description:
-    "Explore the bespoke wedding planning, event production, and decor design services offered by Hindavi Wedding Family in Karad, Maharashtra.",
+    "Explore the bespoke wedding planning, event production, and decor design services offered by Hindavi Wedding Family in Pune and Maharashtra.",
   alternates: {
     canonical: "/services",
   },
   openGraph: {
     title: `Services & Specializations | ${BUSINESS_CONFIG.displayName}`,
     description:
-      "Explore the bespoke wedding planning, event production, and decor design services offered by Hindavi Wedding Family in Karad, Maharashtra.",
+      "Explore the bespoke wedding planning, event production, and decor design services offered by Hindavi Wedding Family in Pune and Maharashtra.",
     url: `${BUSINESS_CONFIG.siteUrl}/services`,
   },
 };
@@ -83,7 +83,7 @@ export default function ServicesPage() {
       {/* ========================================================
           1. EDITORIAL SERVICES HERO
           ======================================================== */}
-      <section className="relative min-h-[60vh] sm:min-h-[70vh] flex items-center justify-center overflow-hidden bg-charcoal text-white">
+      <section className="relative min-h-[50vh] sm:min-h-[55vh] flex items-center justify-center overflow-hidden bg-charcoal text-white">
         <div className="absolute inset-0 z-0">
           <Image
             src="/images/service_production.jpg"
@@ -93,31 +93,22 @@ export default function ServicesPage() {
             sizes="100vw"
             className="object-cover object-center"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-charcoal via-charcoal/70 to-charcoal/40" />
-          <div className="absolute inset-0 bg-burgundy/25 mix-blend-multiply" />
+          <div className="absolute inset-0 bg-gradient-to-t from-charcoal via-charcoal/70 to-black/30" />
         </div>
 
-        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center space-y-6">
-          <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-gold/20 backdrop-blur-md border border-gold/40 text-gold-light text-xs uppercase tracking-[0.25em] font-sans font-semibold">
-            <span>Owner-Verified Categories</span>
+        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center space-y-5">
+          <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white text-xs uppercase tracking-[0.25em] font-sans font-bold">
+            <span>Specialized Capabilities</span>
           </div>
 
           <h1 className="font-serif text-4xl sm:text-6xl md:text-7xl font-normal text-white tracking-tight leading-[1.1]">
-            Our Wedding & Event Services
+            Our Wedding &amp; Event Services
           </h1>
 
-          <Divider variant="ornate" centered={true} />
-
-          <p className="font-sans text-base sm:text-lg text-ivory-100/90 max-w-2xl mx-auto leading-relaxed font-light">
+          <p className="font-sans text-base sm:text-lg text-white/90 max-w-2xl mx-auto leading-relaxed font-light">
             Three core disciplines orchestrated by {BUSINESS_CONFIG.displayName},
             tailored to elevate every chapter of your celebration.
           </p>
-
-          <div className="pt-2">
-            <span className="text-[10px] text-ivory-300 uppercase tracking-widest font-sans">
-              * Photography shown represents illustrative concept
-            </span>
-          </div>
         </div>
       </section>
 

@@ -1,13 +1,13 @@
 import React from "react";
 
 interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
-  variant?: "gold" | "burgundy" | "charcoal" | "neutral";
+  variant?: "gold" | "burgundy" | "charcoal" | "neutral" | "coral" | "blush";
   size?: "sm" | "md";
   children: React.ReactNode;
 }
 
 export function Badge({
-  variant = "gold",
+  variant = "coral",
   size = "md",
   className = "",
   children,
@@ -19,10 +19,12 @@ export function Badge({
   };
 
   const variantStyles = {
-    gold: "bg-gold-50 text-burgundy border border-gold/30 font-semibold",
-    burgundy: "bg-burgundy text-white font-medium",
-    charcoal: "bg-charcoal text-ivory-100 font-medium",
-    neutral: "bg-ivory-200 text-charcoal font-medium",
+    coral: "bg-coral text-white font-semibold shadow-xs",
+    blush: "bg-[#F9CFCA] text-charcoal border border-[#F4ABA2]/50 font-semibold",
+    gold: "bg-blush-50 text-coral border border-coral/30 font-semibold",
+    burgundy: "bg-coral-dark text-white font-medium",
+    charcoal: "bg-charcoal text-white font-medium",
+    neutral: "bg-blush-50 text-charcoal border border-blush/60 font-medium",
   };
 
   return (

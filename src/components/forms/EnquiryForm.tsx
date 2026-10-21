@@ -156,8 +156,8 @@ export function EnquiryForm() {
               Edit Details
             </Button>
             <a
-              href={`mailto:${BUSINESS_CONFIG.contact.email}?subject=Wedding Enquiry from ${encodeURIComponent(formData.fullName)}&body=Name: ${encodeURIComponent(formData.fullName)}%0D%0APhone: ${encodeURIComponent(formData.phone)}%0D%0AEvent: ${encodeURIComponent(formData.eventType)}%0D%0ADate: ${encodeURIComponent(formData.eventDate || "Flexible")}%0D%0ALocation: ${encodeURIComponent(formData.location || "Karad")}%0D%0AMessage: ${encodeURIComponent(formData.message)}`}
-              className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 bg-burgundy hover:bg-burgundy-600 text-white font-sans text-xs uppercase tracking-wider font-semibold py-3 px-6 rounded-sm transition-colors shadow-sm"
+              href={`mailto:${BUSINESS_CONFIG.contact.email}?subject=Wedding Enquiry from ${encodeURIComponent(formData.fullName)}&body=Name: ${encodeURIComponent(formData.fullName)}%0D%0APhone: ${encodeURIComponent(formData.phone)}%0D%0AEvent: ${encodeURIComponent(formData.eventType)}%0D%0ADate: ${encodeURIComponent(formData.eventDate || "Flexible")}%0D%0ALocation: ${encodeURIComponent(formData.location || "Pune")}%0D%0AMessage: ${encodeURIComponent(formData.message)}`}
+              className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 bg-coral hover:bg-coral-dark text-white font-sans text-xs uppercase tracking-wider font-bold py-3.5 px-7 rounded-full transition-all shadow-md"
             >
               <Mail className="w-4 h-4" />
               <span>Send via Email Directly</span>
@@ -225,7 +225,7 @@ export function EnquiryForm() {
             <FormField
               label="Event Location / City"
               name="location"
-              placeholder="e.g. Karad, Satara, Pune"
+              placeholder="e.g. Pune, Mumbai, Karad, Mahabaleshwar"
               value={formData.location}
               onChange={handleChange}
             />

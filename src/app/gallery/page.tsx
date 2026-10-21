@@ -106,7 +106,7 @@ export default function GalleryPage() {
       {/* ========================================================
           1. EDITORIAL GALLERY HERO
           ======================================================== */}
-      <section className="relative min-h-[60vh] sm:min-h-[70vh] flex items-center justify-center overflow-hidden bg-charcoal text-white">
+      <section className="relative min-h-[50vh] sm:min-h-[55vh] flex items-center justify-center overflow-hidden bg-charcoal text-white">
         <div className="absolute inset-0 z-0">
           <Image
             src="/images/hero_about.jpg"
@@ -116,31 +116,22 @@ export default function GalleryPage() {
             sizes="100vw"
             className="object-cover object-center"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-charcoal via-charcoal/70 to-charcoal/40" />
-          <div className="absolute inset-0 bg-burgundy/20 mix-blend-multiply" />
+          <div className="absolute inset-0 bg-gradient-to-t from-charcoal via-charcoal/70 to-black/30" />
         </div>
 
-        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center space-y-6">
-          <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-gold/20 backdrop-blur-md border border-gold/40 text-gold-light text-xs uppercase tracking-[0.25em] font-sans font-semibold">
+        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center space-y-5">
+          <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white text-xs uppercase tracking-[0.25em] font-sans font-bold">
             <span>Visual Portfolio</span>
           </div>
 
           <h1 className="font-serif text-4xl sm:text-6xl md:text-7xl font-normal text-white tracking-tight leading-[1.1]">
-            Celebrations & Decor Concepts
+            Celebrations &amp; Decor Concepts
           </h1>
 
-          <Divider variant="ornate" centered={true} />
-
-          <p className="font-sans text-base sm:text-lg text-ivory-100/90 max-w-2xl mx-auto leading-relaxed font-light">
+          <p className="font-sans text-base sm:text-lg text-white/90 max-w-2xl mx-auto leading-relaxed font-light">
             A curated showcase of sacred mandaps, ambient evening lighting,
             and grand celebrations orchestrated across Maharashtra.
           </p>
-
-          <div className="pt-2">
-            <span className="text-[10px] text-ivory-300 uppercase tracking-widest font-sans">
-              * Photography shown represents illustrative concept
-            </span>
-          </div>
         </div>
       </section>
 
@@ -149,9 +140,9 @@ export default function GalleryPage() {
           ======================================================== */}
       <Section background="white">
         {/* Transparency banner */}
-        <div className="mb-12 p-6 rounded-sm bg-ivory-50 border border-ivory-200 text-center max-w-3xl mx-auto">
-          <p className="font-sans text-xs text-charcoal-muted leading-relaxed">
-            * <strong>Client Privacy & Authenticity Policy:</strong> In alignment
+        <div className="mb-12 p-6 rounded-2xl bg-blush-50/70 border border-blush/60 text-center max-w-3xl mx-auto">
+          <p className="font-sans text-xs text-charcoal/80 leading-relaxed">
+            * <strong>Client Privacy &amp; Authenticity Policy:</strong> In alignment
             with our transparency principles, the photography below displays
             illustrative aesthetic design concepts. Real client wedding albums
             will be published only following client consent and guest privacy
@@ -160,7 +151,7 @@ export default function GalleryPage() {
               href={BUSINESS_CONFIG.socials.instagram.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-burgundy font-semibold hover:underline"
+              className="text-coral font-bold hover:underline"
             >
               Instagram profile
             </a>
@@ -168,7 +159,7 @@ export default function GalleryPage() {
           </p>
         </div>
 
-        {/* Category Filter Tabs */}
+        {/* Category Filter Tabs (Shaadi Squad style pill filters) */}
         <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mb-12">
           {CATEGORIES.map((cat) => {
             const isActive = activeCategory === cat;
@@ -177,10 +168,10 @@ export default function GalleryPage() {
                 key={cat}
                 type="button"
                 onClick={() => setActiveCategory(cat)}
-                className={`px-4 py-2 rounded-full font-sans text-xs uppercase tracking-wider transition-all duration-200 cursor-pointer focus-visible:outline-burgundy ${
+                className={`px-5 py-2.5 rounded-full font-sans text-xs uppercase tracking-wider transition-all duration-200 cursor-pointer focus-visible:outline-coral ${
                   isActive
-                    ? "bg-burgundy text-white shadow-sm font-semibold"
-                    : "bg-ivory-100 text-charcoal hover:bg-ivory-200 hover:text-burgundy font-medium"
+                    ? "bg-coral text-white shadow-sm font-bold"
+                    : "bg-blush-50/80 text-charcoal border border-blush/60 hover:border-coral hover:text-coral font-semibold"
                 }`}
                 aria-pressed={isActive}
               >

@@ -29,22 +29,21 @@ export default function ContactPage() {
       {/* ========================================================
           1. EDITORIAL CONTACT HERO
           ======================================================== */}
-      <section className="relative min-h-[50vh] sm:min-h-[60vh] flex items-center justify-center overflow-hidden bg-charcoal text-white">
+      <section className="relative min-h-[45vh] sm:min-h-[50vh] flex items-center justify-center overflow-hidden bg-charcoal text-white">
         <div className="absolute inset-0 z-0">
           <Image
             src="/images/hero_wedding.jpg"
-            alt="Illustrative wedding venue illumination in Karad"
+            alt="Illustrative wedding venue illumination in Pune"
             fill
             priority
             sizes="100vw"
             className="object-cover object-center"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-charcoal via-charcoal/70 to-charcoal/40" />
-          <div className="absolute inset-0 bg-burgundy/25 mix-blend-multiply" />
+          <div className="absolute inset-0 bg-gradient-to-t from-charcoal via-charcoal/70 to-black/30" />
         </div>
 
-        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center space-y-6">
-          <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-gold/20 backdrop-blur-md border border-gold/40 text-gold-light text-xs uppercase tracking-[0.25em] font-sans font-semibold">
+        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center space-y-5">
+          <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white text-xs uppercase tracking-[0.25em] font-sans font-bold">
             <span>Direct Planning Liaison</span>
           </div>
 
@@ -52,18 +51,10 @@ export default function ContactPage() {
             Connect With Our Team
           </h1>
 
-          <Divider variant="ornate" centered={true} />
-
-          <p className="font-sans text-base sm:text-lg text-ivory-100/90 max-w-2xl mx-auto leading-relaxed font-light">
-            Whether you are envisioning a grand palace wedding or an intimate
-            family celebration, we are here to craft your milestone with grace.
+          <p className="font-sans text-base sm:text-lg text-white/90 max-w-2xl mx-auto leading-relaxed font-light">
+            Whether you are envisioning a grand celebration in Pune or a destination wedding across Maharashtra,
+            we are here to craft your milestone with grace.
           </p>
-
-          <div className="pt-2">
-            <span className="text-[10px] text-ivory-300 uppercase tracking-widest font-sans">
-              * Photography shown represents illustrative concept
-            </span>
-          </div>
         </div>
       </section>
 
@@ -72,33 +63,34 @@ export default function ContactPage() {
           ======================================================== */}
       <Section background="white">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
-          {/* Left Column: Contact Profile & Office Details */}
-          <div className="lg:col-span-5 space-y-8">
+          {/* Left Column: Contact Profile & Office Details (Shaadi Squad style clean card) */}
+          <div className="lg:col-span-5 space-y-8 bg-blush-50/70 p-8 sm:p-10 rounded-2xl border border-blush/60">
             <div className="space-y-3">
-              <span className="text-xs uppercase tracking-[0.25em] text-burgundy font-sans font-semibold">
+              <span className="text-xs uppercase tracking-[0.25em] text-coral font-sans font-bold">
                 Pune Office
               </span>
-              <h2 className="font-serif text-3xl sm:text-4xl text-charcoal-dark leading-tight">
+              <h2 className="font-sans text-2xl sm:text-3xl font-extrabold uppercase tracking-tight text-charcoal leading-tight">
                 {BUSINESS_CONFIG.displayName}
               </h2>
-              <p className="font-sans text-sm text-charcoal-muted leading-relaxed">
+              <div className="w-12 h-1 bg-coral rounded-full" />
+              <p className="font-sans text-sm text-charcoal/80 leading-relaxed pt-2">
                 We invite you to reach out for an initial consultation. Our event
                 specialists coordinate wedding planning timelines, decor fabrication,
-                and technical staging across Pune, Karad, and surrounding districts in Maharashtra.
+                and technical staging across Pune and Maharashtra.
               </p>
             </div>
 
-            <div className="space-y-6 pt-6 border-t border-ivory-200">
+            <div className="space-y-6 pt-6 border-t border-blush/60">
               {/* Address */}
               <div className="flex items-start space-x-4">
-                <div className="w-10 h-10 rounded-full bg-ivory-100 flex items-center justify-center text-burgundy flex-shrink-0 mt-0.5">
-                  <MapPin className="w-5 h-5 text-gold-dark" />
+                <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-coral shadow-xs flex-shrink-0 mt-0.5 border border-blush/50">
+                  <MapPin className="w-5 h-5 text-coral" />
                 </div>
                 <div className="font-sans text-sm">
-                  <span className="font-semibold block text-charcoal-dark mb-0.5">
+                  <span className="font-bold uppercase tracking-wider text-xs block text-charcoal mb-0.5">
                     Main Office Address
                   </span>
-                  <address className="not-italic leading-relaxed text-charcoal-muted text-xs">
+                  <address className="not-italic leading-relaxed text-charcoal/80 text-xs">
                     {BUSINESS_CONFIG.contact.address.fullText}
                   </address>
                 </div>
@@ -106,16 +98,16 @@ export default function ContactPage() {
 
               {/* Email */}
               <div className="flex items-start space-x-4">
-                <div className="w-10 h-10 rounded-full bg-ivory-100 flex items-center justify-center text-burgundy flex-shrink-0 mt-0.5">
-                  <Mail className="w-5 h-5 text-gold-dark" />
+                <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-coral shadow-xs flex-shrink-0 mt-0.5 border border-blush/50">
+                  <Mail className="w-5 h-5 text-coral" />
                 </div>
                 <div className="font-sans text-sm">
-                  <span className="font-semibold block text-charcoal-dark mb-0.5">
+                  <span className="font-bold uppercase tracking-wider text-xs block text-charcoal mb-0.5">
                     Direct Email
                   </span>
                   <a
                     href={`mailto:${BUSINESS_CONFIG.contact.email}`}
-                    className="text-burgundy hover:underline text-xs break-all"
+                    className="text-coral hover:text-coral-dark font-medium text-xs break-all hover:underline"
                   >
                     {BUSINESS_CONFIG.contact.email}
                   </a>
@@ -124,20 +116,20 @@ export default function ContactPage() {
 
               {/* Phone */}
               <div className="flex items-start space-x-4">
-                <div className="w-10 h-10 rounded-full bg-ivory-100 flex items-center justify-center text-burgundy flex-shrink-0 mt-0.5">
-                  <Phone className="w-5 h-5 text-gold-dark" />
+                <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-coral shadow-xs flex-shrink-0 mt-0.5 border border-blush/50">
+                  <Phone className="w-5 h-5 text-coral" />
                 </div>
                 <div className="font-sans text-sm">
-                  <span className="font-semibold block text-charcoal-dark mb-0.5">
+                  <span className="font-bold uppercase tracking-wider text-xs block text-charcoal mb-0.5">
                     Mobile / Phone
                   </span>
                   <a
                     href={`tel:+91${BUSINESS_CONFIG.contact.phone}`}
-                    className="text-burgundy hover:underline text-xs font-semibold block"
+                    className="text-coral hover:text-coral-dark text-sm font-bold block"
                   >
                     {BUSINESS_CONFIG.contact.displayPhone}
                   </a>
-                  <span className="text-[11px] text-charcoal-muted">
+                  <span className="text-[11px] text-charcoal/60">
                     Available for wedding consultations and inquiries
                   </span>
                 </div>
@@ -145,14 +137,14 @@ export default function ContactPage() {
 
               {/* Response Time Expectation */}
               <div className="flex items-start space-x-4">
-                <div className="w-10 h-10 rounded-full bg-ivory-100 flex items-center justify-center text-burgundy flex-shrink-0 mt-0.5">
-                  <Clock className="w-5 h-5 text-gold-dark" />
+                <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-coral shadow-xs flex-shrink-0 mt-0.5 border border-blush/50">
+                  <Clock className="w-5 h-5 text-coral" />
                 </div>
                 <div className="font-sans text-sm">
-                  <span className="font-semibold block text-charcoal-dark mb-0.5">
+                  <span className="font-bold uppercase tracking-wider text-xs block text-charcoal mb-0.5">
                     Consultation Response
                   </span>
-                  <span className="text-charcoal-muted text-xs">
+                  <span className="text-charcoal/70 text-xs">
                     Inquiries received via direct email or form are acknowledged
                     within 24–48 business hours.
                   </span>
@@ -161,8 +153,8 @@ export default function ContactPage() {
             </div>
 
             {/* Social Channels */}
-            <div className="pt-6 border-t border-ivory-200 space-y-3">
-              <span className="font-sans text-xs uppercase tracking-wider text-charcoal-muted block font-semibold">
+            <div className="pt-6 border-t border-blush/60 space-y-3">
+              <span className="font-sans text-xs uppercase tracking-wider text-charcoal/70 block font-bold">
                 Official Channels
               </span>
               <div className="flex items-center space-x-4">
@@ -170,7 +162,7 @@ export default function ContactPage() {
                   href={BUSINESS_CONFIG.socials.instagram.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center space-x-1.5 text-xs text-burgundy hover:text-burgundy-600 font-semibold transition-colors"
+                  className="inline-flex items-center space-x-1.5 text-xs text-coral hover:text-coral-dark font-bold transition-colors"
                 >
                   <InstagramIcon className="w-4 h-4" />
                   <span>Instagram</span>

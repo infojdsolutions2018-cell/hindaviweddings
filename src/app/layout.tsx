@@ -26,16 +26,16 @@ export const metadata: Metadata = {
     template: `%s | ${BUSINESS_CONFIG.displayName}`,
   },
   description:
-    "Hindavi Wedding Family offers bespoke wedding planning, event production, and decor design services based in Karad, Maharashtra.",
+    "Hindavi Wedding Family offers bespoke wedding planning, event production, and decor design services based in Pune, Maharashtra.",
   keywords: [
     "Wedding Planning",
     "Event Production",
     "Event Decor Design",
-    "Karad Weddings",
+    "Pune Weddings",
+    "Maharashtra Wedding Planner",
     "Hindavi Wedding Family",
     "Hindavi Weddings & Events",
-    "Maharashtra Wedding Planner",
-    "Mandap Decor Karad",
+    "Mandap Decor Pune",
   ],
   authors: [{ name: BUSINESS_CONFIG.name }],
   creator: BUSINESS_CONFIG.name,
@@ -47,7 +47,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: `${BUSINESS_CONFIG.displayName} | Wedding Planning & Event Production`,
     description:
-      "Bespoke wedding planning, event production, and decor design in Karad, Maharashtra.",
+      "Bespoke wedding planning, event production, and decor design in Pune, Maharashtra.",
     siteName: BUSINESS_CONFIG.displayName,
     url: BUSINESS_CONFIG.siteUrl,
     locale: "en_IN",
@@ -57,7 +57,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: `${BUSINESS_CONFIG.displayName} | Wedding Planning & Event Production`,
     description:
-      "Bespoke wedding planning, event production, and decor design in Karad, Maharashtra.",
+      "Bespoke wedding planning, event production, and decor design in Pune, Maharashtra.",
   },
   robots: {
     index: true,
@@ -82,7 +82,7 @@ export default function RootLayout({
       lang="en"
       className={`${cormorant.variable} ${montserrat.variable} scroll-smooth`}
     >
-      <body className="min-h-screen flex flex-col font-sans bg-ivory text-charcoal antialiased selection:bg-gold-100 selection:text-burgundy">
+      <body className="min-h-screen flex flex-col font-sans bg-white text-charcoal antialiased selection:bg-blush-200 selection:text-coral-dark">
         <Header />
         <main className="flex-grow">{children}</main>
         <Footer />

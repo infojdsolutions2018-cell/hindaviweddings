@@ -4,20 +4,24 @@
 
 :root {
   /* Brand Tokens */
-  --color-ivory: #F8F0E8;
+  --color-blush: #F9CFCA;
+  --color-blush-light: #FDF3F1;
+  --color-coral: #F2887B;
+  --color-coral-dark: #E06D5F;
+  --color-ivory: #FAF7F5;
   --color-burgundy: #6F1829;
   --color-gold: #C6A15B;
-  --color-charcoal: #454038;
+  --color-charcoal: #333333;
   --color-white: #FFFFFF;
 
-  --background: var(--color-ivory);
+  --background: #FFFFFF;
   --foreground: var(--color-charcoal);
 }
 
 html {
   scroll-behavior: smooth;
-  background-color: var(--color-ivory);
-  color: var(--color-charcoal);
+  background-color: var(--background);
+  color: var(--foreground);
 }
 
 body {

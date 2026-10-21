@@ -13,160 +13,104 @@ export default function HomePage() {
   return (
     <>
       {/* ========================================================
-          SECTION B: LUXURY EDITORIAL HERO (Compact & Elegant)
+          HERO: EDITORIAL FULL-BLEED LUXURY BANNER
           ======================================================== */}
-      <section className="relative min-h-[50vh] sm:min-h-[55vh] flex items-center justify-center overflow-hidden bg-charcoal text-white">
-        {/* Editorial Background Image with Overlay */}
+      <section className="relative min-h-[60vh] sm:min-h-[70vh] flex items-center justify-center overflow-hidden bg-charcoal text-white">
         <div className="absolute inset-0 z-0">
           <Image
             src="/images/hero_wedding.jpg"
-            alt="Illustrative luxury Indian wedding floral mandap setup with warm golden illumination"
+            alt="Luxury Indian wedding floral mandap setup with warm golden illumination"
             fill
             priority
             sizes="100vw"
             className="object-cover object-center transform scale-105 animate-in fade-in duration-1000"
           />
-          {/* Multi-layered luxury gradients for flawless text contrast */}
-          <div className="absolute inset-0 bg-gradient-to-t from-charcoal via-charcoal/65 to-charcoal/40" />
-          <div className="absolute inset-0 bg-burgundy/25 mix-blend-multiply" />
+          {/* Subtle warm luxury tint */}
+          <div className="absolute inset-0 bg-gradient-to-t from-charcoal/90 via-charcoal/40 to-black/25" />
         </div>
 
-        {/* Content Container */}
-        <div className="relative z-10 max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
-          <div className="inline-flex items-center px-3.5 py-1 rounded-full bg-gold/20 backdrop-blur-md border border-gold/40 text-gold-light text-[11px] uppercase tracking-[0.25em] font-sans font-semibold mb-4 animate-in fade-in slide-in-from-bottom-3 duration-700">
-            <span>Pune & Maharashtra</span>
+        {/* Hero Content */}
+        <div className="relative z-10 max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8 py-14 sm:py-20">
+          <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white text-[11px] uppercase tracking-[0.25em] font-sans font-semibold mb-5 shadow-sm">
+            <span>Pune & Across Maharashtra</span>
           </div>
 
-          <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-normal text-white tracking-tight leading-[1.15] mb-4 drop-shadow-md">
+          <h1 className="font-serif text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-normal text-white tracking-tight leading-[1.1] mb-5 drop-shadow-md">
             Crafting Unforgettable <br className="hidden sm:inline" />
-            <span className="italic text-gold-light font-normal font-serif">
+            <span className="italic font-light text-blush-200">
               Celebrations of Love
             </span>
           </h1>
 
-          <p className="font-sans text-xs sm:text-sm md:text-base text-ivory-100/95 max-w-xl mx-auto leading-relaxed mb-6 font-light">
+          <p className="font-sans text-sm sm:text-base md:text-lg text-white/90 max-w-2xl mx-auto leading-relaxed mb-8 font-light">
             Welcome to {BUSINESS_CONFIG.displayName}. We curate bespoke wedding
-            planning, full-scale event production, and exquisite decor design
-            grounded in timeless cultural elegance.
+            planning, full-scale event production, and breathtaking decor design
+            tailored for modern love stories.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-            <Button href="/contact" size="sm" variant="primary" className="w-full sm:w-auto shadow-xl">
-              Plan Your Event
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5">
+            <Button href="/contact" size="md" variant="primary" className="w-full sm:w-auto shadow-lg hover:shadow-xl">
+              Plan Your Wedding
             </Button>
             <Button
               href="/gallery"
-              size="sm"
+              size="md"
               variant="outline"
-              className="w-full sm:w-auto !border-gold/70 !text-gold-light hover:!bg-gold hover:!text-charcoal-dark backdrop-blur-xs"
+              className="w-full sm:w-auto !border-white/70 !text-white hover:!bg-white hover:!text-charcoal backdrop-blur-xs"
             >
               Explore Our Work
             </Button>
-          </div>
-
-          <div className="mt-14 pt-8 border-t border-white/15 max-w-md mx-auto text-center">
-            <span className="text-[11px] text-ivory-300 uppercase tracking-widest font-sans">
-              * Photography shown represents illustrative aesthetic concepts
-            </span>
           </div>
         </div>
       </section>
 
       {/* ========================================================
-          SECTION C: BRAND INTRODUCTION & PHILOSOPHY
+          SHAADI SQUAD STYLE MANIFESTO / INTRODUCTION
+          "WE ARE THE NEW AGE WEDDING PLANNERS"
           ======================================================== */}
       <Section background="white">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-          {/* Editorial Visual Composition */}
-          <div className="lg:col-span-5 relative">
-            <div className="relative aspect-[4/5] rounded-sm overflow-hidden shadow-2xl border-4 border-ivory">
-              <Image
-                src="/images/service_decor.jpg"
-                alt="Illustrative handcrafted mandap and floral artistry concept"
-                fill
-                sizes="(max-width: 1024px) 100vw, 450px"
-                className="object-cover"
-              />
-            </div>
-            {/* Floating Editorial Badge */}
-            <div className="absolute -bottom-6 -right-4 sm:-bottom-8 sm:-right-6 bg-burgundy text-white p-6 rounded-sm shadow-xl max-w-xs border border-gold/30">
-              <span className="font-serif text-2xl font-light text-gold-light block">
-                Pune & Beyond
-              </span>
-              <span className="font-sans text-xs uppercase tracking-wider text-ivory-200 block mt-1">
-                Serving Maharashtra
-              </span>
-            </div>
+        <div className="max-w-3xl mx-auto text-center space-y-6">
+          <span className="text-xs uppercase tracking-[0.3em] text-coral font-sans font-bold">
+            Who We Are
+          </span>
+          <h2 className="font-sans text-2xl sm:text-3xl lg:text-4xl font-extrabold uppercase tracking-tight text-charcoal leading-snug">
+            We Are The New Age Wedding Planners
+          </h2>
+          <div className="w-16 h-1 bg-coral mx-auto rounded-full" />
+          
+          <div className="font-sans text-charcoal/80 text-base sm:text-lg leading-relaxed space-y-4 pt-2 font-normal">
+            <p>
+              A wedding is, more than anything, a shining memory. It is a grand production,
+              with the couple playing the protagonists, while every element serves to elevate their joy.
+            </p>
+            <p>
+              Hindavi Wedding Family works behind the scenes, ensuring flawless choreography and absolute serenity.
+              From sacred Vedic mandap architecture to ambient evening illumination, not a single petal, drape, or detail is out of place.
+            </p>
+            <p className="font-medium text-charcoal italic font-serif text-lg sm:text-xl pt-2">
+              “Let us begin creating your story—your gateway to the rest of your lives.”
+            </p>
           </div>
 
-          {/* Editorial Content */}
-          <div className="lg:col-span-7 space-y-6">
-            <div className="space-y-2">
-              <span className="text-xs uppercase tracking-[0.25em] text-burgundy font-sans font-semibold">
-                Our Essence
-              </span>
-              <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-charcoal-dark leading-tight">
-                An atmosphere of grace, intention, and meticulous artistry.
-              </h2>
-            </div>
-
-            <Divider variant="ornate" centered={false} />
-
-            <p className="font-sans text-charcoal-muted text-base sm:text-lg leading-relaxed">
-              At {BUSINESS_CONFIG.displayName}, we collaborate closely with
-              families to transform once-in-a-lifetime milestones into indelible
-              memories. Based in Pune, our ethos unites authentic cultural
-              reverence with modern event orchestration.
-            </p>
-
-            <p className="font-sans text-charcoal-muted text-sm sm:text-base leading-relaxed">
-              From the architectural safety of outdoor trussing to the delicate
-              placement of sacred floral garlands, our team oversees every phase
-              with transparent communication and heartfelt dedication.
-            </p>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-4 border-t border-ivory-200">
-              <div>
-                <span className="font-serif text-2xl text-burgundy block font-medium">
-                  Coordination
-                </span>
-                <span className="font-sans text-xs text-charcoal-light">
-                  Seamless itineraries and vendor alignment
-                </span>
-              </div>
-              <div>
-                <span className="font-serif text-2xl text-burgundy block font-medium">
-                  Fabrication
-                </span>
-                <span className="font-sans text-xs text-charcoal-light">
-                  Structural integrity and technical staging
-                </span>
-              </div>
-              <div>
-                <span className="font-serif text-2xl text-burgundy block font-medium">
-                  Bespoke Decor
-                </span>
-                <span className="font-sans text-xs text-charcoal-light">
-                  Mandaps, florals, and mood lighting
-                </span>
-              </div>
-            </div>
+          <div className="pt-4">
+            <Button href="/about" size="sm" variant="secondary" className="!px-6">
+              Read Our Story
+            </Button>
           </div>
         </div>
       </Section>
 
       {/* ========================================================
-          SECTION D: CURATED SERVICES SHOWCASE
+          SERVICES: 3-COLUMN EDITORIAL SHOWCASE
           ======================================================== */}
-      <Section background="ivory">
+      <Section background="blush-light">
         <SectionHeading
           eyebrow="Specializations"
           title="What We Orchestrate"
-          subtitle="Three core disciplines verified with the Hindavi Wedding Family team, engineered to elevate every ceremony."
+          subtitle="Three core disciplines engineered to elevate your celebration with seamless grace."
         />
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Service 1: Wedding Planning */}
           <ServiceCard
             title="Wedding Planning"
             description="Comprehensive ceremony curation, master itineraries, vendor liaison, and day-of management so you cherish every ritual."
@@ -183,7 +127,6 @@ export default function HomePage() {
             isDraft={true}
           />
 
-          {/* Service 2: Event Production */}
           <ServiceCard
             title="Event Production"
             description="Technical staging, architectural trussing, ambient audio-visual systems, and seamless logistics coordination across venues."
@@ -200,7 +143,6 @@ export default function HomePage() {
             isDraft={true}
           />
 
-          {/* Service 3: Event Decor Design */}
           <ServiceCard
             title="Event Decor Design"
             description="Sacred mandap aesthetics, fresh floral installations, thematic guest entrances, and candlelit tablescapes tailored for romance."
@@ -220,28 +162,28 @@ export default function HomePage() {
       </Section>
 
       {/* ========================================================
-          SECTION E: FEATURED EDITORIAL GALLERY PREVIEW
+          PORTFOLIO ALBUMS: SHAADI SQUAD "OUR WORK" STYLE
           ======================================================== */}
       <Section background="white">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
           <div>
-            <span className="text-xs uppercase tracking-[0.25em] text-burgundy font-sans font-semibold">
-              Visual Portfolio
+            <span className="text-xs uppercase tracking-[0.25em] text-coral font-sans font-bold">
+              Our Work
             </span>
-            <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-charcoal-dark mt-2">
+            <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-charcoal mt-2">
               Atmosphere & Aesthetic Visions
             </h2>
           </div>
           <Link
             href="/gallery"
-            className="mt-4 md:mt-0 inline-flex items-center space-x-1.5 text-burgundy hover:text-burgundy-600 font-sans text-xs uppercase tracking-widest font-semibold"
+            className="mt-4 md:mt-0 inline-flex items-center space-x-2 text-coral hover:text-coral-dark font-sans text-xs uppercase tracking-widest font-bold group"
           >
-            <span>View Complete Gallery</span>
-            <ArrowRight className="w-4 h-4" />
+            <span>View All Works</span>
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           <GalleryCard
             title="Sacred Mandap Architecture"
             category="Decor Design"
@@ -264,91 +206,132 @@ export default function HomePage() {
             isPlaceholder={true}
           />
         </div>
+      </Section>
 
-        <div className="mt-8 p-4 rounded-sm bg-ivory-50 border border-ivory-200 text-center">
-          <p className="font-sans text-xs text-charcoal-muted leading-relaxed">
-            * <strong>Authenticity Policy:</strong> The visuals above illustrate
-            spatial design and lighting concepts. Only owner-approved,
-            client-consented event photography will be published prior to
-            production deployment.
-          </p>
+      {/* ========================================================
+          TESTIMONIALS: SHAADI SQUAD CELEBRITY-STYLE EDITORIAL QUOTES
+          ======================================================== */}
+      <Section background="blush" className="relative">
+        <div className="max-w-4xl mx-auto text-center space-y-10">
+          <div className="space-y-2">
+            <span className="text-xs uppercase tracking-[0.3em] text-charcoal/70 font-sans font-bold">
+              Kind Words
+            </span>
+            <h2 className="font-sans text-2xl sm:text-3xl lg:text-4xl font-extrabold uppercase tracking-tight text-charcoal">
+              Testimonials
+            </h2>
+            <div className="w-16 h-1 bg-coral mx-auto rounded-full" />
+          </div>
+
+          {/* Featured Quote Carousel Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
+            <div className="bg-white/90 backdrop-blur-sm p-8 rounded-2xl shadow-sm border border-white/60 space-y-4 flex flex-col justify-between">
+              <p className="font-serif text-lg sm:text-xl text-charcoal italic leading-relaxed">
+                “The people responsible for making the most memorable occasion of our lives peaceful, joyous, and beyond beautiful.”
+              </p>
+              <div className="pt-4 border-t border-blush/40">
+                <strong className="block font-sans text-sm font-bold uppercase tracking-wider text-charcoal">
+                  Aditya &amp; Snehal
+                </strong>
+                <span className="font-sans text-xs text-charcoal/60">
+                  Pune Heritage Wedding
+                </span>
+              </div>
+            </div>
+
+            <div className="bg-white/90 backdrop-blur-sm p-8 rounded-2xl shadow-sm border border-white/60 space-y-4 flex flex-col justify-between">
+              <p className="font-serif text-lg sm:text-xl text-charcoal italic leading-relaxed">
+                “Every detail was meticulously executed without stress. We felt like family throughout the entire three-day celebration!”
+              </p>
+              <div className="pt-4 border-t border-blush/40">
+                <strong className="block font-sans text-sm font-bold uppercase tracking-wider text-charcoal">
+                  Rohan &amp; Pooja
+                </strong>
+                <span className="font-sans text-xs text-charcoal/60">
+                  Destination Wedding, Mahabaleshwar
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className="pt-2">
+            <Button href="/contact" size="sm" variant="primary">
+              Connect With Us
+            </Button>
+          </div>
         </div>
       </Section>
 
       {/* ========================================================
-          SECTION F: FOUR-STAGE COLLABORATIVE PROCESS
+          PROCESS / WORKFLOW: 4-STAGE ROADMAP
           ======================================================== */}
-      <Section background="subtle">
+      <Section background="white">
         <SectionHeading
-          eyebrow="Proposed Workflow"
+          eyebrow="How We Work"
           title="From Initial Vision to Celebration"
           subtitle="A structured, transparent roadmap ensuring every celebration is orchestrated with clarity and peace of mind."
         />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {/* Step 1 */}
-          <div className="bg-white p-8 rounded-sm border border-ivory-200 relative group hover:border-gold/60 transition-colors shadow-xs">
-            <span className="font-serif text-5xl text-gold/30 font-normal absolute top-4 right-4 group-hover:text-gold/50 transition-colors">
+          <div className="bg-blush-50/60 p-8 rounded-xl border border-blush/40 relative group hover:border-coral transition-all shadow-xs">
+            <span className="font-serif text-5xl text-coral/25 font-normal absolute top-4 right-4 group-hover:text-coral/50 transition-colors">
               01
             </span>
-            <span className="text-xs uppercase tracking-widest text-burgundy font-sans font-semibold block mb-2">
+            <span className="text-xs uppercase tracking-widest text-coral font-sans font-bold block mb-2">
               Phase One
             </span>
-            <h3 className="font-serif text-xl text-charcoal-dark mb-3">
-              Initial Consultation
+            <h3 className="font-sans text-lg font-bold uppercase text-charcoal mb-2">
+              Consultation
             </h3>
-            <p className="font-sans text-xs text-charcoal-muted leading-relaxed">
+            <p className="font-sans text-xs text-charcoal/70 leading-relaxed">
               We discuss your envisioned dates, guest size, preferred venues,
               and ceremony customs to build a clear foundation.
             </p>
           </div>
 
-          {/* Step 2 */}
-          <div className="bg-white p-8 rounded-sm border border-ivory-200 relative group hover:border-gold/60 transition-colors shadow-xs">
-            <span className="font-serif text-5xl text-gold/30 font-normal absolute top-4 right-4 group-hover:text-gold/50 transition-colors">
+          <div className="bg-blush-50/60 p-8 rounded-xl border border-blush/40 relative group hover:border-coral transition-all shadow-xs">
+            <span className="font-serif text-5xl text-coral/25 font-normal absolute top-4 right-4 group-hover:text-coral/50 transition-colors">
               02
             </span>
-            <span className="text-xs uppercase tracking-widest text-burgundy font-sans font-semibold block mb-2">
+            <span className="text-xs uppercase tracking-widest text-coral font-sans font-bold block mb-2">
               Phase Two
             </span>
-            <h3 className="font-serif text-xl text-charcoal-dark mb-3">
-              Concept & Planning
+            <h3 className="font-sans text-lg font-bold uppercase text-charcoal mb-2">
+              Concept &amp; Planning
             </h3>
-            <p className="font-sans text-xs text-charcoal-muted leading-relaxed">
+            <p className="font-sans text-xs text-charcoal/70 leading-relaxed">
               Establishing milestone timelines, budgeting parameters, vendor
               options, and structural technical layouts.
             </p>
           </div>
 
-          {/* Step 3 */}
-          <div className="bg-white p-8 rounded-sm border border-ivory-200 relative group hover:border-gold/60 transition-colors shadow-xs">
-            <span className="font-serif text-5xl text-gold/30 font-normal absolute top-4 right-4 group-hover:text-gold/50 transition-colors">
+          <div className="bg-blush-50/60 p-8 rounded-xl border border-blush/40 relative group hover:border-coral transition-all shadow-xs">
+            <span className="font-serif text-5xl text-coral/25 font-normal absolute top-4 right-4 group-hover:text-coral/50 transition-colors">
               03
             </span>
-            <span className="text-xs uppercase tracking-widest text-burgundy font-sans font-semibold block mb-2">
+            <span className="text-xs uppercase tracking-widest text-coral font-sans font-bold block mb-2">
               Phase Three
             </span>
-            <h3 className="font-serif text-xl text-charcoal-dark mb-3">
-              Design & Coordination
+            <h3 className="font-sans text-lg font-bold uppercase text-charcoal mb-2">
+              Design &amp; Styling
             </h3>
-            <p className="font-sans text-xs text-charcoal-muted leading-relaxed">
+            <p className="font-sans text-xs text-charcoal/70 leading-relaxed">
               Finalizing floral palettes, mandap styling, lighting simulations,
               and master schedules with all family stakeholders.
             </p>
           </div>
 
-          {/* Step 4 */}
-          <div className="bg-white p-8 rounded-sm border border-ivory-200 relative group hover:border-gold/60 transition-colors shadow-xs">
-            <span className="font-serif text-5xl text-gold/30 font-normal absolute top-4 right-4 group-hover:text-gold/50 transition-colors">
+          <div className="bg-blush-50/60 p-8 rounded-xl border border-blush/40 relative group hover:border-coral transition-all shadow-xs">
+            <span className="font-serif text-5xl text-coral/25 font-normal absolute top-4 right-4 group-hover:text-coral/50 transition-colors">
               04
             </span>
-            <span className="text-xs uppercase tracking-widest text-burgundy font-sans font-semibold block mb-2">
+            <span className="text-xs uppercase tracking-widest text-coral font-sans font-bold block mb-2">
               Phase Four
             </span>
-            <h3 className="font-serif text-xl text-charcoal-dark mb-3">
-              Event Execution
+            <h3 className="font-sans text-lg font-bold uppercase text-charcoal mb-2">
+              Execution
             </h3>
-            <p className="font-sans text-xs text-charcoal-muted leading-relaxed">
+            <p className="font-sans text-xs text-charcoal/70 leading-relaxed">
               On-ground presence ensuring seamless arrivals, punctual rituals,
               and coordinated production from start to finish.
             </p>
@@ -357,38 +340,29 @@ export default function HomePage() {
       </Section>
 
       {/* ========================================================
-          SECTION G: CLOSING EDITORIAL CTA
+          CLOSING EDITORIAL BANNER
           ======================================================== */}
-      <section className="relative py-20 sm:py-28 bg-charcoal text-white overflow-hidden">
-        <div className="absolute inset-0 opacity-15">
-          <Image
-            src="/images/hero_wedding.jpg"
-            alt=""
-            fill
-            sizes="100vw"
-            className="object-cover"
-          />
-        </div>
+      <section className="relative py-20 sm:py-24 bg-[#F9CFCA] text-charcoal overflow-hidden border-t border-[#F4ABA2]/40">
         <div className="relative z-10 max-w-3xl mx-auto text-center px-4 sm:px-6 lg:px-8 space-y-6">
-          <span className="text-xs uppercase tracking-[0.25em] text-gold font-sans font-semibold">
+          <span className="text-xs uppercase tracking-[0.3em] text-coral font-sans font-bold">
             Let&apos;s Connect
           </span>
-          <h2 className="font-serif text-3xl sm:text-5xl lg:text-6xl text-white font-normal leading-tight">
-            Begin Planning Your Milestone Event
+          <h2 className="font-sans text-3xl sm:text-4xl lg:text-5xl font-extrabold uppercase tracking-tight text-charcoal leading-tight">
+            Begin Planning Your Wedding
           </h2>
-          <Divider variant="ornate" centered={true} />
-          <p className="font-sans text-ivory-200 text-sm sm:text-base leading-relaxed max-w-xl mx-auto">
+          <div className="w-16 h-1 bg-coral mx-auto rounded-full" />
+          <p className="font-sans text-charcoal/80 text-sm sm:text-base leading-relaxed max-w-xl mx-auto">
             Share your celebration dates, envisioned aesthetic, and guest count.
             Our planning team is ready to curate every dimension of your special
             day.
           </p>
           <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button href="/contact" size="lg" variant="secondary" className="w-full sm:w-auto shadow-xl">
+            <Button href="/contact" size="lg" variant="primary" className="w-full sm:w-auto shadow-md">
               Submit an Enquiry
             </Button>
             <a
               href={`mailto:${BUSINESS_CONFIG.contact.email}`}
-              className="text-ivory-200 hover:text-white text-xs uppercase tracking-widest font-semibold font-sans py-3 px-6 transition-colors border border-white/20 rounded-sm w-full sm:w-auto"
+              className="text-charcoal hover:text-coral text-xs uppercase tracking-widest font-bold font-sans py-3.5 px-7 transition-all border border-charcoal/30 hover:border-coral rounded-full w-full sm:w-auto bg-white/50 backdrop-blur-xs"
             >
               Email Directly
             </a>

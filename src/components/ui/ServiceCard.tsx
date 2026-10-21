@@ -58,22 +58,22 @@ export function ServiceCard({
         )}
 
         <div className="p-6 sm:p-8">
-          <h3 className="font-serif text-2xl sm:text-3xl text-charcoal-dark mb-3 group-hover:text-burgundy transition-colors">
+          <h3 className="font-serif text-2xl sm:text-3xl text-charcoal mb-3 group-hover:text-coral transition-colors">
             {title}
           </h3>
 
-          <p className="font-sans text-sm text-charcoal-muted leading-relaxed mb-6">
+          <p className="font-sans text-sm text-charcoal/80 leading-relaxed mb-6">
             {description}
           </p>
 
           {features && features.length > 0 && (
-            <ul className="space-y-2 mb-6 pt-4 border-t border-ivory-100">
+            <ul className="space-y-2 mb-6 pt-4 border-t border-blush/40">
               {features.map((feature, idx) => (
                 <li
                   key={idx}
-                  className="font-sans text-xs text-charcoal-light flex items-center space-x-2"
+                  className="font-sans text-xs text-charcoal/80 flex items-center space-x-2"
                 >
-                  <Check className="w-3.5 h-3.5 text-gold flex-shrink-0" />
+                  <Check className="w-3.5 h-3.5 text-coral flex-shrink-0" />
                   <span>{feature}</span>
                 </li>
               ))}
@@ -84,11 +84,11 @@ export function ServiceCard({
 
       <div className="px-6 pb-6 sm:px-8 sm:pb-8 pt-0 flex items-center justify-between text-xs">
         {isDraft ? (
-          <span className="text-[11px] text-charcoal-muted italic">
-            * Scope subject to owner confirmation
+          <span className="text-[11px] text-charcoal/60 italic">
+            * Dedicated Pune &amp; Maharashtra orchestration
           </span>
         ) : (
-          <span className="text-gold-dark font-semibold uppercase tracking-wider">
+          <span className="text-coral font-bold uppercase tracking-wider">
             Available Service
           </span>
         )}
@@ -96,7 +96,7 @@ export function ServiceCard({
         {href && (
           <Link
             href={href}
-            className="text-burgundy hover:text-burgundy-600 font-semibold inline-flex items-center space-x-1 focus-visible:outline-burgundy"
+            className="text-coral hover:text-coral-dark font-bold inline-flex items-center space-x-1.5 focus-visible:outline-coral"
           >
             <span>Learn more</span>
             <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />

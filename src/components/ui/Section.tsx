@@ -2,7 +2,7 @@ import React from "react";
 
 interface SectionProps extends React.HTMLAttributes<HTMLElement> {
   as?: "section" | "div" | "article";
-  background?: "ivory" | "white" | "charcoal" | "subtle";
+  background?: "ivory" | "white" | "charcoal" | "subtle" | "blush" | "blush-light";
   containerSize?: "default" | "narrow" | "wide" | "full";
   className?: string;
   children: React.ReactNode;
@@ -10,17 +10,19 @@ interface SectionProps extends React.HTMLAttributes<HTMLElement> {
 
 export function Section({
   as: Component = "section",
-  background = "ivory",
+  background = "white",
   containerSize = "default",
   className = "",
   children,
   ...props
 }: SectionProps) {
   const bgStyles = {
-    ivory: "bg-ivory text-charcoal",
+    ivory: "bg-[#FAF7F5] text-charcoal",
     white: "bg-white text-charcoal",
-    charcoal: "bg-charcoal text-ivory",
-    subtle: "bg-ivory-50 text-charcoal",
+    charcoal: "bg-charcoal text-white",
+    subtle: "bg-blush-50 text-charcoal",
+    blush: "bg-[#F9CFCA] text-charcoal",
+    "blush-light": "bg-[#FEF7F6] text-charcoal",
   };
 
   const containerWidths = {
@@ -65,8 +67,8 @@ export function SectionHeading({
     >
       {eyebrow && (
         <span
-          className={`inline-block text-xs uppercase tracking-widest font-sans font-semibold mb-3 ${
-            inverted ? "text-gold" : "text-burgundy"
+          className={`inline-block text-xs uppercase tracking-[0.25em] font-sans font-semibold mb-3 ${
+            inverted ? "text-coral-light" : "text-coral"
           }`}
         >
           {eyebrow}
@@ -74,13 +76,13 @@ export function SectionHeading({
       )}
       <h2
         className={`font-serif text-3xl sm:text-4xl lg:text-5xl tracking-tight leading-tight ${
-          inverted ? "text-white" : "text-charcoal-dark"
+          inverted ? "text-white" : "text-charcoal"
         }`}
       >
         {title}
       </h2>
       <div
-        className={`w-16 h-0.5 bg-gold my-4 ${
+        className={`w-16 h-0.5 bg-coral my-4 rounded-full ${
           centered ? "mx-auto" : ""
         }`}
         aria-hidden="true"

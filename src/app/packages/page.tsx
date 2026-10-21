@@ -73,7 +73,7 @@ export default function PackagesPage() {
       {/* ========================================================
           1. EDITORIAL PACKAGES HERO
           ======================================================== */}
-      <section className="relative min-h-[60vh] sm:min-h-[70vh] flex items-center justify-center overflow-hidden bg-charcoal text-white">
+      <section className="relative min-h-[50vh] sm:min-h-[55vh] flex items-center justify-center overflow-hidden bg-charcoal text-white">
         <div className="absolute inset-0 z-0">
           <Image
             src="/images/gallery_reception.jpg"
@@ -83,12 +83,11 @@ export default function PackagesPage() {
             sizes="100vw"
             className="object-cover object-center"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-charcoal via-charcoal/70 to-charcoal/40" />
-          <div className="absolute inset-0 bg-burgundy/25 mix-blend-multiply" />
+          <div className="absolute inset-0 bg-gradient-to-t from-charcoal via-charcoal/70 to-black/30" />
         </div>
 
-        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center space-y-6">
-          <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-gold/20 backdrop-blur-md border border-gold/40 text-gold-light text-xs uppercase tracking-[0.25em] font-sans font-semibold">
+        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center space-y-5">
+          <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white text-xs uppercase tracking-[0.25em] font-sans font-bold">
             <span>Tailored Investment Model</span>
           </div>
 
@@ -96,18 +95,10 @@ export default function PackagesPage() {
             Curated Event Proposals
           </h1>
 
-          <Divider variant="ornate" centered={true} />
-
-          <p className="font-sans text-base sm:text-lg text-ivory-100/90 max-w-2xl mx-auto leading-relaxed font-light">
+          <p className="font-sans text-base sm:text-lg text-white/90 max-w-2xl mx-auto leading-relaxed font-light">
             Every love story is unique. We build tailored investment proposals
             aligned with your venue scale, ceremony traditions, and design aspirations.
           </p>
-
-          <div className="pt-2">
-            <span className="text-[10px] text-ivory-300 uppercase tracking-widest font-sans">
-              * Photography shown represents illustrative concept
-            </span>
-          </div>
         </div>
       </section>
 
@@ -117,23 +108,22 @@ export default function PackagesPage() {
       <Section background="white">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
           <div className="lg:col-span-7 space-y-6">
-            <span className="text-xs uppercase tracking-[0.25em] text-burgundy font-sans font-semibold">
+            <span className="text-xs uppercase tracking-[0.25em] text-coral font-sans font-bold">
               Our Pricing Principles
             </span>
 
-            <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-charcoal-dark leading-tight">
+            <h2 className="font-sans text-2xl sm:text-3xl lg:text-4xl font-extrabold uppercase tracking-tight text-charcoal leading-tight">
               Why We Create Custom Proposals Instead of Generic Packages
             </h2>
+            <div className="w-16 h-1 bg-coral rounded-full" />
 
-            <Divider variant="ornate" centered={false} />
-
-            <p className="font-sans text-charcoal-muted text-base leading-relaxed">
+            <p className="font-sans text-charcoal/80 text-base leading-relaxed">
               Standardized packages often force families into compromises—either
               paying for unnecessary services or finding critical ceremony items
               missing as unexpected extras later.
             </p>
 
-            <p className="font-sans text-charcoal-muted text-sm sm:text-base leading-relaxed">
+            <p className="font-sans text-charcoal/80 text-sm sm:text-base leading-relaxed">
               At {BUSINESS_CONFIG.displayName}, we reject cookie-cutter formulas.
               In accordance with our project standards, we do not publish
               fabricated tier prices. Instead, we invest time in understanding
