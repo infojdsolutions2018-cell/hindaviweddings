@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Mail, MapPin } from "lucide-react";
 import { InstagramIcon } from "@/components/ui/InstagramIcon";
 import { BUSINESS_CONFIG } from "@/config/business";
@@ -13,13 +14,24 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
           {/* Brand Column */}
           <div className="space-y-4">
-            <div>
-              <span className="font-serif text-2xl tracking-wider text-gold-light font-semibold block">
-                {BUSINESS_CONFIG.name}
-              </span>
-              <span className="font-sans text-xs uppercase tracking-widest text-ivory-200">
-                {BUSINESS_CONFIG.displayName}
-              </span>
+            <div className="flex items-center gap-3">
+              <div className="relative w-12 h-12 rounded-full overflow-hidden border border-gold/50 shadow-sm flex-shrink-0 bg-white">
+                <Image
+                  src="/logo.jpg"
+                  alt="Hindavi Weddings & Events Logo"
+                  fill
+                  sizes="48px"
+                  className="object-cover object-center"
+                />
+              </div>
+              <div>
+                <span className="font-serif text-2xl tracking-wider text-gold-light font-semibold block leading-tight">
+                  {BUSINESS_CONFIG.name}
+                </span>
+                <span className="font-sans text-xs uppercase tracking-widest text-ivory-200">
+                  {BUSINESS_CONFIG.displayName}
+                </span>
+              </div>
             </div>
             <p className="font-sans text-xs sm:text-sm text-ivory-300 leading-relaxed max-w-sm">
               Creating elevated, thoughtful wedding experiences and event

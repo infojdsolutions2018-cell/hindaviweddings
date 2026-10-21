@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { InstagramIcon } from "@/components/ui/InstagramIcon";
+import Image from "next/image";
 import { BUSINESS_CONFIG } from "@/config/business";
 import { Button } from "@/components/ui/Button";
 
@@ -16,18 +17,30 @@ export function Header() {
     <header className="sticky top-0 z-50 bg-ivory/95 backdrop-blur-md border-b border-ivory-200 transition-all">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20 md:h-24">
-          {/* Brand Wordmark */}
+          {/* Brand Logo & Wordmark */}
           <Link
             href="/"
-            className="flex flex-col group focus-visible:outline-burgundy"
+            className="flex items-center gap-3 group focus-visible:outline-burgundy"
             aria-label={`${BUSINESS_CONFIG.displayName} - Home`}
           >
-            <span className="font-serif text-xl sm:text-2xl lg:text-3xl font-semibold tracking-wider text-burgundy group-hover:text-burgundy-600 transition-colors">
-              HINDAVI
-            </span>
-            <span className="font-sans text-[10px] sm:text-xs uppercase tracking-[0.22em] text-gold-dark font-medium -mt-1">
-              Weddings & Events
-            </span>
+            <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-full overflow-hidden border border-gold/40 shadow-sm flex-shrink-0 bg-white">
+              <Image
+                src="/logo.jpg"
+                alt="Hindavi Weddings & Events Logo"
+                fill
+                sizes="(max-width: 640px) 48px, 56px"
+                className="object-cover object-center group-hover:scale-105 transition-transform duration-300"
+                priority
+              />
+            </div>
+            <div className="flex flex-col">
+              <span className="font-serif text-lg sm:text-2xl lg:text-3xl font-semibold tracking-wider text-burgundy group-hover:text-burgundy-600 transition-colors leading-tight">
+                HINDAVI
+              </span>
+              <span className="font-sans text-[9px] sm:text-[11px] uppercase tracking-[0.22em] text-gold-dark font-medium">
+                Weddings & Events
+              </span>
+            </div>
           </Link>
 
           {/* Desktop Navigation */}
