@@ -149,6 +149,17 @@ export function Footer() {
           <p>
             © {currentYear} {BUSINESS_CONFIG.name}. All rights reserved.
           </p>
+          <p className="text-center sm:text-left">
+            Designed &amp; Developed by{" "}
+            <a
+              href="https://www.jisnudigital.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-charcoal hover:text-coral transition-colors underline decoration-charcoal/30 hover:decoration-coral underline-offset-2"
+            >
+              Jisnu Digital Solutions
+            </a>
+          </p>
           <div className="flex items-center space-x-5">
             <Link
               href="/privacy-policy"
