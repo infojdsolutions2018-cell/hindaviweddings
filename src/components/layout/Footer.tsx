@@ -39,30 +39,37 @@ export function Footer() {
               Creating elevated, thoughtful wedding experiences and event
               productions with bespoke decor design and seamless execution.
             </p>
-            <div className="flex items-center space-x-2.5 pt-1">
+            <div className="flex items-center space-x-3 pt-1">
+              {/* Instagram (Official Gradient) */}
               <a
                 href={BUSINESS_CONFIG.socials.instagram.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-8 h-8 rounded-full bg-white/70 border border-coral/30 flex items-center justify-center text-charcoal hover:bg-coral hover:text-white transition-all shadow-xs"
+                className="w-9 h-9 rounded-full bg-gradient-to-tr from-[#FD1D1D] via-[#E1306C] to-[#405DE6] p-[1.5px] transition-transform duration-300 hover:scale-110 shadow-sm"
                 aria-label="Follow Hindavi on Instagram"
               >
-                <InstagramIcon className="w-4 h-4" />
+                <span className="w-full h-full rounded-full bg-white flex items-center justify-center text-[#E1306C] hover:bg-transparent hover:text-white transition-colors duration-300">
+                  <InstagramIcon className="w-4 h-4" />
+                </span>
               </a>
+
+              {/* Threads (Classic Sleek Brand Black/White) */}
               <a
                 href={BUSINESS_CONFIG.socials.threads.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-8 h-8 rounded-full bg-white/70 border border-coral/30 flex items-center justify-center text-charcoal hover:bg-coral hover:text-white transition-all shadow-xs"
+                className="w-9 h-9 rounded-full bg-neutral-900 flex items-center justify-center text-white transition-all duration-300 hover:scale-110 hover:bg-black shadow-sm border border-neutral-700/30"
                 aria-label="Follow Hindavi on Threads"
               >
                 <ThreadsIcon className="w-4 h-4" />
               </a>
+
+              {/* Facebook (Official Brand Blue) */}
               <a
                 href={BUSINESS_CONFIG.socials.facebook.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-8 h-8 rounded-full bg-white/70 border border-coral/30 flex items-center justify-center text-charcoal hover:bg-coral hover:text-white transition-all shadow-xs"
+                className="w-9 h-9 rounded-full bg-[#1877F2] flex items-center justify-center text-white transition-all duration-300 hover:scale-110 hover:bg-[#166fe5] shadow-sm"
                 aria-label="Follow Hindavi on Facebook"
               >
                 <FacebookIcon className="w-4 h-4" />

@@ -42,7 +42,7 @@ export default function GalleryPage() {
   const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null);
 
   useEffect(() => {
-    fetch("/api/gallery")
+    fetch(`/api/gallery?t=${Date.now()}`, { cache: "no-store" })
       .then((res) => res.json())
       .then((data) => {
         if (data.success && Array.isArray(data.data) && data.data.length > 0) {
@@ -169,7 +169,7 @@ export default function GalleryPage() {
         </div>
 
         {/* Instagram Pure Media Grid (No card borders/shadows, tight seamless fit like reference) */}
-        <div className="columns-2 sm:columns-3 gap-1.5 sm:gap-2 md:gap-2.5 max-w-5xl mx-auto space-y-1.5 sm:space-y-2 md:space-y-2.5">
+        <div key={activeFilter} className="columns-2 sm:columns-3 gap-1.5 sm:gap-2 md:gap-2.5 max-w-5xl mx-auto space-y-1.5 sm:space-y-2 md:space-y-2.5 animate-in fade-in duration-300">
           {filteredItems.map((item) => {
             const isReel = item.type === "reel";
 
@@ -261,7 +261,7 @@ export default function GalleryPage() {
 
           {/* Zoomed Media Container without borders, frames, or text */}
           <div
-            className="relative max-w-full max-h-[95vh] flex items-center justify-center cursor-default"
+            className="relative max-w-full max-h-[95vh] flex items-center justify-center cursor-default animate-in zoom-in-95 duration-200"
             onClick={(e) => e.stopPropagation()}
           >
             {selectedMedia.type === "reel" ? (

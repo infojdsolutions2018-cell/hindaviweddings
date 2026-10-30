@@ -22,13 +22,20 @@ export default function HomePage() {
           ======================================================== */}
       <Section background="white">
         <div className="max-w-3xl mx-auto text-center space-y-6">
-          <span className="text-xs uppercase tracking-[0.3em] text-coral font-sans font-bold">
-            Who We Are
-          </span>
-          <h2 className="font-sans text-2xl sm:text-3xl lg:text-4xl font-extrabold uppercase tracking-tight text-charcoal leading-snug">
-            We Are The New Age Wedding Planners
-          </h2>
-          <div className="w-16 h-1 bg-coral mx-auto rounded-full" />
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-coral/10 border border-coral/20 text-coral text-xs uppercase tracking-[0.25em] font-sans font-bold shadow-xs">
+            <span className="w-1.5 h-1.5 rounded-full bg-coral animate-ping" />
+            <span>Who We Are</span>
+          </div>
+
+          <div className="relative py-1">
+            <h2 className="font-sans text-2xl sm:text-3xl lg:text-5xl font-black uppercase tracking-tight leading-tight bg-gradient-to-r from-charcoal via-coral to-[#C6A15B] bg-clip-text text-transparent animate-text-shine animate-title-float select-none">
+              We Are The New Age Wedding Planners
+            </h2>
+          </div>
+
+          <div className="relative w-32 h-1.5 mx-auto rounded-full overflow-hidden bg-coral/20">
+            <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-coral to-transparent -translate-x-full animate-[shimmer_2s_infinite]" />
+          </div>
           
           <div className="font-sans text-charcoal/80 text-base sm:text-lg leading-relaxed space-y-4 pt-2 font-normal">
             <p>
@@ -62,7 +69,7 @@ export default function HomePage() {
           subtitle="Three core disciplines engineered to elevate your celebration with seamless grace."
         />
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-2">
           <ServiceCard
             title="Wedding Planning"
             description="Comprehensive ceremony curation, master itineraries, vendor liaison, and day-of management so you cherish every ritual."

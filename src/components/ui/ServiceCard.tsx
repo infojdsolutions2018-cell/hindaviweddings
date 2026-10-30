@@ -26,7 +26,7 @@ export function ServiceCard({
   isDraft = true,
 }: ServiceCardProps) {
   return (
-    <article className="bg-white rounded-sm border border-ivory-200 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
+    <article className="bg-white rounded-2xl border border-blush/60 overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 ease-out flex flex-col justify-between group hover:border-coral/50">
       <div>
         {imageUrl ? (
           <div className="relative aspect-[16/10] overflow-hidden bg-ivory-100">
@@ -35,12 +35,12 @@ export function ServiceCard({
               alt={imageAlt || `${title} visual presentation`}
               fill
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 400px"
-              className="object-cover transition-transform duration-500 group-hover:scale-105"
+              className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-charcoal/60 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
+            <div className="absolute inset-0 bg-gradient-to-t from-charcoal/70 via-charcoal/20 to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-500" />
             {categoryLabel && (
-              <div className="absolute top-3 left-3">
-                <Badge variant="gold" size="sm" className="backdrop-blur-sm shadow-xs">
+              <div className="absolute top-3 left-3 transform transition-transform duration-300 group-hover:translate-x-1">
+                <Badge variant="gold" size="sm" className="backdrop-blur-md shadow-sm border border-white/30">
                   {categoryLabel}
                 </Badge>
               </div>
@@ -62,13 +62,15 @@ export function ServiceCard({
           </p>
 
           {features && features.length > 0 && (
-            <ul className="space-y-2 mb-6 pt-4 border-t border-blush/40">
+            <ul className="space-y-2.5 mb-6 pt-4 border-t border-blush/40">
               {features.map((feature, idx) => (
                 <li
                   key={idx}
-                  className="font-sans text-xs text-charcoal/80 flex items-center space-x-2"
+                  className="font-sans text-xs text-charcoal/85 flex items-center space-x-2.5 transition-transform duration-200 group-hover:translate-x-0.5"
                 >
-                  <Check className="w-3.5 h-3.5 text-coral flex-shrink-0" />
+                  <span className="w-5 h-5 rounded-full bg-coral/10 flex items-center justify-center flex-shrink-0 group-hover:bg-coral group-hover:text-white transition-colors duration-300">
+                    <Check className="w-3 h-3 text-coral group-hover:text-white transition-colors duration-300" />
+                  </span>
                   <span>{feature}</span>
                 </li>
               ))}
@@ -91,10 +93,12 @@ export function ServiceCard({
         {href && (
           <Link
             href={href}
-            className="text-coral hover:text-coral-dark font-bold inline-flex items-center space-x-1.5 focus-visible:outline-coral"
+            className="text-coral hover:text-coral-dark font-bold inline-flex items-center space-x-1.5 focus-visible:outline-coral group/link"
           >
-            <span>Learn more</span>
-            <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
+            <span className="relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1.5px] after:bg-coral-dark hover:after:w-full after:transition-all after:duration-300">
+              Learn more
+            </span>
+            <ArrowRight className="w-3.5 h-3.5 transition-transform duration-300 group-hover/link:translate-x-1.5" />
           </Link>
         )}
       </div>

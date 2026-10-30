@@ -65,19 +65,21 @@ export function Header() {
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={`text-[13px] uppercase tracking-[0.12em] font-sans transition-colors py-2 relative focus-visible:outline-coral ${
+                    className={`text-[13px] uppercase tracking-[0.12em] font-sans transition-colors py-2 relative group focus-visible:outline-coral ${
                       isActive
                         ? "text-coral font-bold"
                         : "text-charcoal hover:text-coral font-semibold"
                     }`}
                   >
                     {item.label}
-                    {isActive && (
-                      <span
-                        className="absolute bottom-0 left-0 right-0 h-[2px] bg-coral rounded-full"
-                        aria-hidden="true"
-                      />
-                    )}
+                    <span
+                      className={`absolute bottom-0 left-0 right-0 h-[2px] bg-coral rounded-full transition-all duration-300 ${
+                        isActive
+                          ? "opacity-100 scale-x-100"
+                          : "opacity-0 scale-x-0 group-hover:opacity-75 group-hover:scale-x-100"
+                      }`}
+                      aria-hidden="true"
+                    />
                   </Link>
                 );
               })}
@@ -115,9 +117,20 @@ export function Header() {
               >
                 <FacebookIcon className="w-4 h-4" />
               </a>
-              <Button href="/contact" size="sm" variant="primary">
-                Enquire Now
-              </Button>
+              <Link
+                href="/contact"
+                className="relative inline-flex items-center justify-center px-5 py-2.5 text-xs uppercase tracking-widest font-bold text-white rounded-full bg-gradient-to-r from-coral via-coral-dark to-coral bg-[length:200%_auto] hover:bg-right shadow-[0_4px_14px_rgba(242,136,123,0.45)] hover:shadow-[0_6px_20px_rgba(242,136,123,0.6)] hover:scale-105 active:scale-95 transition-all duration-300 overflow-hidden group/btn"
+              >
+                {/* Continuous luxury light shimmer sweep */}
+                <span
+                  className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover/btn:animate-[shimmer_1.5s_infinite]"
+                  aria-hidden="true"
+                />
+                <span className="relative z-10 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                  <span>Enquire Now</span>
+                </span>
+              </Link>
             </div>
 
             {/* Mobile View: Logo, Instagram/Threads/Facebook, Enquire button, 3 line (hamburger) button */}
@@ -149,9 +162,15 @@ export function Header() {
               >
                 <FacebookIcon className="w-4 h-4" />
               </a>
-              <Button href="/contact" size="sm" variant="primary" className="!px-2.5 !py-1 text-[11px]">
-                Enquire
-              </Button>
+              <Link
+                href="/contact"
+                className="relative inline-flex items-center justify-center px-3 py-1.5 text-[11px] uppercase tracking-wider font-bold text-white rounded-full bg-gradient-to-r from-coral to-coral-dark shadow-[0_2px_10px_rgba(242,136,123,0.45)] hover:scale-105 active:scale-95 transition-all duration-200 overflow-hidden"
+              >
+                <span className="relative z-10 flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                  <span>Enquire</span>
+                </span>
+              </Link>
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -174,7 +193,7 @@ export function Header() {
         {mobileMenuOpen && (
           <div
             id="mobile-navigation"
-            className="md:hidden border-b border-[#F4ABA2]/50 bg-[#F9CFCA] px-4 pt-3 pb-5 space-y-3 animate-in fade-in slide-in-from-top-2 duration-200 shadow-md"
+            className="md:hidden border-b border-[#F4ABA2]/50 bg-[#F9CFCA]/98 backdrop-blur-lg px-4 pt-3 pb-5 space-y-3 animate-in fade-in slide-in-from-top-4 duration-300 ease-out shadow-lg"
           >
             <nav className="flex flex-col space-y-1">
               {BUSINESS_CONFIG.navigation.map((item) => {

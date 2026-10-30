@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
 
+export const dynamic = "force-dynamic";
+
 export interface MediaItem {
   id: string;
   type: "image" | "reel";
@@ -146,22 +148,31 @@ export async function GET() {
       });
     }
 
-    // Interleave / mix reels and images like Instagram feed
-    // e.g. Image, Reel, Image, Image, Reel, Image...
-    const reels = mediaList.filter((m) => m.type === "reel");
-    const images = mediaList.filter((m) => m.type === "image");
+    // Fisher-Yates shuffle helper
+    const shuffleArray = <T>(array: T[]): T[] => {
+      const copy = [...array];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    };
+
+    // Randomize images and reels while interleaving them nicely (2 images, 1 reel, etc.)
+    const shuffledReels = shuffleArray(mediaList.filter((m) => m.type === "reel"));
+    const shuffledImages = shuffleArray(mediaList.filter((m) => m.type === "image"));
 
     const mixedFeed: MediaItem[] = [];
     let rIdx = 0;
     let iIdx = 0;
 
-    // Pattern: 2 images, 1 reel, 2 images, 1 reel...
-    while (iIdx < images.length || rIdx < reels.length) {
-      if (iIdx < images.length) mixedFeed.push(images[iIdx++]);
-      if (iIdx < images.length) mixedFeed.push(images[iIdx++]);
-      if (rIdx < reels.length) mixedFeed.push(reels[rIdx++]);
-      if (iIdx >= images.length && rIdx < reels.length) {
-        mixedFeed.push(reels[rIdx++]);
+    // Interleave: 2 images, 1 reel, 2 images, 1 reel in randomized order
+    while (iIdx < shuffledImages.length || rIdx < shuffledReels.length) {
+      if (iIdx < shuffledImages.length) mixedFeed.push(shuffledImages[iIdx++]);
+      if (iIdx < shuffledImages.length) mixedFeed.push(shuffledImages[iIdx++]);
+      if (rIdx < shuffledReels.length) mixedFeed.push(shuffledReels[rIdx++]);
+      if (iIdx >= shuffledImages.length && rIdx < shuffledReels.length) {
+        mixedFeed.push(shuffledReels[rIdx++]);
       }
     }
 
@@ -169,8 +180,8 @@ export async function GET() {
       success: true,
       data: mixedFeed,
       totalCount: mixedFeed.length,
-      reelsCount: reels.length,
-      imagesCount: images.length,
+      reelsCount: shuffledReels.length,
+      imagesCount: shuffledImages.length,
     });
   } catch {
     return NextResponse.json(
