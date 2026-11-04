@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { WeddingBackend } from "@backend/index";
 
 export const dynamic = "force-dynamic";
@@ -27,7 +28,7 @@ export async function POST(req: Request) {
     const uploadedRecords = [];
     const errors: string[] = [];
 
-    // Process files (in parallel or fast sequence)
+    // Process files
     for (const file of allFiles) {
       try {
         const isVideo =
@@ -44,7 +45,7 @@ export async function POST(req: Request) {
         // Only use caption if explicitly provided by admin; otherwise keep it empty string (no filename like 'WhatsApp Image...')
         const fileTitle = defaultTitle ? defaultTitle.trim() : "";
 
-        // Upload to ImageKit CDN
+        // 1. Upload to ImageKit CDN
         const uploadResult = await WeddingBackend.gallery.upload({
           file: buffer,
           fileName: file.name.replace(/[^a-zA-Z0-9.-]/g, "_"),
@@ -52,7 +53,11 @@ export async function POST(req: Request) {
           tags: ["hindavi", category.toLowerCase(), mediaType],
         });
 
-        // Save into Database
+        if (!uploadResult || !uploadResult.url) {
+          throw new Error("ImageKit returned an empty file URL");
+        }
+
+        // 2. Save into Database (guaranteed to throw if Neon fails in production)
         const savedRecord = await WeddingBackend.gallery.save({
           type: mediaType,
           src: uploadResult.url,
@@ -74,6 +79,15 @@ export async function POST(req: Request) {
         { success: false, error: `Upload failed: ${errors.join(", ")}` },
         { status: 500 }
       );
+    }
+
+    // Bust Next.js App Router cache across public and admin pages
+    try {
+      revalidatePath("/gallery");
+      revalidatePath("/admin");
+      revalidatePath("/");
+    } catch (revalidateErr) {
+      console.warn("Revalidation warning:", revalidateErr);
     }
 
     return NextResponse.json({

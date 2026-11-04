@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { WeddingBackend } from "@backend/index";
 
 export const dynamic = "force-dynamic";
@@ -28,6 +29,13 @@ export async function PATCH(req: Request) {
       );
     }
 
+    try {
+      revalidatePath("/gallery");
+      revalidatePath("/admin");
+    } catch (e) {
+      console.warn("Revalidate error:", e);
+    }
+
     return NextResponse.json({ success: true, data: updated });
   } catch (error: any) {
     return NextResponse.json(
@@ -52,6 +60,15 @@ export async function DELETE(req: Request) {
     }
 
     const result = await WeddingBackend.gallery.delete(id, fileId || undefined);
+
+    try {
+      revalidatePath("/gallery");
+      revalidatePath("/admin");
+      revalidatePath("/");
+    } catch (e) {
+      console.warn("Revalidate error:", e);
+    }
+
     return NextResponse.json({ success: true, data: result });
   } catch (error: any) {
     return NextResponse.json(

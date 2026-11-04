@@ -81,6 +81,9 @@ export async function initDatabaseSchema() {
 
   const sql = getDatabase();
   if (!sql) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error("DATABASE_URL is not configured in production environment.");
+    }
     return { initialized: false, mode: "memory" };
   }
 
@@ -119,8 +122,11 @@ export async function initDatabaseSchema() {
 
     schemaInitialized = true;
     return { initialized: true, mode: "neon-postgres" };
-  } catch (err) {
-    console.warn("Neon schema init error, continuing with fallback:", err);
+  } catch (err: any) {
+    console.error("Neon schema init error:", err);
+    if (process.env.NODE_ENV === "production" || process.env.DATABASE_URL) {
+      throw new Error(`Failed to initialize database schema: ${err.message || err}`);
+    }
     return { initialized: false, mode: "fallback" };
   }
 }
@@ -156,9 +162,16 @@ export async function saveEnquiry(data: {
         RETURNING *;
       `;
       return result[0];
-    } catch (dbErr) {
-      console.warn("Neon saveEnquiry failed, using memory store:", dbErr);
+    } catch (dbErr: any) {
+      console.error("Neon saveEnquiry failed:", dbErr);
+      if (process.env.NODE_ENV === "production" || process.env.DATABASE_URL) {
+        throw new Error(`Database error saving enquiry: ${dbErr.message || dbErr}`);
+      }
     }
+  }
+
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("DATABASE_URL is required to save enquiries in production.");
   }
 
   const item = {
@@ -179,27 +192,30 @@ export async function getAllEnquiries() {
     try {
       await initDatabaseSchema();
       const rows = await sql`
-        SELECT 
+        SELECT
           id,
-          fullname AS "fullName",
+          fullName,
           phone,
           email,
-          eventdate AS "eventDate",
-          eventtype AS "eventType",
-          tentativemonthyear AS "tentativeMonthYear",
-          weddingdates AS "weddingDates",
-          guestcount AS "guestCount",
-          estimatedbudget AS "estimatedBudget",
+          eventDate,
+          eventType,
+          tentativeMonthYear,
+          weddingDates,
+          guestCount,
+          estimatedBudget,
           location,
           message,
           status,
           created_at
-        FROM wedding_enquiries 
+        FROM wedding_enquiries
         ORDER BY created_at DESC;
       `;
       return rows;
-    } catch (dbErr) {
-      console.warn("Neon getAllEnquiries failed, using memory store:", dbErr);
+    } catch (dbErr: any) {
+      console.error("Neon getAllEnquiries failed:", dbErr);
+      if (process.env.NODE_ENV === "production" || process.env.DATABASE_URL) {
+        throw new Error(`Database error fetching enquiries: ${dbErr.message || dbErr}`);
+      }
     }
   }
 
@@ -212,12 +228,16 @@ export async function updateEnquiryStatus(id: number, status: string) {
 
   if (sql) {
     try {
+      await initDatabaseSchema();
       const rows = await sql`
         UPDATE wedding_enquiries SET status = ${status} WHERE id = ${id} RETURNING *;
       `;
       return rows[0];
-    } catch (dbErr) {
-      console.warn("Neon updateEnquiryStatus failed, updating memory:", dbErr);
+    } catch (dbErr: any) {
+      console.error("Neon updateEnquiryStatus failed:", dbErr);
+      if (process.env.NODE_ENV === "production" || process.env.DATABASE_URL) {
+        throw new Error(`Database error updating enquiry: ${dbErr.message || dbErr}`);
+      }
     }
   }
 
@@ -248,9 +268,16 @@ export async function saveGalleryMedia(data: {
         RETURNING *;
       `;
       return result[0];
-    } catch (dbErr) {
-      console.warn("Neon saveGalleryMedia failed, using memory store:", dbErr);
+    } catch (dbErr: any) {
+      console.error("Neon saveGalleryMedia failed:", dbErr);
+      if (process.env.NODE_ENV === "production" || process.env.DATABASE_URL) {
+        throw new Error(`Database error saving gallery media: ${dbErr.message || dbErr}`);
+      }
     }
+  }
+
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("DATABASE_URL is not configured in production environment.");
   }
 
   const item: GalleryMediaItem = {
@@ -274,8 +301,11 @@ export async function getCustomGalleryMedia() {
         ORDER BY created_at DESC;
       `;
       return rows as GalleryMediaItem[];
-    } catch (dbErr) {
-      console.warn("Neon getCustomGalleryMedia failed, using memory store:", dbErr);
+    } catch (dbErr: any) {
+      console.error("Neon getCustomGalleryMedia failed:", dbErr);
+      if (process.env.NODE_ENV === "production" || process.env.DATABASE_URL) {
+        throw new Error(`Database error fetching gallery media: ${dbErr.message || dbErr}`);
+      }
     }
   }
 
@@ -299,8 +329,11 @@ export async function updateGalleryMedia(
         RETURNING *;
       `;
       return rows[0];
-    } catch (dbErr) {
-      console.warn("Neon updateGalleryMedia failed, updating memory:", dbErr);
+    } catch (dbErr: any) {
+      console.error("Neon updateGalleryMedia failed:", dbErr);
+      if (process.env.NODE_ENV === "production" || process.env.DATABASE_URL) {
+        throw new Error(`Database error updating gallery media: ${dbErr.message || dbErr}`);
+      }
     }
   }
 
@@ -323,8 +356,11 @@ export async function deleteGalleryMedia(id: string | number) {
         DELETE FROM wedding_gallery_media WHERE id = ${Number(id)} RETURNING *;
       `;
       return rows[0];
-    } catch (dbErr) {
-      console.warn("Neon deleteGalleryMedia failed, deleting from memory:", dbErr);
+    } catch (dbErr: any) {
+      console.error("Neon deleteGalleryMedia failed:", dbErr);
+      if (process.env.NODE_ENV === "production" || process.env.DATABASE_URL) {
+        throw new Error(`Database error deleting gallery media: ${dbErr.message || dbErr}`);
+      }
     }
   }
 
@@ -340,10 +376,18 @@ export async function deleteEnquiry(id: number) {
   const sql = getDatabase();
 
   if (sql) {
-    const rows = await sql`
-      DELETE FROM wedding_enquiries WHERE id = ${Number(id)} RETURNING *;
-    `;
-    return rows[0];
+    try {
+      await initDatabaseSchema();
+      const rows = await sql`
+        DELETE FROM wedding_enquiries WHERE id = ${Number(id)} RETURNING *;
+      `;
+      return rows[0];
+    } catch (dbErr: any) {
+      console.error("Neon deleteEnquiry failed:", dbErr);
+      if (process.env.NODE_ENV === "production" || process.env.DATABASE_URL) {
+        throw new Error(`Database error deleting enquiry: ${dbErr.message || dbErr}`);
+      }
+    }
   }
 
   const idx = globalMemory.enquiries.findIndex((e) => e.id === Number(id));
