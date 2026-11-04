@@ -18,7 +18,7 @@ export const BUSINESS_CONFIG = {
    * Uses NEXT_PUBLIC_SITE_URL or defaults to local development URL.
    * Note for launch: set NEXT_PUBLIC_SITE_URL to the verified custom domain.
    */
-  siteUrl: process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
+  siteUrl: process.env.NEXT_PUBLIC_SITE_URL || "https://hindaviweddings.vercel.app",
   specializations: [
     "Wedding Planning",
     "Event Production",
