@@ -15,6 +15,9 @@ export interface MediaItem {
 
 // GET: Returns ONLY ImageKit uploaded images and reels (no local hardcoded files)
 export async function GET() {
+  const reqStartTime = Date.now();
+  console.log(`[API /api/gallery] GET request started at ${new Date().toISOString()}`);
+
   try {
     const customUploaded = await WeddingBackend.gallery.list();
 
@@ -30,13 +33,15 @@ export async function GET() {
         }))
       : [];
 
+    console.log(`[API /api/gallery] GET completed (${Date.now() - reqStartTime}ms) | Total items: ${mediaList.length}`);
+
     return NextResponse.json({
       success: true,
       data: mediaList,
       totalCount: mediaList.length,
     });
   } catch (error: any) {
-    console.error("Failed to load ImageKit gallery media:", error);
+    console.error(`[API /api/gallery] GET failed (${Date.now() - reqStartTime}ms):`, error.message || error);
     return NextResponse.json(
       { success: false, error: "Failed to read gallery media from ImageKit database" },
       { status: 500 }

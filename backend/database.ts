@@ -257,6 +257,9 @@ export async function saveGalleryMedia(data: {
   category: "Engagement" | "Halad" | "Sangit" | "Vidhi" | "Marriage" | "Other";
   fileId?: string;
 }) {
+  const startTime = Date.now();
+  console.log(`[NEON] saveGalleryMedia started | Category: ${data.category} | Type: ${data.type} | Title: "${data.title}" | FileID: ${data.fileId || "none"}`);
+
   const sql = getDatabase();
 
   if (sql) {
@@ -267,9 +270,10 @@ export async function saveGalleryMedia(data: {
         VALUES (${data.type}, ${data.src}, ${data.title}, ${data.aspect}, ${data.category}, ${data.fileId || null})
         RETURNING *;
       `;
+      console.log(`[NEON] saveGalleryMedia successful (${Date.now() - startTime}ms) | Inserted Row ID: ${result[0]?.id}`);
       return result[0];
     } catch (dbErr: any) {
-      console.error("Neon saveGalleryMedia failed:", dbErr);
+      console.error(`[NEON] saveGalleryMedia failed (${Date.now() - startTime}ms):`, dbErr.message || dbErr);
       if (process.env.NODE_ENV === "production" || process.env.DATABASE_URL) {
         throw new Error(`Database error saving gallery media: ${dbErr.message || dbErr}`);
       }
@@ -286,10 +290,14 @@ export async function saveGalleryMedia(data: {
     created_at: new Date().toISOString(),
   };
   globalMemory.customGalleryItems.unshift(item);
+  console.log(`[NEON] saveGalleryMedia saved to local memory (${Date.now() - startTime}ms) | Temp ID: ${item.id}`);
   return item;
 }
 
 export async function getCustomGalleryMedia() {
+  const startTime = Date.now();
+  console.log(`[NEON] getCustomGalleryMedia query started`);
+
   const sql = getDatabase();
 
   if (sql) {
@@ -300,15 +308,17 @@ export async function getCustomGalleryMedia() {
         FROM wedding_gallery_media
         ORDER BY created_at DESC;
       `;
+      console.log(`[NEON] getCustomGalleryMedia successful (${Date.now() - startTime}ms) | Fetched ${rows.length} rows`);
       return rows as GalleryMediaItem[];
     } catch (dbErr: any) {
-      console.error("Neon getCustomGalleryMedia failed:", dbErr);
+      console.error(`[NEON] getCustomGalleryMedia failed (${Date.now() - startTime}ms):`, dbErr.message || dbErr);
       if (process.env.NODE_ENV === "production" || process.env.DATABASE_URL) {
         throw new Error(`Database error fetching gallery media: ${dbErr.message || dbErr}`);
       }
     }
   }
 
+  console.log(`[NEON] getCustomGalleryMedia using local memory (${Date.now() - startTime}ms) | ${globalMemory.customGalleryItems.length} rows`);
   return globalMemory.customGalleryItems;
 }
 
@@ -316,6 +326,9 @@ export async function updateGalleryMedia(
   id: string | number,
   updates: { title?: string; category?: GalleryMediaItem["category"] }
 ) {
+  const startTime = Date.now();
+  console.log(`[NEON] updateGalleryMedia started | ID: ${id} | Updates:`, updates);
+
   const sql = getDatabase();
 
   if (sql) {
@@ -328,9 +341,10 @@ export async function updateGalleryMedia(
         WHERE id = ${Number(id)}
         RETURNING *;
       `;
+      console.log(`[NEON] updateGalleryMedia successful (${Date.now() - startTime}ms) | Row ID: ${id}`);
       return rows[0];
     } catch (dbErr: any) {
-      console.error("Neon updateGalleryMedia failed:", dbErr);
+      console.error(`[NEON] updateGalleryMedia failed (${Date.now() - startTime}ms):`, dbErr.message || dbErr);
       if (process.env.NODE_ENV === "production" || process.env.DATABASE_URL) {
         throw new Error(`Database error updating gallery media: ${dbErr.message || dbErr}`);
       }
@@ -341,12 +355,16 @@ export async function updateGalleryMedia(
   if (item) {
     if (updates.title !== undefined) item.title = updates.title;
     if (updates.category !== undefined) item.category = updates.category;
+    console.log(`[NEON] updateGalleryMedia in local memory (${Date.now() - startTime}ms) | ID: ${id}`);
     return item;
   }
   return null;
 }
 
 export async function deleteGalleryMedia(id: string | number) {
+  const startTime = Date.now();
+  console.log(`[NEON] deleteGalleryMedia started | ID: ${id}`);
+
   const sql = getDatabase();
 
   if (sql) {
@@ -355,9 +373,10 @@ export async function deleteGalleryMedia(id: string | number) {
       const rows = await sql`
         DELETE FROM wedding_gallery_media WHERE id = ${Number(id)} RETURNING *;
       `;
+      console.log(`[NEON] deleteGalleryMedia successful (${Date.now() - startTime}ms) | Deleted Row ID: ${id}`);
       return rows[0];
     } catch (dbErr: any) {
-      console.error("Neon deleteGalleryMedia failed:", dbErr);
+      console.error(`[NEON] deleteGalleryMedia failed (${Date.now() - startTime}ms):`, dbErr.message || dbErr);
       if (process.env.NODE_ENV === "production" || process.env.DATABASE_URL) {
         throw new Error(`Database error deleting gallery media: ${dbErr.message || dbErr}`);
       }
@@ -367,6 +386,7 @@ export async function deleteGalleryMedia(id: string | number) {
   const idx = globalMemory.customGalleryItems.findIndex((m) => String(m.id) === String(id));
   if (idx !== -1) {
     const deleted = globalMemory.customGalleryItems.splice(idx, 1);
+    console.log(`[NEON] deleteGalleryMedia from local memory (${Date.now() - startTime}ms) | ID: ${id}`);
     return deleted[0];
   }
   return null;
