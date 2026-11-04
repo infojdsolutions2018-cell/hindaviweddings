@@ -8,6 +8,7 @@ import { GalleryCard } from "@/components/ui/GalleryCard";
 import { HeroRotation } from "@/components/ui/HeroRotation";
 import { EnquiryCTASection } from "@/components/ui/EnquiryCTASection";
 
+
 export default function HomePage() {
   return (
     <>
