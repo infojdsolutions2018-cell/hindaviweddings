@@ -73,7 +73,7 @@ export default function HomePage() {
           <ServiceCard
             title="Wedding Planning"
             description="Comprehensive ceremony curation, master itineraries, vendor liaison, and day-of management so you cherish every ritual."
-            imageUrl="/other-images/wedding_planning.jpg"
+            imageUrl="/hello-images/wedding_planning.jpg"
             imageAlt="Illustrative wedding planning stationery and consultation palette"
             categoryLabel="Full Planning"
             features={[
@@ -89,7 +89,7 @@ export default function HomePage() {
           <ServiceCard
             title="Event Production"
             description="Technical staging, architectural trussing, ambient audio-visual systems, and seamless logistics coordination across venues."
-            imageUrl="/other-images/event_production.jpg"
+            imageUrl="/hello-images/event_production.jpg"
             imageAlt="Illustrative open-air stage production and ambient lighting"
             categoryLabel="Technical & Staging"
             features={[
@@ -105,7 +105,7 @@ export default function HomePage() {
           <ServiceCard
             title="Event Decor Design"
             description="Sacred mandap aesthetics, fresh floral installations, thematic guest entrances, and candlelit tablescapes tailored for romance."
-            imageUrl="/other-images/event_decor_design.jpg"
+            imageUrl="/hello-images/event_decor_design.jpg"
             imageAlt="Illustrative royal floral mandap and traditional brass decor"
             categoryLabel="Bespoke Aesthetics"
             features={[
@@ -146,21 +146,21 @@ export default function HomePage() {
           <GalleryCard
             title="Sacred Mandap Architecture"
             category="Decor Design"
-            imageUrl="/other-images/our_work_mandap.jpg"
+            imageUrl="/hello-images/our_work_mandap.jpg"
             altText="Illustrative royal mandap floral setup"
             isPlaceholder={true}
           />
           <GalleryCard
             title="Haldi Courtyard Atmosphere"
             category="Traditional Rituals"
-            imageUrl="/other-images/our_work_haldi.jpg"
+            imageUrl="/hello-images/our_work_haldi.jpg"
             altText="Illustrative marigold Haldi courtyard design"
             isPlaceholder={true}
           />
           <GalleryCard
             title="Reception Dinner Banquet"
             category="Event Production"
-            imageUrl="/other-images/our_work_reception.jpg"
+            imageUrl="/hello-images/our_work_reception.jpg"
             altText="Illustrative banquet table setting with chandeliers"
             isPlaceholder={true}
           />

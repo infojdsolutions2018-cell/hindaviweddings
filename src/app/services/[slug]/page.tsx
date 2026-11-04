@@ -34,7 +34,7 @@ const SERVICE_REGISTRY: Record<string, ServiceData> = {
     title: "Wedding Planning & Coordination",
     slug: "wedding-planning",
     category: "Full Service Planning",
-    heroImage: "/other-images/wedding_planning.jpg",
+    heroImage: "/hello-images/wedding_planning.jpg",
     imageAlt: "Illustrative wedding stationery, planning notebook, and consultation palette",
     summary:
       "A complete planning partnership guiding you through budget allocation, vendor discovery, timeline drafting, and on-ground coordination during your wedding celebrations.",
@@ -95,7 +95,7 @@ const SERVICE_REGISTRY: Record<string, ServiceData> = {
     title: "Event Production & Fabrication",
     slug: "event-production",
     category: "Technical Production",
-    heroImage: "/other-images/event_production.jpg",
+    heroImage: "/hello-images/event_production.jpg",
     imageAlt: "Illustrative open-air stage production, structural rigging, and ambient lighting",
     summary:
       "Professional structural engineering, trussing, ambient audio-visual systems, and synchronized stage setups built to host your guests flawlessly.",
@@ -156,7 +156,7 @@ const SERVICE_REGISTRY: Record<string, ServiceData> = {
     title: "Event Decor Design & Styling",
     slug: "event-decor-design",
     category: "Decor & Floral Design",
-    heroImage: "/other-images/event_decor_design.jpg",
+    heroImage: "/hello-images/event_decor_design.jpg",
     imageAlt: "Illustrative royal wedding mandap with cascading roses and traditional brass lamps",
     summary:
       "Bespoke spatial design bringing together sacred mandaps, breathtaking entrance archways, floral installations, and delicate color stories.",

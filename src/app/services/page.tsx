@@ -29,7 +29,7 @@ const SERVICES_DATA = [
     slug: "wedding-planning",
     eyebrow: "Comprehensive Choreography",
     tagline: "End-to-end ceremony orchestration so your family can be fully present.",
-    imageUrl: "/other-images/wedding_planning.jpg",
+    imageUrl: "/hello-images/wedding_planning.jpg",
     imageAlt: "Illustrative wedding consultation invitations and moodboards",
     description:
       "Planning a wedding involves harmonizing dozens of ceremonial customs, venue contracts, and family expectations. Our planning service acts as your personal advocate, designing master run-sheets, coordinating vendor arrivals, and managing on-day rituals with grace.",
@@ -46,7 +46,7 @@ const SERVICES_DATA = [
     slug: "event-production",
     eyebrow: "Technical Infrastructure",
     tagline: "Precision structural fabrication and synchronized lighting architecture.",
-    imageUrl: "/other-images/event_production.jpg",
+    imageUrl: "/hello-images/event_production.jpg",
     imageAlt: "Illustrative open-air stage production and ambient lighting",
     description:
       "Behind every breathtaking visual is solid engineering. We specialize in safe outdoor trussing, custom-built stages, sound architecture that envelops without overpowering, and backup power coordination across private estates and open-lawn banquet venues in Maharashtra.",
@@ -63,7 +63,7 @@ const SERVICES_DATA = [
     slug: "event-decor-design",
     eyebrow: "Bespoke Spatial Aesthetics",
     tagline: "Artisanal floral installations, sacred mandaps, and romantic candlelit environments.",
-    imageUrl: "/other-images/event_decor_design.jpg",
+    imageUrl: "/hello-images/event_decor_design.jpg",
     imageAlt: "Illustrative royal wedding mandap with cascading florals and brass lamps",
     description:
       "Every love story has its own aesthetic voice. Our decor design studio curates sacred mandap architecture, fragrant floral installations of fresh marigold and velvet roses, thematic entrance gateways, and bespoke tablescapes that transport your guests into an enchanting sanctuary.",
@@ -222,15 +222,24 @@ export default function ServicesPage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {BUSINESS_CONFIG.eventSpecialties.map((spec, i) => {
+              // Explicit mapping matching the user's requested ceremonial themes:
+              // 1. Haldi Ceremony -> No change (service_haldi_decor.jpg)
+              // 2. Wedding (Lagna) -> Indian wedding Vedic mandap (our_work_mandap.jpg)
+              // 3. Engagement -> Indian style engagement couple (service_engagement_indian.jpg)
+              // 4. Mehendi Ceremony -> Indian Mehendi ceremony (service_mehendi.png)
+              // 5. Entrance Decor -> No change (service_entrance.jpg)
+              // 6. Sangeet Night -> No change (service_sangeet_stage.jpg)
+              // 7. Ring Ceremony -> Indian style ring ceremony (our_work_ring_ceremony.jpg)
+              // 8. Romantic Proposal -> Romantic fairy light proposal setup (service_romantic_proposal.png)
               const specialtyImages = [
                 "/hello-images/service_haldi_decor.jpg",
-                "/hello-images/service_mandap.jpg",
-                "/hello-images/service_entrance.jpg",
-                "/hello-images/service_decor.jpg",
+                "/hello-images/our_work_mandap.jpg",
+                "/hello-images/service_engagement_indian.jpg",
+                "/hello-images/service_mehendi.png",
                 "/hello-images/service_entrance.jpg",
                 "/hello-images/service_sangeet_stage.jpg",
-                "/hello-images/service_production.jpg",
-                "/hello-images/hero_wedding.jpg",
+                "/hello-images/our_work_ring_ceremony.jpg",
+                "/hello-images/service_romantic_proposal.png",
               ];
               const imgUrl = specialtyImages[i % specialtyImages.length];
 

@@ -359,18 +359,12 @@ export default function AdminDashboardPage() {
     <div className="min-h-screen bg-[#FDF9F8] text-charcoal font-sans selection:bg-[#F9CFCA] selection:text-[#801C30]">
       {/* Top Header styled in signature Pink / Blush Palette */}
       <header className="sticky top-0 z-40 bg-[#F9CFCA]/95 backdrop-blur-md border-b border-[#F4ABA2]/60 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 sm:h-20 flex items-center justify-between">
-          <div className="flex items-center gap-3.5">
-            <Link
-              href="/"
-              className="w-10 h-10 rounded-xl bg-white border border-[#F4ABA2] flex items-center justify-center text-charcoal hover:text-[#801C30] hover:border-[#801C30] transition-all shadow-xs"
-              title="Return to Public Website"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </Link>
-
-            <div className="flex items-center gap-3">
-              <div className="relative w-10 h-10 rounded-xl overflow-hidden border border-[#F4ABA2] bg-white p-0.5 shadow-sm flex-shrink-0">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2.5 sm:py-0 sm:h-20 flex flex-col sm:flex-row items-center justify-between gap-2.5 sm:gap-4">
+          
+          {/* Logo & Brand title (Back button removed as requested) */}
+          <div className="flex items-center justify-between w-full sm:w-auto">
+            <div className="flex items-center gap-2.5 sm:gap-3">
+              <div className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl overflow-hidden border border-[#F4ABA2] bg-white p-0.5 shadow-sm flex-shrink-0">
                 <Image
                   src="/logo.jpg"
                   alt="Hindavi Weddings Logo"
@@ -379,74 +373,86 @@ export default function AdminDashboardPage() {
                 />
               </div>
               <div>
-                <div className="flex items-center gap-2">
-                  <h1 className="font-serif text-lg sm:text-xl font-bold tracking-wide text-charcoal">
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <h1 className="font-serif text-base sm:text-xl font-bold tracking-wide text-charcoal">
                     {BUSINESS_CONFIG.displayName}
                   </h1>
-                  <span className="text-[10px] uppercase font-bold tracking-widest px-2.5 py-0.5 rounded-full bg-white text-[#801C30] border border-[#F4ABA2] shadow-xs">
+                  <span className="text-[9px] sm:text-[10px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-full bg-white text-[#801C30] border border-[#F4ABA2] shadow-xs">
                     Admin
                   </span>
                 </div>
-                <p className="text-[11px] text-charcoal/70 font-medium">
+                <p className="hidden sm:block text-[11px] text-charcoal/70 font-medium">
                   Enquiries, Milestones &amp; ImageKit Media Management
                 </p>
               </div>
             </div>
+
+            {/* Mobile Refresh shortcut */}
+            <button
+              onClick={() => {
+                fetchEnquiries();
+                fetchGallery();
+              }}
+              className="sm:hidden p-2 rounded-xl bg-white border border-[#F4ABA2] text-charcoal hover:text-[#801C30] shadow-xs"
+              title="Refresh Data"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${loadingEnquiries || loadingGallery ? "animate-spin text-[#801C30]" : ""}`} />
+            </button>
           </div>
 
-          <div className="flex items-center gap-2.5">
-            {/* Nav Tabs Pill in Pink Theme */}
-            <div className="inline-flex p-1 rounded-xl bg-white/90 border border-[#F4ABA2] text-xs font-semibold shadow-xs">
+          {/* Navigation Tab Pills & Desktop Refresh */}
+          <div className="flex items-center justify-between sm:justify-end w-full sm:w-auto gap-2">
+            <div className="inline-flex w-full sm:w-auto justify-around p-1 rounded-xl bg-white/90 border border-[#F4ABA2] text-xs font-semibold shadow-xs">
               <button
                 onClick={() => setActiveTab("enquiries")}
-                className={`px-3.5 sm:px-4 py-1.5 rounded-lg transition-all flex items-center gap-1.5 ${
+                className={`flex-1 sm:flex-initial px-2.5 sm:px-4 py-1.5 rounded-lg transition-all flex items-center justify-center gap-1 sm:gap-1.5 text-[11px] sm:text-xs ${
                   activeTab === "enquiries"
                     ? "bg-[#801C30] text-white shadow-sm font-bold"
                     : "text-charcoal/70 hover:text-charcoal"
                 }`}
               >
-                <Users className="w-3.5 h-3.5" />
+                <Users className="w-3.5 h-3.5 flex-shrink-0" />
                 <span>Enquiries</span>
-                <span className={`ml-1 px-1.5 py-0.2 rounded-full text-[10px] ${activeTab === "enquiries" ? "bg-white/25 text-white" : "bg-[#F9CFCA] text-charcoal"}`}>
+                <span className={`ml-0.5 px-1.5 py-0.2 rounded-full text-[9px] sm:text-[10px] ${activeTab === "enquiries" ? "bg-white/25 text-white" : "bg-[#F9CFCA] text-charcoal"}`}>
                   {enquiries.length}
                 </span>
               </button>
 
               <button
                 onClick={() => setActiveTab("gallery")}
-                className={`px-3.5 sm:px-4 py-1.5 rounded-lg transition-all flex items-center gap-1.5 ${
+                className={`flex-1 sm:flex-initial px-2.5 sm:px-4 py-1.5 rounded-lg transition-all flex items-center justify-center gap-1 sm:gap-1.5 text-[11px] sm:text-xs ${
                   activeTab === "gallery"
                     ? "bg-[#801C30] text-white shadow-sm font-bold"
                     : "text-charcoal/70 hover:text-charcoal"
                 }`}
               >
-                <ImageIcon className="w-3.5 h-3.5" />
+                <ImageIcon className="w-3.5 h-3.5 flex-shrink-0" />
                 <span>Gallery</span>
-                <span className={`ml-1 px-1.5 py-0.2 rounded-full text-[10px] ${activeTab === "gallery" ? "bg-white/25 text-white" : "bg-[#F9CFCA] text-charcoal"}`}>
+                <span className={`ml-0.5 px-1.5 py-0.2 rounded-full text-[9px] sm:text-[10px] ${activeTab === "gallery" ? "bg-white/25 text-white" : "bg-[#F9CFCA] text-charcoal"}`}>
                   {galleryItems.length}
                 </span>
               </button>
 
               <button
                 onClick={() => setActiveTab("upload")}
-                className={`px-3.5 sm:px-4 py-1.5 rounded-lg transition-all flex items-center gap-1.5 ${
+                className={`flex-1 sm:flex-initial px-2.5 sm:px-4 py-1.5 rounded-lg transition-all flex items-center justify-center gap-1 sm:gap-1.5 text-[11px] sm:text-xs ${
                   activeTab === "upload"
                     ? "bg-[#801C30] text-white shadow-sm font-bold"
                     : "text-charcoal/70 hover:text-charcoal"
                 }`}
               >
-                <Upload className="w-3.5 h-3.5" />
-                <span>Upload Media</span>
+                <Upload className="w-3.5 h-3.5 flex-shrink-0" />
+                <span>Upload</span>
               </button>
             </div>
 
-            {/* Refresh Button */}
+            {/* Desktop Refresh Button */}
             <button
               onClick={() => {
                 fetchEnquiries();
                 fetchGallery();
               }}
-              className="p-2.5 rounded-xl bg-white border border-[#F4ABA2] hover:border-[#801C30] text-charcoal hover:text-[#801C30] transition-all shadow-xs"
+              className="hidden sm:block p-2.5 rounded-xl bg-white border border-[#F4ABA2] hover:border-[#801C30] text-charcoal hover:text-[#801C30] transition-all shadow-xs flex-shrink-0"
               title="Refresh Data"
             >
               <RefreshCw className={`w-4 h-4 ${loadingEnquiries || loadingGallery ? "animate-spin text-[#801C30]" : ""}`} />
@@ -526,8 +532,9 @@ export default function AdminDashboardPage() {
               </div>
             </div>
 
-            {/* Table */}
-            <div className="bg-white rounded-2xl border border-[#F4ABA2]/60 overflow-hidden shadow-xs">
+            {/* Responsive Client Enquiries: Mobile Cards + Desktop Table */}
+            {/* Desktop Table View (Hidden on small mobile) */}
+            <div className="hidden md:block bg-white rounded-2xl border border-[#F4ABA2]/60 overflow-hidden shadow-xs">
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse text-xs">
                   <thead>
@@ -651,6 +658,111 @@ export default function AdminDashboardPage() {
                   </tbody>
                 </table>
               </div>
+            </div>
+
+            {/* Mobile Cards View (Optimized for Phones) */}
+            <div className="block md:hidden space-y-3">
+              {loadingEnquiries ? (
+                <div className="bg-white p-8 rounded-2xl border border-[#F4ABA2]/60 text-center text-charcoal/60">
+                  <Loader2 className="w-6 h-6 animate-spin text-[#801C30] mx-auto mb-2" />
+                  Loading enquiries...
+                </div>
+              ) : filteredEnquiries.length === 0 ? (
+                <div className="bg-white p-8 rounded-2xl border border-[#F4ABA2]/60 text-center text-charcoal/60 text-xs">
+                  No enquiries found matching filters.
+                </div>
+              ) : (
+                filteredEnquiries.map((enquiry) => (
+                  <div
+                    key={enquiry.id}
+                    className="bg-white p-4 rounded-2xl border border-[#F4ABA2]/60 shadow-xs space-y-3"
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <h4 className="font-bold text-sm text-charcoal">{enquiry.fullName}</h4>
+                        <span className="text-[10px] text-charcoal/50">
+                          {new Date(enquiry.created_at).toLocaleDateString("en-IN", {
+                            month: "short",
+                            day: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </span>
+                      </div>
+                      
+                      {/* Status Selector */}
+                      <select
+                        value={enquiry.status}
+                        onChange={(e) => handleStatusChange(enquiry.id, e.target.value)}
+                        className={`px-2 py-0.5 rounded-lg text-[10px] font-bold border ${
+                          enquiry.status === "new"
+                            ? "bg-sky-50 text-sky-700 border-sky-300"
+                            : enquiry.status === "contacted"
+                            ? "bg-amber-50 text-amber-700 border-amber-300"
+                            : enquiry.status === "confirmed"
+                            ? "bg-emerald-50 text-emerald-700 border-emerald-300"
+                            : "bg-gray-100 text-gray-700 border-gray-300"
+                        }`}
+                      >
+                        <option value="new">New</option>
+                        <option value="contacted">Contacted</option>
+                        <option value="confirmed">Confirmed</option>
+                        <option value="closed">Closed</option>
+                      </select>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2 text-[11px] pt-1 border-t border-[#F4ABA2]/30 text-charcoal/80">
+                      <div>
+                        <span className="text-[10px] text-charcoal/50 uppercase block font-semibold">Phone</span>
+                        <a href={`tel:${enquiry.phone}`} className="font-bold text-[#801C30] hover:underline">
+                          {enquiry.phone}
+                        </a>
+                      </div>
+                      <div>
+                        <span className="text-[10px] text-charcoal/50 uppercase block font-semibold">Dates</span>
+                        <span className="font-medium">{enquiry.eventDate || "TBD"}</span>
+                      </div>
+                      <div>
+                        <span className="text-[10px] text-charcoal/50 uppercase block font-semibold">Budget</span>
+                        <span className="font-bold text-emerald-700">{enquiry.estimatedBudget || "TBD"}</span>
+                      </div>
+                      <div>
+                        <span className="text-[10px] text-charcoal/50 uppercase block font-semibold">City / Location</span>
+                        <span className="font-medium">{enquiry.location || "Pune"}</span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between pt-2 border-t border-[#F4ABA2]/30">
+                      <button
+                        onClick={() => setSelectedEnquiry(enquiry)}
+                        className="px-3 py-1.5 rounded-xl bg-[#F9CFCA]/40 hover:bg-[#F9CFCA] text-[#801C30] text-xs font-bold flex items-center gap-1.5"
+                      >
+                        <Eye className="w-3.5 h-3.5" />
+                        <span>View All Details</span>
+                      </button>
+
+                      <div className="flex items-center gap-1.5">
+                        <a
+                          href={`https://wa.me/${enquiry.phone.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(`Namaskar ${enquiry.fullName}, this is from Hindavi Wedding Family regarding your enquiry!`)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="p-2 rounded-xl bg-green-50 text-green-700 border border-green-300"
+                          title="WhatsApp"
+                        >
+                          <Phone className="w-3.5 h-3.5 text-[#25D366]" />
+                        </a>
+                        <button
+                          onClick={() => handleDeleteEnquiry(enquiry.id)}
+                          className="p-2 rounded-xl bg-red-50 text-red-600 border border-red-200"
+                          title="Delete"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         )}
