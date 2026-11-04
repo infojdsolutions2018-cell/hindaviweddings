@@ -7,7 +7,7 @@ import {
   Users, Calendar, Mail, Phone, Clock, CheckCircle2, 
   Search, Filter, RefreshCw, Eye, ArrowLeft, Shield, AlertCircle,
   Upload, Film, ImageIcon, Plus, Check, Loader2, Trash2, ExternalLink,
-  Edit2, Save, X
+  Edit2, Save, X, Play
 } from "lucide-react";
 import { BUSINESS_CONFIG } from "@/config/business";
 
@@ -20,8 +20,11 @@ interface EnquiryItem {
   email: string;
   eventDate?: string;
   eventType?: string;
+  tentativeMonthYear?: string;
+  weddingDates?: string;
   guestCount?: string;
   estimatedBudget?: string;
+  location?: string;
   message?: string;
   status: "new" | "contacted" | "confirmed" | "closed";
   created_at: string;
@@ -97,6 +100,7 @@ export default function AdminDashboardPage() {
   const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
   const [loadingGallery, setLoadingGallery] = useState(false);
   const [galleryFilter, setGalleryFilter] = useState<string>("all");
+  const [galleryTypeFilter, setGalleryTypeFilter] = useState<"all" | "image" | "reel">("all");
 
   // Edit Gallery Item State
   const [editingItem, setEditingItem] = useState<GalleryItem | null>(null);
@@ -104,11 +108,14 @@ export default function AdminDashboardPage() {
   const [editCategory, setEditCategory] = useState<MilestoneCategory>("Other");
   const [isSavingEdit, setIsSavingEdit] = useState(false);
 
-  // ImageKit Media Upload State
-  const [uploadFile, setUploadFile] = useState<File | null>(null);
+  // Video / Image Preview Player Modal State
+  const [previewMedia, setPreviewMedia] = useState<GalleryItem | null>(null);
+
+  // ImageKit Media Upload State (Multiple Selection Support)
+  const [uploadFiles, setUploadFiles] = useState<File[]>([]);
   const [mediaTitle, setMediaTitle] = useState("");
   const [mediaCategory, setMediaCategory] = useState<MilestoneCategory>("Other");
-  const [mediaType, setMediaType] = useState<"image" | "reel">("image");
+  const [mediaType, setMediaType] = useState<"all" | "image" | "reel">("all");
   const [isUploading, setIsUploading] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState<string | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
@@ -145,9 +152,38 @@ export default function AdminDashboardPage() {
     }
   };
 
+  // Silent background sync for real-time live data
+  const syncEnquiriesSilent = async () => {
+    try {
+      const res = await fetch(`/api/enquiries?t=${Date.now()}`, { cache: "no-store" });
+      const json = await res.json();
+      if (json.success && Array.isArray(json.data)) {
+        setEnquiries(json.data);
+      }
+    } catch {}
+  };
+
+  const syncGallerySilent = async () => {
+    try {
+      const res = await fetch(`/api/gallery?t=${Date.now()}`, { cache: "no-store" });
+      const json = await res.json();
+      if (json.success && Array.isArray(json.data)) {
+        setGalleryItems(json.data);
+      }
+    } catch {}
+  };
+
   useEffect(() => {
     fetchEnquiries();
     fetchGallery();
+
+    // Auto-refresh enquiries and gallery every 5 seconds so admin sees customer submissions automatically without clicking load
+    const interval = setInterval(() => {
+      syncEnquiriesSilent();
+      syncGallerySilent();
+    }, 5000);
+
+    return () => clearInterval(interval);
   }, []);
 
   // Update enquiry status
@@ -249,11 +285,11 @@ export default function AdminDashboardPage() {
     }
   };
 
-  // ImageKit File Upload Handler
+  // ImageKit Multiple File Upload Handler
   const handleUploadMedia = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!uploadFile) {
-      setUploadError("Please choose an image, reel, or video file to upload.");
+    if (uploadFiles.length === 0) {
+      setUploadError("Please choose one or more images, reels, or video files to upload.");
       return;
     }
 
@@ -261,21 +297,21 @@ export default function AdminDashboardPage() {
     setUploadError(null);
     setUploadSuccess(null);
 
-    // Pick effective title: if user didn't input title, pick a random smart default for the selected milestone
-    let finalTitle = mediaTitle.trim();
-    if (!finalTitle) {
-      const presets = DEFAULT_CAPTIONS[mediaCategory] || DEFAULT_CAPTIONS["Other"];
-      finalTitle = presets[Math.floor(Math.random() * presets.length)];
-    }
+    // If user didn't input title, leave it completely empty (do not force default captions or filenames)
+    const finalTitle = mediaTitle.trim();
 
     const effectiveCategory = mediaCategory || "Other";
 
     try {
       const formData = new FormData();
-      formData.append("file", uploadFile);
+      uploadFiles.forEach((file) => {
+        formData.append("files", file);
+      });
       formData.append("title", finalTitle);
       formData.append("category", effectiveCategory);
-      formData.append("type", mediaType);
+      if (mediaType !== "all") {
+        formData.append("type", mediaType);
+      }
 
       const res = await fetch("/api/gallery/upload", {
         method: "POST",
@@ -285,10 +321,14 @@ export default function AdminDashboardPage() {
       const json = await res.json();
 
       if (json.success) {
-        setUploadSuccess(`Uploaded successfully with caption: "${finalTitle}" under "${effectiveCategory}"!`);
-        setUploadFile(null);
+        const count = json.totalUploaded || uploadFiles.length;
+        setUploadSuccess(
+          `Successfully uploaded ${count} media item${count > 1 ? "s" : ""} to ImageKit CDN under "${effectiveCategory}"!`
+        );
+        setUploadFiles([]);
         setMediaTitle("");
-        fetchGallery();
+        await fetchGallery();
+        setActiveTab("gallery");
       } else {
         setUploadError(json.error || "Failed to upload to ImageKit CDN.");
       }
@@ -309,8 +349,10 @@ export default function AdminDashboardPage() {
   });
 
   const filteredGallery = galleryItems.filter((item) => {
-    if (galleryFilter === "all") return true;
-    return item.category === galleryFilter;
+    const matchesCategory = galleryFilter === "all" ? true : item.category === galleryFilter;
+    const matchesType =
+      galleryTypeFilter === "all" ? true : item.type === galleryTypeFilter;
+    return matchesCategory && matchesType;
   });
 
   return (
@@ -618,31 +660,79 @@ export default function AdminDashboardPage() {
             ======================================================== */}
         {activeTab === "gallery" && (
           <div className="space-y-6 animate-in fade-in duration-300">
-            {/* Filter Pills in Pink Theme */}
-            <div className="flex items-center justify-between flex-wrap gap-3 bg-white p-4 rounded-2xl border border-[#F4ABA2]/60 shadow-xs">
-              <div className="flex items-center gap-1.5 flex-wrap">
-                {["all", "Engagement", "Halad", "Sangit", "Vidhi", "Marriage", "Other"].map((cat) => (
-                  <button
-                    key={cat}
-                    onClick={() => setGalleryFilter(cat)}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-semibold capitalize transition-all ${
-                      galleryFilter === cat
-                        ? "bg-[#801C30] text-white font-bold shadow-xs"
-                        : "bg-[#FDF9F8] text-charcoal/70 hover:text-charcoal border border-[#F4ABA2]/50"
-                    }`}
-                  >
-                    {cat === "all" ? `All Media (${galleryItems.length})` : cat}
-                  </button>
-                ))}
+            {/* Filter Pills in Pink Theme with Format Toggle */}
+            <div className="bg-white p-4 rounded-2xl border border-[#F4ABA2]/60 shadow-xs space-y-3.5">
+              <div className="flex items-center justify-between flex-wrap gap-3">
+                {/* Milestone Filter Pills */}
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  {["all", "Engagement", "Halad", "Sangit", "Vidhi", "Marriage", "Other"].map((cat) => (
+                    <button
+                      key={cat}
+                      onClick={() => setGalleryFilter(cat)}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-semibold capitalize transition-all ${
+                        galleryFilter === cat
+                          ? "bg-[#801C30] text-white font-bold shadow-xs"
+                          : "bg-[#FDF9F8] text-charcoal/70 hover:text-charcoal border border-[#F4ABA2]/50"
+                      }`}
+                    >
+                      {cat === "all" ? `All Categories (${galleryItems.length})` : cat}
+                    </button>
+                  ))}
+                </div>
+
+                <button
+                  onClick={() => setActiveTab("upload")}
+                  className="px-3.5 py-1.5 rounded-xl bg-[#801C30] hover:bg-[#6F1829] text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Upload Media</span>
+                </button>
               </div>
 
-              <button
-                onClick={() => setActiveTab("upload")}
-                className="px-3.5 py-1.5 rounded-xl bg-[#801C30] hover:bg-[#6F1829] text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all"
-              >
-                <Plus className="w-4 h-4" />
-                <span>Upload New Media</span>
-              </button>
+              {/* Media Format Filter: All / Photos / Reels */}
+              <div className="flex items-center justify-between flex-wrap gap-2 pt-3 border-t border-[#F4ABA2]/30">
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] font-bold text-charcoal/70 uppercase tracking-wider">Format Filter:</span>
+                  <div className="inline-flex p-1 rounded-xl bg-[#FDF9F8] border border-[#F4ABA2]/50 text-xs font-semibold">
+                    <button
+                      onClick={() => setGalleryTypeFilter("all")}
+                      className={`px-3 py-1 rounded-lg transition-all ${
+                        galleryTypeFilter === "all"
+                          ? "bg-[#801C30] text-white font-bold shadow-xs"
+                          : "text-charcoal/70 hover:text-charcoal"
+                      }`}
+                    >
+                      All Formats ({galleryItems.length})
+                    </button>
+                    <button
+                      onClick={() => setGalleryTypeFilter("image")}
+                      className={`px-3 py-1 rounded-lg transition-all flex items-center gap-1 ${
+                        galleryTypeFilter === "image"
+                          ? "bg-[#801C30] text-white font-bold shadow-xs"
+                          : "text-charcoal/70 hover:text-charcoal"
+                      }`}
+                    >
+                      <ImageIcon className="w-3.5 h-3.5" />
+                      <span>Photos ({galleryItems.filter((i) => i.type === "image").length})</span>
+                    </button>
+                    <button
+                      onClick={() => setGalleryTypeFilter("reel")}
+                      className={`px-3 py-1 rounded-lg transition-all flex items-center gap-1 ${
+                        galleryTypeFilter === "reel"
+                          ? "bg-[#801C30] text-white font-bold shadow-xs"
+                          : "text-charcoal/70 hover:text-charcoal"
+                      }`}
+                    >
+                      <Film className="w-3.5 h-3.5" />
+                      <span>Reels / Videos ({galleryItems.filter((i) => i.type === "reel").length})</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div className="text-xs text-charcoal/60">
+                  Showing <span className="font-bold text-[#801C30]">{filteredGallery.length}</span> media item{filteredGallery.length !== 1 ? "s" : ""}
+                </div>
+              </div>
             </div>
 
             {/* Media Grid with Edit Option */}
@@ -652,14 +742,32 @@ export default function AdminDashboardPage() {
                   key={item.id}
                   className="group relative bg-white rounded-2xl border border-[#F4ABA2]/60 overflow-hidden shadow-xs flex flex-col"
                 >
-                  <div className="relative aspect-square w-full bg-[#F9CFCA]/30 overflow-hidden">
+                  <div 
+                    onClick={() => setPreviewMedia(item)}
+                    className="relative aspect-square w-full bg-[#F9CFCA]/30 overflow-hidden cursor-pointer group"
+                  >
                     {item.type === "reel" ? (
-                      <video
-                        src={item.src}
-                        className="w-full h-full object-cover"
-                        playsInline
-                        muted
-                      />
+                      <>
+                        <video
+                          src={item.src}
+                          className="w-full h-full object-cover"
+                          playsInline
+                          muted
+                          loop
+                          onMouseOver={(e) => (e.target as HTMLVideoElement).play().catch(() => {})}
+                          onMouseOut={(e) => {
+                            const v = e.target as HTMLVideoElement;
+                            v.pause();
+                            v.currentTime = 0;
+                          }}
+                        />
+                        {/* Centered Play Button Overlay */}
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/25 group-hover:bg-black/10 transition-colors">
+                          <div className="w-11 h-11 rounded-full bg-[#801C30]/90 text-white flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                            <Play className="w-5 h-5 fill-current ml-0.5" />
+                          </div>
+                        </div>
+                      </>
                     ) : (
                       <Image
                         src={item.src}
@@ -670,12 +778,12 @@ export default function AdminDashboardPage() {
                       />
                     )}
 
-                    <div className="absolute top-2 left-2 bg-white/95 text-[#801C30] text-[9px] font-sans font-bold px-2 py-0.5 rounded-full uppercase border border-[#F4ABA2]/80 shadow-xs">
+                    <div className="absolute top-2 left-2 bg-white/95 text-[#801C30] text-[9px] font-sans font-bold px-2 py-0.5 rounded-full uppercase border border-[#F4ABA2]/80 shadow-xs z-10">
                       {item.category}
                     </div>
 
                     {item.type === "reel" && (
-                      <div className="absolute top-2 right-2 bg-[#801C30] text-white p-1 rounded-md shadow-xs">
+                      <div className="absolute top-2 right-2 bg-[#801C30] text-white p-1 rounded-md shadow-xs z-10">
                         <Film className="w-3 h-3" />
                       </div>
                     )}
@@ -768,75 +876,92 @@ export default function AdminDashboardPage() {
               <form onSubmit={handleUploadMedia} className="space-y-5 text-xs">
                 {/* Media Format Toggle */}
                 <div>
-                  <label className="block font-bold text-charcoal mb-2">Media Format</label>
-                  <div className="grid grid-cols-2 gap-3">
+                  <label className="block font-bold text-charcoal mb-2">Media Format Filter</label>
+                  <div className="grid grid-cols-3 gap-2.5">
                     <button
                       type="button"
-                      onClick={() => {
-                        setMediaType("image");
-                        setUploadFile(null);
-                      }}
-                      className={`p-3.5 rounded-2xl border text-left flex items-center gap-3 transition-all ${
+                      onClick={() => setMediaType("all")}
+                      className={`p-3 rounded-2xl border text-center transition-all ${
+                        mediaType === "all"
+                          ? "bg-[#F9CFCA]/40 border-[#801C30] text-[#801C30] font-bold shadow-xs"
+                          : "bg-[#FDF9F8] border-[#F4ABA2]/50 text-charcoal/70"
+                      }`}
+                    >
+                      <div className="font-bold">Photos &amp; Reels</div>
+                      <div className="text-[10px] text-charcoal/50">Any Format</div>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setMediaType("image")}
+                      className={`p-3 rounded-2xl border text-center transition-all ${
                         mediaType === "image"
                           ? "bg-[#F9CFCA]/40 border-[#801C30] text-[#801C30] font-bold shadow-xs"
                           : "bg-[#FDF9F8] border-[#F4ABA2]/50 text-charcoal/70"
                       }`}
                     >
-                      <ImageIcon className="w-5 h-5 text-[#801C30]" />
-                      <div>
-                        <div className="font-bold">Photograph</div>
-                        <div className="text-[10px] text-charcoal/50">JPG, PNG, WebP</div>
-                      </div>
+                      <div className="font-bold">Photos Only</div>
+                      <div className="text-[10px] text-charcoal/50">JPG, PNG, WEBP</div>
                     </button>
 
                     <button
                       type="button"
-                      onClick={() => {
-                        setMediaType("reel");
-                        setUploadFile(null);
-                      }}
-                      className={`p-3.5 rounded-2xl border text-left flex items-center gap-3 transition-all ${
+                      onClick={() => setMediaType("reel")}
+                      className={`p-3 rounded-2xl border text-center transition-all ${
                         mediaType === "reel"
                           ? "bg-[#F9CFCA]/40 border-[#801C30] text-[#801C30] font-bold shadow-xs"
                           : "bg-[#FDF9F8] border-[#F4ABA2]/50 text-charcoal/70"
                       }`}
                     >
-                      <Film className="w-5 h-5 text-[#801C30]" />
-                      <div>
-                        <div className="font-bold">Reel / Video</div>
-                        <div className="text-[10px] text-charcoal/50">MP4, WebM, MOV</div>
-                      </div>
+                      <div className="font-bold">Reels Only</div>
+                      <div className="text-[10px] text-charcoal/50">MP4, WEBM, MOV</div>
                     </button>
                   </div>
                 </div>
 
-                {/* File Dropzone */}
+                {/* Multi-File Dropzone */}
                 <div>
-                  <label className="block font-bold text-charcoal mb-2">Select File from Computer</label>
+                  <label className="block font-bold text-charcoal mb-2">
+                    Select File(s) from Computer (Multiple Selection Enabled)
+                  </label>
                   <label 
                     htmlFor="adminFileInput"
                     className="flex flex-col items-center justify-center border-2 border-dashed border-[#F4ABA2] hover:border-[#801C30] rounded-2xl p-6 sm:p-8 cursor-pointer bg-[#FDF9F8] hover:bg-white transition-all group"
                   >
                     <Upload className="w-8 h-8 text-[#801C30] mb-2 group-hover:scale-110 transition-transform" />
                     <span className="font-bold text-charcoal text-sm text-center">
-                      {uploadFile ? uploadFile.name : "Click here to choose file from computer"}
+                      {uploadFiles.length > 0
+                        ? `${uploadFiles.length} file${uploadFiles.length > 1 ? "s" : ""} selected`
+                        : "Click here to choose multiple photos, reels, or videos"}
                     </span>
-                    <span className="text-[11px] text-charcoal/50 mt-1">
-                      {uploadFile
-                        ? `${(uploadFile.size / (1024 * 1024)).toFixed(2)} MB • Ready to upload`
-                        : mediaType === "image"
-                        ? "Supports JPG, PNG, WEBP images"
-                        : "Supports MP4, WEBM vertical reels"}
+                    <span className="text-[11px] text-charcoal/50 mt-1 text-center">
+                      {uploadFiles.length > 0
+                        ? `Total Size: ${(uploadFiles.reduce((acc, f) => acc + f.size, 0) / (1024 * 1024)).toFixed(2)} MB • Ready to batch upload`
+                        : "You can select multiple photos and reels at the same time (Hold Ctrl/Shift to pick multiple)"}
                     </span>
+
+                    {/* Preview list of selected files */}
+                    {uploadFiles.length > 0 && (
+                      <div className="mt-3.5 max-h-36 overflow-y-auto w-full max-w-md bg-white border border-[#F4ABA2]/60 rounded-xl p-2.5 divide-y divide-[#F4ABA2]/20">
+                        {uploadFiles.map((file, idx) => (
+                          <div key={idx} className="flex items-center justify-between py-1 px-1.5 text-[11px]">
+                            <span className="truncate max-w-[240px] font-medium text-charcoal">{file.name}</span>
+                            <span className="text-charcoal/50">{(file.size / (1024 * 1024)).toFixed(2)} MB</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
                     <input
                       id="adminFileInput"
                       type="file"
-                      accept={mediaType === "image" ? "image/*" : "video/*"}
+                      multiple
+                      accept={mediaType === "image" ? "image/*" : mediaType === "reel" ? "video/*" : "image/*,video/*"}
                       className="sr-only"
                       onChange={(e) => {
-                        if (e.target.files && e.target.files[0]) {
-                          const f = e.target.files[0];
-                          setUploadFile(f);
+                        if (e.target.files && e.target.files.length > 0) {
+                          const fileArray = Array.from(e.target.files);
+                          setUploadFiles(fileArray);
                           setUploadError(null);
                         }
                       }}
@@ -898,18 +1023,20 @@ export default function AdminDashboardPage() {
                 {/* Submit Button */}
                 <button
                   type="submit"
-                  disabled={isUploading || !uploadFile}
+                  disabled={isUploading || uploadFiles.length === 0}
                   className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#801C30] to-[#A82835] hover:from-[#6F1829] hover:to-[#801C30] disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md shadow-[#801C30]/20 transition-all mt-4"
                 >
                   {isUploading ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin" />
-                      <span>Uploading to ImageKit CDN &amp; Publishing...</span>
+                      <span>Uploading {uploadFiles.length} item{uploadFiles.length > 1 ? "s" : ""} to ImageKit CDN &amp; Saving...</span>
                     </>
                   ) : (
                     <>
                       <Upload className="w-4 h-4" />
-                      <span>Upload &amp; Save Media</span>
+                      <span>
+                        Upload {uploadFiles.length > 0 ? `${uploadFiles.length} Selected Media` : "& Save Media"}
+                      </span>
                     </>
                   )}
                 </button>
@@ -1058,30 +1185,94 @@ export default function AdminDashboardPage() {
               </button>
             </div>
 
-            <div className="p-6 space-y-4 text-xs">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="p-3 rounded-xl bg-[#FDF9F8] border border-[#F4ABA2]/40">
-                  <span className="text-[10px] text-charcoal/50 uppercase font-bold">Phone</span>
-                  <div className="font-semibold text-charcoal mt-0.5">{selectedEnquiry.phone}</div>
+            <div className="p-6 space-y-4 text-xs max-h-[75vh] overflow-y-auto">
+              {/* Primary Contact Details */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <div className="p-3.5 rounded-2xl bg-[#FDF9F8] border border-[#F4ABA2]/40 space-y-0.5">
+                  <span className="text-[10px] text-charcoal/50 uppercase font-bold tracking-wider">Full Name</span>
+                  <div className="font-bold text-sm text-charcoal">{selectedEnquiry.fullName}</div>
                 </div>
-                <div className="p-3 rounded-xl bg-[#FDF9F8] border border-[#F4ABA2]/40">
-                  <span className="text-[10px] text-charcoal/50 uppercase font-bold">Email</span>
-                  <div className="font-semibold text-charcoal mt-0.5 truncate">{selectedEnquiry.email}</div>
+
+                <div className="p-3.5 rounded-2xl bg-[#FDF9F8] border border-[#F4ABA2]/40 space-y-0.5">
+                  <span className="text-[10px] text-charcoal/50 uppercase font-bold tracking-wider">Phone Number</span>
+                  <div className="font-bold text-sm text-[#801C30] flex items-center gap-1.5">
+                    <Phone className="w-3.5 h-3.5" />
+                    <a href={`tel:${selectedEnquiry.phone}`} className="hover:underline">
+                      {selectedEnquiry.phone}
+                    </a>
+                  </div>
                 </div>
-                <div className="p-3 rounded-xl bg-[#FDF9F8] border border-[#F4ABA2]/40">
-                  <span className="text-[10px] text-charcoal/50 uppercase font-bold">Event Date</span>
-                  <div className="font-semibold text-charcoal mt-0.5">{selectedEnquiry.eventDate || "TBD"}</div>
-                </div>
-                <div className="p-3 rounded-xl bg-[#FDF9F8] border border-[#F4ABA2]/40">
-                  <span className="text-[10px] text-charcoal/50 uppercase font-bold">Budget</span>
-                  <div className="font-semibold text-emerald-700 mt-0.5">{selectedEnquiry.estimatedBudget || "TBD"}</div>
+
+                <div className="p-3.5 rounded-2xl bg-[#FDF9F8] border border-[#F4ABA2]/40 space-y-0.5 sm:col-span-2">
+                  <span className="text-[10px] text-charcoal/50 uppercase font-bold tracking-wider">Email Address</span>
+                  <div className="font-semibold text-charcoal flex items-center gap-1.5">
+                    <Mail className="w-3.5 h-3.5 text-charcoal/40" />
+                    <a href={`mailto:${selectedEnquiry.email}`} className="hover:underline">
+                      {selectedEnquiry.email}
+                    </a>
+                  </div>
                 </div>
               </div>
 
+              {/* Event Timing & Planning Details */}
+              <div className="border-t border-[#F4ABA2]/30 pt-3">
+                <h4 className="text-[11px] font-bold uppercase tracking-wider text-[#801C30] mb-2.5">
+                  Wedding Event Specifications
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="p-3 rounded-xl bg-[#FDF9F8] border border-[#F4ABA2]/40 space-y-0.5">
+                    <span className="text-[10px] text-charcoal/50 uppercase font-bold">Tentative Month &amp; Year</span>
+                    <div className="font-medium text-charcoal">
+                      {selectedEnquiry.tentativeMonthYear || selectedEnquiry.eventDate || "Not selected"}
+                    </div>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-[#FDF9F8] border border-[#F4ABA2]/40 space-y-0.5">
+                    <span className="text-[10px] text-charcoal/50 uppercase font-bold">Exact Wedding Dates</span>
+                    <div className="font-medium text-charcoal">
+                      {selectedEnquiry.weddingDates || "Not finalised yet"}
+                    </div>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-[#FDF9F8] border border-[#F4ABA2]/40 space-y-0.5">
+                    <span className="text-[10px] text-charcoal/50 uppercase font-bold">Event Location / City</span>
+                    <div className="font-medium text-charcoal">
+                      {selectedEnquiry.location || "Pune / Maharashtra"}
+                    </div>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-[#FDF9F8] border border-[#F4ABA2]/40 space-y-0.5">
+                    <span className="text-[10px] text-charcoal/50 uppercase font-bold">Expected Number of Guests</span>
+                    <div className="font-medium text-charcoal">
+                      {selectedEnquiry.guestCount ? `${selectedEnquiry.guestCount} Guests` : "Not specified"}
+                    </div>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-[#FDF9F8] border border-[#F4ABA2]/40 space-y-0.5">
+                    <span className="text-[10px] text-charcoal/50 uppercase font-bold">Estimated Budget</span>
+                    <div className="font-bold text-emerald-700">
+                      {selectedEnquiry.estimatedBudget || "Not specified"}
+                    </div>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-[#FDF9F8] border border-[#F4ABA2]/40 space-y-0.5">
+                    <span className="text-[10px] text-charcoal/50 uppercase font-bold">Event Type / Scope</span>
+                    <div className="font-medium text-charcoal">
+                      {selectedEnquiry.eventType || "Full Wedding Planning & Decor"}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Additional Notes & Envisioned Details */}
               {selectedEnquiry.message && (
-                <div className="p-4 rounded-xl bg-[#FDF9F8] border border-[#F4ABA2]/40">
-                  <span className="text-[10px] text-charcoal/50 uppercase font-bold">Client Notes &amp; Message</span>
-                  <p className="mt-1 text-charcoal/80 leading-relaxed whitespace-pre-wrap">{selectedEnquiry.message}</p>
+                <div className="p-4 rounded-2xl bg-[#FDF9F8] border border-[#F4ABA2]/40 space-y-1">
+                  <span className="text-[10px] text-charcoal/50 uppercase font-bold tracking-wider">
+                    Additional Notes / Envisioned Details
+                  </span>
+                  <p className="text-charcoal leading-relaxed whitespace-pre-wrap font-medium">
+                    {selectedEnquiry.message}
+                  </p>
                 </div>
               )}
             </div>
@@ -1093,6 +1284,72 @@ export default function AdminDashboardPage() {
               >
                 Close
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Fullscreen Video / Image Player Modal */}
+      {previewMedia && (
+        <div 
+          onClick={() => setPreviewMedia(null)}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in"
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            className="bg-[#1F1B1A] border border-[#F4ABA2]/40 rounded-3xl overflow-hidden max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl relative"
+          >
+            {/* Modal Header */}
+            <div className="p-4 bg-[#F9CFCA]/20 border-b border-white/10 flex items-center justify-between">
+              <div>
+                <span className="text-[10px] uppercase font-bold text-[#F4ABA2] tracking-wider">
+                  {previewMedia.category} • {previewMedia.type.toUpperCase()}
+                </span>
+                <h3 className="font-serif text-base sm:text-lg text-white font-semibold truncate max-w-md">
+                  {previewMedia.title}
+                </h3>
+              </div>
+              <button
+                onClick={() => setPreviewMedia(null)}
+                className="p-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Media Player Container */}
+            <div className="relative flex items-center justify-center bg-black flex-grow overflow-hidden min-h-[300px] max-h-[70vh]">
+              {previewMedia.type === "reel" ? (
+                <video
+                  src={previewMedia.src}
+                  controls
+                  autoPlay
+                  playsInline
+                  className="max-h-[68vh] max-w-full object-contain mx-auto"
+                />
+              ) : (
+                <div className="relative w-full h-[60vh]">
+                  <Image
+                    src={previewMedia.src}
+                    alt={previewMedia.title}
+                    fill
+                    className="object-contain"
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* Footer with links */}
+            <div className="p-3.5 bg-black/40 border-t border-white/10 flex items-center justify-between text-xs">
+              <span className="text-white/60 truncate max-w-xs">{previewMedia.src}</span>
+              <a
+                href={previewMedia.src}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-3 py-1.5 rounded-xl bg-[#801C30] hover:bg-[#6F1829] text-white font-semibold flex items-center gap-1.5 transition-colors"
+              >
+                <span>Open in Tab</span>
+                <ExternalLink className="w-3.5 h-3.5" />
+              </a>
             </div>
           </div>
         </div>

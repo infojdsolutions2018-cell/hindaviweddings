@@ -19,8 +19,11 @@ interface MemoryStore {
     email: string;
     eventDate?: string;
     eventType?: string;
+    tentativeMonthYear?: string;
+    weddingDates?: string;
     guestCount?: string;
     estimatedBudget?: string;
+    location?: string;
     message?: string;
     status: string;
     created_at: string;
@@ -68,43 +71,58 @@ export function getDatabase() {
   return neon(dbUrl);
 }
 
+let schemaInitialized = false;
+
 // Auto-initialize Neon Postgres Schema (Enquiries + Gallery Uploads)
 export async function initDatabaseSchema() {
+  if (schemaInitialized) {
+    return { initialized: true, mode: "neon-postgres" };
+  }
+
   const sql = getDatabase();
   if (!sql) {
     return { initialized: false, mode: "memory" };
   }
 
-  await sql`
-    CREATE TABLE IF NOT EXISTS wedding_enquiries (
-      id SERIAL PRIMARY KEY,
-      fullName VARCHAR(255) NOT NULL,
-      phone VARCHAR(50) NOT NULL,
-      email VARCHAR(255) NOT NULL,
-      eventDate VARCHAR(100),
-      eventType VARCHAR(100),
-      guestCount VARCHAR(100),
-      estimatedBudget VARCHAR(100),
-      message TEXT,
-      status VARCHAR(50) DEFAULT 'new',
-      created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-    );
-  `;
+  try {
+    await sql`
+      CREATE TABLE IF NOT EXISTS wedding_enquiries (
+        id SERIAL PRIMARY KEY,
+        fullName VARCHAR(255) NOT NULL,
+        phone VARCHAR(50) NOT NULL,
+        email VARCHAR(255) NOT NULL,
+        eventDate VARCHAR(100),
+        eventType VARCHAR(100),
+        tentativeMonthYear VARCHAR(255),
+        weddingDates VARCHAR(255),
+        guestCount VARCHAR(100),
+        estimatedBudget VARCHAR(100),
+        location VARCHAR(255),
+        message TEXT,
+        status VARCHAR(50) DEFAULT 'new',
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      );
+    `;
 
-  await sql`
-    CREATE TABLE IF NOT EXISTS wedding_gallery_media (
-      id SERIAL PRIMARY KEY,
-      type VARCHAR(20) NOT NULL,
-      src TEXT NOT NULL,
-      title VARCHAR(255) NOT NULL,
-      aspect VARCHAR(20) DEFAULT 'square',
-      category VARCHAR(50) NOT NULL,
-      file_id VARCHAR(255),
-      created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-    );
-  `;
+    await sql`
+      CREATE TABLE IF NOT EXISTS wedding_gallery_media (
+        id SERIAL PRIMARY KEY,
+        type VARCHAR(20) NOT NULL,
+        src TEXT NOT NULL,
+        title VARCHAR(255) DEFAULT '',
+        aspect VARCHAR(20) DEFAULT 'square',
+        category VARCHAR(50) NOT NULL,
+        file_id VARCHAR(255),
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      );
+    `;
 
-  return { initialized: true, mode: "neon-postgres" };
+    schemaInitialized = true;
+    return { initialized: true, mode: "neon-postgres" };
+  } catch (err) {
+    console.warn("Neon schema init error, continuing with fallback:", err);
+    return { initialized: false, mode: "fallback" };
+  }
 }
 
 // Service: Save new wedding enquiry
@@ -114,35 +132,43 @@ export async function saveEnquiry(data: {
   email: string;
   eventDate?: string;
   eventType?: string;
+  tentativeMonthYear?: string;
+  weddingDates?: string;
   guestCount?: string;
   estimatedBudget?: string;
+  location?: string;
   message?: string;
 }) {
   const sql = getDatabase();
 
   if (sql) {
-    await initDatabaseSchema();
-    const result = await sql`
-      INSERT INTO wedding_enquiries (
-        fullName, phone, email, eventDate, eventType, guestCount, estimatedBudget, message, status
-      ) VALUES (
-        ${data.fullName}, ${data.phone}, ${data.email}, ${data.eventDate || null},
-        ${data.eventType || null}, ${data.guestCount || null}, ${data.estimatedBudget || null},
-        ${data.message || null}, 'new'
-      )
-      RETURNING *;
-    `;
-    return result[0];
-  } else {
-    const item = {
-      id: globalMemory.enquiries.length + 1,
-      ...data,
-      status: "new",
-      created_at: new Date().toISOString(),
-    };
-    globalMemory.enquiries.unshift(item);
-    return item;
+    try {
+      await initDatabaseSchema();
+      const result = await sql`
+        INSERT INTO wedding_enquiries (
+          fullName, phone, email, eventDate, eventType, tentativeMonthYear, weddingDates, guestCount, estimatedBudget, location, message, status
+        ) VALUES (
+          ${data.fullName}, ${data.phone}, ${data.email}, ${data.eventDate || null},
+          ${data.eventType || null}, ${data.tentativeMonthYear || null}, ${data.weddingDates || null},
+          ${data.guestCount || null}, ${data.estimatedBudget || null}, ${data.location || null},
+          ${data.message || null}, 'new'
+        )
+        RETURNING *;
+      `;
+      return result[0];
+    } catch (dbErr) {
+      console.warn("Neon saveEnquiry failed, using memory store:", dbErr);
+    }
   }
+
+  const item = {
+    id: globalMemory.enquiries.length + 1,
+    ...data,
+    status: "new",
+    created_at: new Date().toISOString(),
+  };
+  globalMemory.enquiries.unshift(item);
+  return item;
 }
 
 // Service: Fetch all enquiries for Admin
@@ -150,11 +176,31 @@ export async function getAllEnquiries() {
   const sql = getDatabase();
 
   if (sql) {
-    await initDatabaseSchema();
-    const rows = await sql`
-      SELECT * FROM wedding_enquiries ORDER BY created_at DESC;
-    `;
-    return rows;
+    try {
+      await initDatabaseSchema();
+      const rows = await sql`
+        SELECT 
+          id,
+          fullname AS "fullName",
+          phone,
+          email,
+          eventdate AS "eventDate",
+          eventtype AS "eventType",
+          tentativemonthyear AS "tentativeMonthYear",
+          weddingdates AS "weddingDates",
+          guestcount AS "guestCount",
+          estimatedbudget AS "estimatedBudget",
+          location,
+          message,
+          status,
+          created_at
+        FROM wedding_enquiries 
+        ORDER BY created_at DESC;
+      `;
+      return rows;
+    } catch (dbErr) {
+      console.warn("Neon getAllEnquiries failed, using memory store:", dbErr);
+    }
   }
 
   return globalMemory.enquiries;
@@ -165,10 +211,14 @@ export async function updateEnquiryStatus(id: number, status: string) {
   const sql = getDatabase();
 
   if (sql) {
-    const rows = await sql`
-      UPDATE wedding_enquiries SET status = ${status} WHERE id = ${id} RETURNING *;
-    `;
-    return rows[0];
+    try {
+      const rows = await sql`
+        UPDATE wedding_enquiries SET status = ${status} WHERE id = ${id} RETURNING *;
+      `;
+      return rows[0];
+    } catch (dbErr) {
+      console.warn("Neon updateEnquiryStatus failed, updating memory:", dbErr);
+    }
   }
 
   const item = globalMemory.enquiries.find((e) => e.id === Number(id));
@@ -184,41 +234,49 @@ export async function saveGalleryMedia(data: {
   src: string;
   title: string;
   aspect: "square" | "tall" | "wide";
-  category: "Engagement" | "Halad" | "Sangit" | "Vidhi" | "Marriage";
+  category: "Engagement" | "Halad" | "Sangit" | "Vidhi" | "Marriage" | "Other";
   fileId?: string;
 }) {
   const sql = getDatabase();
 
   if (sql) {
-    await initDatabaseSchema();
-    const result = await sql`
-      INSERT INTO wedding_gallery_media (type, src, title, aspect, category, file_id)
-      VALUES (${data.type}, ${data.src}, ${data.title}, ${data.aspect}, ${data.category}, ${data.fileId || null})
-      RETURNING *;
-    `;
-    return result[0];
-  } else {
-    const item: GalleryMediaItem = {
-      id: `ik-${Date.now()}`,
-      ...data,
-      created_at: new Date().toISOString(),
-    };
-    globalMemory.customGalleryItems.unshift(item);
-    return item;
+    try {
+      await initDatabaseSchema();
+      const result = await sql`
+        INSERT INTO wedding_gallery_media (type, src, title, aspect, category, file_id)
+        VALUES (${data.type}, ${data.src}, ${data.title}, ${data.aspect}, ${data.category}, ${data.fileId || null})
+        RETURNING *;
+      `;
+      return result[0];
+    } catch (dbErr) {
+      console.warn("Neon saveGalleryMedia failed, using memory store:", dbErr);
+    }
   }
+
+  const item: GalleryMediaItem = {
+    id: `ik-${Date.now()}`,
+    ...data,
+    created_at: new Date().toISOString(),
+  };
+  globalMemory.customGalleryItems.unshift(item);
+  return item;
 }
 
 export async function getCustomGalleryMedia() {
   const sql = getDatabase();
 
   if (sql) {
-    await initDatabaseSchema();
-    const rows = await sql`
-      SELECT id, type, src, title, aspect, category, file_id as "fileId", created_at
-      FROM wedding_gallery_media
-      ORDER BY created_at DESC;
-    `;
-    return rows as GalleryMediaItem[];
+    try {
+      await initDatabaseSchema();
+      const rows = await sql`
+        SELECT id, type, src, title, aspect, category, file_id as "fileId", created_at
+        FROM wedding_gallery_media
+        ORDER BY created_at DESC;
+      `;
+      return rows as GalleryMediaItem[];
+    } catch (dbErr) {
+      console.warn("Neon getCustomGalleryMedia failed, using memory store:", dbErr);
+    }
   }
 
   return globalMemory.customGalleryItems;
@@ -231,15 +289,19 @@ export async function updateGalleryMedia(
   const sql = getDatabase();
 
   if (sql) {
-    await initDatabaseSchema();
-    const rows = await sql`
-      UPDATE wedding_gallery_media
-      SET title = COALESCE(${updates.title ?? null}, title),
-          category = COALESCE(${updates.category ?? null}, category)
-      WHERE id = ${Number(id)}
-      RETURNING *;
-    `;
-    return rows[0];
+    try {
+      await initDatabaseSchema();
+      const rows = await sql`
+        UPDATE wedding_gallery_media
+        SET title = COALESCE(${updates.title ?? null}, title),
+            category = COALESCE(${updates.category ?? null}, category)
+        WHERE id = ${Number(id)}
+        RETURNING *;
+      `;
+      return rows[0];
+    } catch (dbErr) {
+      console.warn("Neon updateGalleryMedia failed, updating memory:", dbErr);
+    }
   }
 
   const item = globalMemory.customGalleryItems.find((m) => String(m.id) === String(id));
@@ -255,11 +317,15 @@ export async function deleteGalleryMedia(id: string | number) {
   const sql = getDatabase();
 
   if (sql) {
-    await initDatabaseSchema();
-    const rows = await sql`
-      DELETE FROM wedding_gallery_media WHERE id = ${Number(id)} RETURNING *;
-    `;
-    return rows[0];
+    try {
+      await initDatabaseSchema();
+      const rows = await sql`
+        DELETE FROM wedding_gallery_media WHERE id = ${Number(id)} RETURNING *;
+      `;
+      return rows[0];
+    } catch (dbErr) {
+      console.warn("Neon deleteGalleryMedia failed, deleting from memory:", dbErr);
+    }
   }
 
   const idx = globalMemory.customGalleryItems.findIndex((m) => String(m.id) === String(id));

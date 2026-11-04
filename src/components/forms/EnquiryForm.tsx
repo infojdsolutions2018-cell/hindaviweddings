@@ -6,16 +6,62 @@ import { Button } from "@/components/ui/Button";
 import { BUSINESS_CONFIG } from "@/config/business";
 import { CheckCircle2, MessageSquare, Loader2 } from "lucide-react";
 
-const TENTATIVE_MONTH_YEAR_OPTIONS = [
-  { value: "November 2026 - December 2026", label: "November 2026 - December 2026" },
-  { value: "January 2027 - March 2027", label: "January 2027 - March 2027" },
-  { value: "April 2027 to September 2027", label: "April 2027 to September 2027" },
-  { value: "October 2027 to March 2028", label: "October 2027 to March 2028" },
-  { value: "April 2028 to September 2028", label: "April 2028 to September 2028" },
-  { value: "October 2028 to December 2028", label: "October 2028 to December 2028" },
-  { value: "January 2029 to June 2029", label: "January 2029 to June 2029" },
-  { value: "July 2029 and beyond", label: "July 2029 and beyond" },
+// Definitions of prospective wedding season ranges
+interface SeasonRange {
+  label: string;
+  startDate: string; // YYYY-MM-DD
+  endDate: string;   // YYYY-MM-DD
+}
+
+const ALL_SEASON_RANGES: SeasonRange[] = [
+  { label: "November 2026 - December 2026", startDate: "2026-11-01", endDate: "2026-12-31" },
+  { label: "January 2027 - March 2027", startDate: "2027-01-01", endDate: "2027-03-31" },
+  { label: "April 2027 to September 2027", startDate: "2027-04-01", endDate: "2027-09-30" },
+  { label: "October 2027 to March 2028", startDate: "2027-10-01", endDate: "2028-03-31" },
+  { label: "April 2028 to September 2028", startDate: "2028-04-01", endDate: "2028-09-30" },
+  { label: "October 2028 to December 2028", startDate: "2028-10-01", endDate: "2028-12-31" },
+  { label: "January 2029 to June 2029", startDate: "2029-01-01", endDate: "2029-06-30" },
+  { label: "July 2029 and beyond", startDate: "2029-07-01", endDate: "2035-12-31" },
 ];
+
+// Helper to filter out past seasons dynamically according to current today's date
+const getActiveSeasonOptions = (): { value: string; label: string }[] => {
+  const today = new Date().toISOString().split("T")[0];
+
+  // Only keep seasons whose end date is >= today (meaning season has not fully ended)
+  const activeRanges = ALL_SEASON_RANGES.filter((season) => season.endDate >= today);
+
+  const options = activeRanges.map((season) => ({
+    value: season.label,
+    label: season.label,
+  }));
+
+  // Always keep "Other" available at the end
+  options.push({
+    value: "Other",
+    label: "Other (Select custom date / any timeframe)",
+  });
+
+  return options;
+};
+
+// Helper to determine min and max date constraint:
+// Never allows dates in the past (minimum is always max(today, seasonStart))
+const getDateRangeForOption = (option: string): { min?: string; max?: string } => {
+  const today = new Date().toISOString().split("T")[0];
+
+  const matched = ALL_SEASON_RANGES.find((s) => s.label === option);
+
+  if (matched) {
+    // If season started before today (e.g. today is Nov 4, season started Nov 1),
+    // min is today so past dates (Nov 1-3) can never be selected
+    const effectiveMin = matched.startDate < today ? today : matched.startDate;
+    return { min: effectiveMin, max: matched.endDate };
+  }
+
+  // "Other" opens all dates from today onwards
+  return { min: today, max: "2035-12-31" };
+};
 
 export function EnquiryForm({
   headingTitle = "Share Your Event Aspirations",
@@ -105,7 +151,30 @@ export function EnquiryForm({
       "c5458694-e524-44b8-ae53-4597b5512cf7";
 
     try {
-      // 1. Submit to Web3Forms for email notification
+      // 1. Immediately save to Backend Database (Neon PostgreSQL) for instant admin availability
+      try {
+        await fetch("/api/enquiries", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            fullName: formData.fullName,
+            phone: formData.phone,
+            email: formData.email,
+            eventDate: formData.weddingDates || formData.tentativeMonthYear,
+            eventType: formData.eventType,
+            tentativeMonthYear: formData.tentativeMonthYear,
+            weddingDates: formData.weddingDates,
+            guestCount: formData.guestCount,
+            estimatedBudget: formData.estimatedBudget,
+            location: formData.location,
+            message: formData.message,
+          }),
+        });
+      } catch (backendErr) {
+        console.warn("Backend save error:", backendErr);
+      }
+
+      // 2. Submit to Web3Forms for email notification
       const response = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
         headers: {
@@ -130,26 +199,6 @@ export function EnquiryForm({
           "Source Website": BUSINESS_CONFIG.displayName,
         }),
       });
-
-      // 2. Also save to Backend Database for Admin Dashboard
-      try {
-        await fetch("/api/enquiries", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            fullName: formData.fullName,
-            phone: formData.phone,
-            email: formData.email,
-            eventDate: formData.weddingDates || formData.tentativeMonthYear,
-            eventType: formData.eventType,
-            guestCount: formData.guestCount,
-            estimatedBudget: formData.estimatedBudget,
-            message: formData.message,
-          }),
-        });
-      } catch (backendErr) {
-        console.warn("Backend save error:", backendErr);
-      }
 
       const result = await response.json();
 
@@ -315,18 +364,39 @@ export function EnquiryForm({
               name="tentativeMonthYear"
               type="select"
               placeholder="Select Tentative Month & Year"
-              options={TENTATIVE_MONTH_YEAR_OPTIONS}
+              options={getActiveSeasonOptions()}
               required={true}
               value={formData.tentativeMonthYear}
-              onChange={handleChange}
+              onChange={(e) => {
+                handleChange(e);
+                // Clear previously chosen wedding date if it no longer falls into the new range
+                const newRange = getDateRangeForOption(e.target.value);
+                if (formData.weddingDates) {
+                  if (
+                    (newRange.min && formData.weddingDates < newRange.min) ||
+                    (newRange.max && formData.weddingDates > newRange.max)
+                  ) {
+                    setFormData((prev) => ({ ...prev, weddingDates: "" }));
+                  }
+                }
+              }}
               error={errors.tentativeMonthYear}
             />
+            
             <FormField
               label="Dates of the Wedding (If finalised)"
               name="weddingDates"
-              type="text"
-              placeholder="For example: 12–14 February 2027"
-              helperText="Leave blank if not yet finalised"
+              type="date"
+              placeholder="Select date from calendar"
+              min={getDateRangeForOption(formData.tentativeMonthYear).min}
+              max={getDateRangeForOption(formData.tentativeMonthYear).max}
+              helperText={
+                formData.tentativeMonthYear === "Other"
+                  ? "Calendar open for any custom date range"
+                  : formData.tentativeMonthYear
+                  ? `Calendar locked to ${formData.tentativeMonthYear}`
+                  : "Select a tentative period first or choose 'Other' for all dates"
+              }
               value={formData.weddingDates}
               onChange={handleChange}
             />

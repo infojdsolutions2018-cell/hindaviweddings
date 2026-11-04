@@ -34,8 +34,11 @@ export async function POST(req: Request) {
       email: body.email,
       eventDate: body.eventDate,
       eventType: body.eventType,
+      tentativeMonthYear: body.tentativeMonthYear,
+      weddingDates: body.weddingDates,
       guestCount: body.guestCount,
       estimatedBudget: body.estimatedBudget,
+      location: body.location,
       message: body.message,
     });
 

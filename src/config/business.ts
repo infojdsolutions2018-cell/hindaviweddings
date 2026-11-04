@@ -28,7 +28,7 @@ export const BUSINESS_CONFIG = {
     { title: "Haldi Ceremony", description: "Vibrant yellow floral decor, marigold backdrops, brass urli setups, and festive ritual ambiance." },
     { title: "Wedding (Lagna)", description: "Sacred Vedic mandap architecture, floral canopies, traditional seating, and seamless ceremonial choreography." },
     { title: "Engagement", description: "Romantic floral arches, customized stage backdrops, ambient illumination, and bespoke couple seating." },
-    { title: "Engagement Ceremony", description: "Curated ritual setups, exchange of rings staging, family welcoming aesthetics, and acoustic arrangements." },
+    { title: "Mehendi Ceremony", description: "Bohemian seating loungers, colorful drapery, customized swing setups, and joyful floral photobooths." },
     { title: "Entrance Decor", description: "Grand floral tunnels, royal entryway arches, brass diyas, lantern pathways, and dramatic welcoming vistas." },
     { title: "Sangeet Night", description: "High-energy concert stage fabrication, intelligent moving-head lighting, LED backdrops, and acoustic design." },
     { title: "Ring Ceremony", description: "Intimate contemporary styling, modern geometric structures, delicate pastel florals, and mood lighting." },

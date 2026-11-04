@@ -3,63 +3,90 @@ import { WeddingBackend } from "@backend/index";
 
 export const dynamic = "force-dynamic";
 
-// POST: Upload Image or Video/Reel to ImageKit
+// POST: Upload single or multiple images, videos, and reels to ImageKit & Neon DB
 export async function POST(req: Request) {
   try {
     const formData = await req.formData();
-    const file = formData.get("file") as File | null;
-    const title = (formData.get("title") as string) || "Wedding Gallery Moment";
-    const category = (formData.get("category") as string) || "Marriage";
-    const mediaType = (formData.get("type") as string) || "image";
+    // Support both single "file" and multiple "files" inputs
+    const files = formData.getAll("files") as File[];
+    const singleFile = formData.get("file") as File | null;
+    
+    const allFiles: File[] = files.length > 0 ? files : singleFile ? [singleFile] : [];
 
-    if (!file) {
+    const defaultTitle = (formData.get("title") as string) || "";
+    const category = (formData.get("category") as string) || "Other";
+    const forcedMediaType = formData.get("type") as string | null;
+
+    if (allFiles.length === 0) {
       return NextResponse.json(
-        { success: false, error: "No file provided for upload" },
+        { success: false, error: "No files provided for upload" },
         { status: 400 }
       );
     }
 
-    // Convert file to Buffer for ImageKit
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
+    const uploadedRecords = [];
+    const errors: string[] = [];
 
-    // Determine aspect ratio default
-    const isVideo = mediaType === "reel" || file.type.startsWith("video/");
-    const aspect = isVideo ? "tall" : "square";
+    // Process files (in parallel or fast sequence)
+    for (const file of allFiles) {
+      try {
+        const isVideo =
+          forcedMediaType === "reel" ||
+          file.type.startsWith("video/") ||
+          /\.(mp4|webm|mov)$/i.test(file.name);
 
-    // Upload to ImageKit
-    const uploadResult = await WeddingBackend.gallery.upload({
-      file: buffer,
-      fileName: file.name.replace(/[^a-zA-Z0-9.-]/g, "_"),
-      folder: isVideo ? "/wedding-reels" : "/wedding-photos",
-      tags: ["hindavi", category.toLowerCase(), isVideo ? "reel" : "photo"],
-    });
+        const mediaType = isVideo ? "reel" : "image";
+        const aspect = isVideo ? "tall" : "square";
 
-    // Save record into database
-    const savedRecord = await WeddingBackend.gallery.save({
-      type: isVideo ? "reel" : "image",
-      src: uploadResult.url,
-      title: title,
-      aspect: aspect,
-      category: category as any,
-      fileId: uploadResult.fileId,
-    });
+        const bytes = await file.arrayBuffer();
+        const buffer = Buffer.from(bytes);
+
+        // Only use caption if explicitly provided by admin; otherwise keep it empty string (no filename like 'WhatsApp Image...')
+        const fileTitle = defaultTitle ? defaultTitle.trim() : "";
+
+        // Upload to ImageKit CDN
+        const uploadResult = await WeddingBackend.gallery.upload({
+          file: buffer,
+          fileName: file.name.replace(/[^a-zA-Z0-9.-]/g, "_"),
+          folder: isVideo ? "/wedding-reels" : "/wedding-photos",
+          tags: ["hindavi", category.toLowerCase(), mediaType],
+        });
+
+        // Save into Database
+        const savedRecord = await WeddingBackend.gallery.save({
+          type: mediaType,
+          src: uploadResult.url,
+          title: fileTitle,
+          aspect: aspect,
+          category: category as any,
+          fileId: uploadResult.fileId,
+        });
+
+        uploadedRecords.push(savedRecord);
+      } catch (err: any) {
+        console.error(`Failed to upload ${file.name}:`, err);
+        errors.push(`${file.name}: ${err.message || "Upload failed"}`);
+      }
+    }
+
+    if (uploadedRecords.length === 0 && errors.length > 0) {
+      return NextResponse.json(
+        { success: false, error: `Upload failed: ${errors.join(", ")}` },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json({
       success: true,
-      data: savedRecord,
-      imagekit: {
-        fileId: uploadResult.fileId,
-        url: uploadResult.url,
-        thumbnailUrl: uploadResult.thumbnailUrl,
-      },
+      data: uploadedRecords,
+      totalUploaded: uploadedRecords.length,
+      errors: errors.length > 0 ? errors : undefined,
     });
   } catch (error: any) {
-    console.error("ImageKit upload error:", error);
+    console.error("Multi-upload error:", error);
     return NextResponse.json(
-      { success: false, error: error.message || "Failed to upload file to ImageKit" },
+      { success: false, error: error.message || "Failed to process files" },
       { status: 500 }
     );
   }
 }
-
