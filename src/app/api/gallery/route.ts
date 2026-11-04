@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { WeddingBackend } from "@backend/index";
 
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
+export const fetchCache = "force-no-store";
 
 export interface MediaItem {
   id: string;
@@ -35,11 +37,20 @@ export async function GET() {
 
     console.log(`[API /api/gallery] GET completed (${Date.now() - reqStartTime}ms) | Total items: ${mediaList.length}`);
 
-    return NextResponse.json({
-      success: true,
-      data: mediaList,
-      totalCount: mediaList.length,
-    });
+    return NextResponse.json(
+      {
+        success: true,
+        data: mediaList,
+        totalCount: mediaList.length,
+      },
+      {
+        headers: {
+          "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0",
+          "CDN-Cache-Control": "no-store",
+          "Vercel-CDN-Cache-Control": "no-store",
+        },
+      }
+    );
   } catch (error: any) {
     console.error(`[API /api/gallery] GET failed (${Date.now() - reqStartTime}ms):`, error.message || error);
     return NextResponse.json(

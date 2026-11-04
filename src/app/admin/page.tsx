@@ -140,7 +140,10 @@ export default function AdminDashboardPage() {
   const fetchGallery = async () => {
     setLoadingGallery(true);
     try {
-      const res = await fetch(`/api/gallery?t=${Date.now()}`);
+      const res = await fetch(`/api/gallery?t=${Date.now()}`, {
+        cache: "no-store",
+        headers: { "Pragma": "no-cache", "Cache-Control": "no-cache" }
+      });
       const json = await res.json();
       if (json.success && Array.isArray(json.data)) {
         setGalleryItems(json.data);
@@ -155,7 +158,10 @@ export default function AdminDashboardPage() {
   // Silent background sync for real-time live data
   const syncEnquiriesSilent = async () => {
     try {
-      const res = await fetch(`/api/enquiries?t=${Date.now()}`, { cache: "no-store" });
+      const res = await fetch(`/api/enquiries?t=${Date.now()}`, {
+        cache: "no-store",
+        headers: { "Pragma": "no-cache", "Cache-Control": "no-cache" }
+      });
       const json = await res.json();
       if (json.success && Array.isArray(json.data)) {
         setEnquiries(json.data);
@@ -165,7 +171,10 @@ export default function AdminDashboardPage() {
 
   const syncGallerySilent = async () => {
     try {
-      const res = await fetch(`/api/gallery?t=${Date.now()}`, { cache: "no-store" });
+      const res = await fetch(`/api/gallery?t=${Date.now()}`, {
+        cache: "no-store",
+        headers: { "Pragma": "no-cache", "Cache-Control": "no-cache" }
+      });
       const json = await res.json();
       if (json.success && Array.isArray(json.data)) {
         setGalleryItems(json.data);
@@ -327,6 +336,22 @@ export default function AdminDashboardPage() {
         );
         setUploadFiles([]);
         setMediaTitle("");
+
+        // Optimistically prepend newly uploaded records immediately so UI updates instantly without waiting for network re-fetch
+        if (Array.isArray(json.data) && json.data.length > 0) {
+          const formattedNewItems = json.data.map((item: any) => ({
+            id: String(item.id),
+            type: item.type,
+            src: item.src,
+            title: item.title,
+            aspect: item.aspect || (item.type === "reel" ? "tall" : "square"),
+            category: item.category || effectiveCategory,
+            fileId: item.fileId || item.file_id,
+            created_at: item.created_at || new Date().toISOString(),
+          }));
+          setGalleryItems((prev) => [...formattedNewItems, ...prev]);
+        }
+
         await fetchGallery();
         setActiveTab("gallery");
       } else {
