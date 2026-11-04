@@ -1,6 +1,9 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { Mail, MapPin } from "lucide-react";
 import { InstagramIcon } from "@/components/ui/InstagramIcon";
 import { ThreadsIcon } from "@/components/ui/ThreadsIcon";
@@ -9,6 +12,12 @@ import { BUSINESS_CONFIG } from "@/config/business";
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
+  const pathname = usePathname();
+
+  // Hide the entire public footer on admin routes
+  if (pathname?.startsWith("/admin")) {
+    return null;
+  }
 
   return (
     <footer className="bg-[#F9CFCA] text-charcoal border-t border-[#F4ABA2]/50">

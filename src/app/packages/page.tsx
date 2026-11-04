@@ -5,7 +5,7 @@ import { Section } from "@/components/ui/Section";
 import { EnquiryCTASection } from "@/components/ui/EnquiryCTASection";
 import { EnquiryForm } from "@/components/forms/EnquiryForm";
 import { BUSINESS_CONFIG } from "@/config/business";
-import { Calendar, Compass, FileText, CheckCircle2 } from "lucide-react";
+import { Calendar, Compass, FileText, CheckCircle2, FileCheck, Award, Shield, Clock, Users, ShieldCheck } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Event Packages & Custom Proposals",
@@ -216,7 +216,7 @@ export default function PackagesPage() {
           {PROPOSAL_STEPS.map((step, idx) => (
             <div
               key={idx}
-              className="p-5 bg-blush-50/70 rounded-xl border border-blush/60 space-y-2"
+              className="p-5 bg-blush-50/70 rounded-2xl border border-blush/60 space-y-2 hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300"
             >
               <span className="font-serif text-3xl text-coral font-light block">
                 {step.step}
@@ -229,6 +229,111 @@ export default function PackagesPage() {
               </p>
             </div>
           ))}
+        </div>
+      </Section>
+
+      {/* ========================================================
+          5. REQUIRED DOCUMENTS CHECKLIST (EXACT REFERENCE 3D CARD STYLE)
+          ======================================================== */}
+      <Section background="blush-light" className="!py-8 sm:!py-12 border-t border-blush/40">
+        <div className="max-w-4xl mx-auto space-y-6">
+          <div className="bg-white rounded-3xl border border-blush/60 p-6 sm:p-8 shadow-[0_10px_30px_rgba(242,136,123,0.08)] space-y-6">
+            {/* Header with 3D Glossy Coral/Red Icon */}
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#FFE4E6] via-[#FECDD3] to-[#F43F5E] p-0.5 shadow-[0_4px_12px_rgba(244,63,94,0.3)] flex items-center justify-center flex-shrink-0">
+                <div className="w-full h-full rounded-[14px] bg-gradient-to-tr from-[#E11D48] to-[#FDA4AF] flex items-center justify-center text-white shadow-inner">
+                  <FileCheck className="w-6 h-6 text-white drop-shadow-sm fill-white/20" />
+                </div>
+              </div>
+              <div>
+                <h3 className="font-sans text-lg sm:text-xl font-extrabold text-charcoal tracking-tight">
+                  Required Documents Checklist
+                </h3>
+                <p className="font-sans text-xs sm:text-sm text-charcoal/60">
+                  Keep digital or physical copies ready for prompt proposal &amp; contract confirmation
+                </p>
+              </div>
+            </div>
+
+            {/* Document list matching uploaded screenshot */}
+            <div className="space-y-3">
+              <div className="p-4 rounded-2xl bg-[#F8FAFC] hover:bg-white border border-[#E2E8F0]/80 hover:border-coral/40 shadow-xs hover:shadow-md transition-all duration-300 flex items-center justify-between gap-3.5 group">
+                <div className="flex items-start gap-3.5">
+                  <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#E0F2FE] to-[#BAE6FD] border border-[#7DD3FC]/50 flex items-center justify-center flex-shrink-0 text-[#0284C7] shadow-[0_2px_6px_rgba(2,132,199,0.2)] mt-0.5">
+                    <FileText className="w-4 h-4 fill-[#0284C7]/20" />
+                  </div>
+                  <div className="space-y-0.5">
+                    <h4 className="font-sans text-sm font-bold text-charcoal/90 group-hover:text-coral transition-colors">
+                      Identity Proof (Aadhaar / PAN / Passport)
+                    </h4>
+                    <p className="font-sans text-xs text-charcoal/65 leading-relaxed">
+                      Primary family signatory identification for agreement and legal booking registration.
+                    </p>
+                  </div>
+                </div>
+                <span className="text-[10px] uppercase font-sans font-bold tracking-wider px-2.5 py-1 rounded-full bg-coral/15 text-coral-dark border border-coral/30 flex-shrink-0">
+                  Mandatory
+                </span>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-[#F8FAFC] hover:bg-white border border-[#E2E8F0]/80 hover:border-coral/40 shadow-xs hover:shadow-md transition-all duration-300 flex items-center justify-between gap-3.5 group">
+                <div className="flex items-start gap-3.5">
+                  <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#E0F2FE] to-[#BAE6FD] border border-[#7DD3FC]/50 flex items-center justify-center flex-shrink-0 text-[#0284C7] shadow-[0_2px_6px_rgba(2,132,199,0.2)] mt-0.5">
+                    <FileText className="w-4 h-4 fill-[#0284C7]/20" />
+                  </div>
+                  <div className="space-y-0.5">
+                    <h4 className="font-sans text-sm font-bold text-charcoal/90 group-hover:text-coral transition-colors">
+                      Venue Booking Letter &amp; Setup Hours Agreement
+                    </h4>
+                    <p className="font-sans text-xs text-charcoal/65 leading-relaxed">
+                      Resort/lawn agreement confirming check-in, generator points, and sound curfew terms.
+                    </p>
+                  </div>
+                </div>
+                <span className="text-[10px] uppercase font-sans font-bold tracking-wider px-2.5 py-1 rounded-full bg-coral/15 text-coral-dark border border-coral/30 flex-shrink-0">
+                  Mandatory
+                </span>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-[#F8FAFC] hover:bg-white border border-[#E2E8F0]/80 hover:border-coral/40 shadow-xs hover:shadow-md transition-all duration-300 flex items-center justify-between gap-3.5 group">
+                <div className="flex items-start gap-3.5">
+                  <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#E0F2FE] to-[#BAE6FD] border border-[#7DD3FC]/50 flex items-center justify-center flex-shrink-0 text-[#0284C7] shadow-[0_2px_6px_rgba(2,132,199,0.2)] mt-0.5">
+                    <FileText className="w-4 h-4 fill-[#0284C7]/20" />
+                  </div>
+                  <div className="space-y-0.5">
+                    <h4 className="font-sans text-sm font-bold text-charcoal/90 group-hover:text-coral transition-colors">
+                      Family Muhurat &amp; Ceremony Timeline
+                    </h4>
+                    <p className="font-sans text-xs text-charcoal/65 leading-relaxed">
+                      Priest consultation sheet with auspicious timings for mandap rituals and reception entrance.
+                    </p>
+                  </div>
+                </div>
+                <span className="text-[10px] uppercase font-sans font-bold tracking-wider px-2.5 py-1 rounded-full bg-charcoal/5 text-charcoal/70 border border-charcoal/10 flex-shrink-0">
+                  Recommended
+                </span>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-[#F8FAFC] hover:bg-white border border-[#E2E8F0]/80 hover:border-coral/40 shadow-xs hover:shadow-md transition-all duration-300 flex items-center justify-between gap-3.5 group">
+                <div className="flex items-start gap-3.5">
+                  <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#E0F2FE] to-[#BAE6FD] border border-[#7DD3FC]/50 flex items-center justify-center flex-shrink-0 text-[#0284C7] shadow-[0_2px_6px_rgba(2,132,199,0.2)] mt-0.5">
+                    <FileText className="w-4 h-4 fill-[#0284C7]/20" />
+                  </div>
+                  <div className="space-y-0.5">
+                    <h4 className="font-sans text-sm font-bold text-charcoal/90 group-hover:text-coral transition-colors">
+                      Estimated Guest Count &amp; Seating Breakdown
+                    </h4>
+                    <p className="font-sans text-xs text-charcoal/65 leading-relaxed">
+                      Preliminary guest headcount to calculate mandap seating, catering area, and audio coverage.
+                    </p>
+                  </div>
+                </div>
+                <span className="text-[10px] uppercase font-sans font-bold tracking-wider px-2.5 py-1 rounded-full bg-charcoal/5 text-charcoal/70 border border-charcoal/10 flex-shrink-0">
+                  Recommended
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
       </Section>
 

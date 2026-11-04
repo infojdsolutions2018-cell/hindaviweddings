@@ -15,6 +15,11 @@ export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
 
+  // Hide the entire public header/navbar on admin routes
+  if (pathname?.startsWith("/admin")) {
+    return null;
+  }
+
   return (
     <>
       <header className="sticky top-0 z-50 bg-[#F9CFCA]/95 backdrop-blur-md border-b border-[#F4ABA2]/40 transition-all shadow-sm">

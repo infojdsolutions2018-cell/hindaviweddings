@@ -105,6 +105,7 @@ export function EnquiryForm({
       "c5458694-e524-44b8-ae53-4597b5512cf7";
 
     try {
+      // 1. Submit to Web3Forms for email notification
       const response = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
         headers: {
@@ -129,6 +130,26 @@ export function EnquiryForm({
           "Source Website": BUSINESS_CONFIG.displayName,
         }),
       });
+
+      // 2. Also save to Backend Database for Admin Dashboard
+      try {
+        await fetch("/api/enquiries", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            fullName: formData.fullName,
+            phone: formData.phone,
+            email: formData.email,
+            eventDate: formData.weddingDates || formData.tentativeMonthYear,
+            eventType: formData.eventType,
+            guestCount: formData.guestCount,
+            estimatedBudget: formData.estimatedBudget,
+            message: formData.message,
+          }),
+        });
+      } catch (backendErr) {
+        console.warn("Backend save error:", backendErr);
+      }
 
       const result = await response.json();
 

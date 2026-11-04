@@ -4,6 +4,7 @@ import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { WhatsAppFloatingButton } from "@/components/ui/WhatsAppFloatingButton";
+import { SpecialServicesFloatingButton } from "@/components/ui/SpecialServicesFloatingButton";
 import { BUSINESS_CONFIG } from "@/config/business";
 
 const cormorant = Cormorant_Garamond({
@@ -109,6 +110,7 @@ export default function RootLayout({
         <Header />
         <main className="flex-grow">{children}</main>
         <Footer />
+        <SpecialServicesFloatingButton />
         <WhatsAppFloatingButton />
       </body>
     </html>

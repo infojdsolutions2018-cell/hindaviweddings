@@ -1,9 +1,16 @@
 "use client";
 
 import React from "react";
+import { usePathname } from "next/navigation";
 import { BUSINESS_CONFIG } from "@/config/business";
 
 export function WhatsAppFloatingButton() {
+  const pathname = usePathname();
+
+  // Hide WhatsApp floating button on admin routes
+  if (pathname?.startsWith("/admin")) {
+    return null;
+  }
   const whatsappUrl =
     BUSINESS_CONFIG.contact.whatsappUrl ||
     `https://wa.me/91${BUSINESS_CONFIG.contact.phone}`;
