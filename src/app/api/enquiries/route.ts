@@ -51,11 +51,11 @@ export async function POST(req: Request) {
   }
 }
 
-// PATCH: Update enquiry status
+// PATCH: Update enquiry status and optional admin remark
 export async function PATCH(req: Request) {
   try {
     const body = await req.json();
-    const { id, status } = body;
+    const { id, status, remark } = body;
 
     if (!id || !status) {
       return NextResponse.json(
@@ -64,7 +64,7 @@ export async function PATCH(req: Request) {
       );
     }
 
-    const updated = await WeddingBackend.enquiries.updateStatus(Number(id), status);
+    const updated = await WeddingBackend.enquiries.updateStatus(Number(id), status, remark);
     return NextResponse.json({ success: true, data: updated });
   } catch (error: any) {
     return NextResponse.json(

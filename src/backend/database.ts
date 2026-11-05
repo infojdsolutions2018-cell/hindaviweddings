@@ -25,6 +25,7 @@ interface MemoryStore {
     estimatedBudget?: string;
     location?: string;
     message?: string;
+    remark?: string;
     status: string;
     created_at: string;
   }>;
@@ -102,6 +103,7 @@ export async function initDatabaseSchema() {
         estimatedBudget VARCHAR(100),
         location VARCHAR(255),
         message TEXT,
+        remark TEXT,
         status VARCHAR(50) DEFAULT 'new',
         created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
       );
@@ -194,17 +196,18 @@ export async function getAllEnquiries() {
       const rows = await sql`
         SELECT
           id,
-          fullName,
+          fullName AS "fullName",
           phone,
           email,
-          eventDate,
-          eventType,
-          tentativeMonthYear,
-          weddingDates,
-          guestCount,
-          estimatedBudget,
+          eventDate AS "eventDate",
+          eventType AS "eventType",
+          tentativeMonthYear AS "tentativeMonthYear",
+          weddingDates AS "weddingDates",
+          guestCount AS "guestCount",
+          estimatedBudget AS "estimatedBudget",
           location,
           message,
+          remark,
           status,
           created_at
         FROM wedding_enquiries
@@ -222,16 +225,29 @@ export async function getAllEnquiries() {
   return globalMemory.enquiries;
 }
 
-// Service: Update enquiry status
-export async function updateEnquiryStatus(id: number, status: string) {
+// Service: Update enquiry status and optional admin remark
+export async function updateEnquiryStatus(id: number, status: string, remark?: string) {
   const sql = getDatabase();
 
   if (sql) {
     try {
       await initDatabaseSchema();
-      const rows = await sql`
-        UPDATE wedding_enquiries SET status = ${status} WHERE id = ${id} RETURNING *;
-      `;
+      let rows;
+      if (typeof remark !== "undefined") {
+        rows = await sql`
+          UPDATE wedding_enquiries 
+          SET status = ${status}, remark = ${remark} 
+          WHERE id = ${id} 
+          RETURNING *;
+        `;
+      } else {
+        rows = await sql`
+          UPDATE wedding_enquiries 
+          SET status = ${status} 
+          WHERE id = ${id} 
+          RETURNING *;
+        `;
+      }
       return rows[0];
     } catch (dbErr: any) {
       console.error("Neon updateEnquiryStatus failed:", dbErr);
@@ -244,6 +260,9 @@ export async function updateEnquiryStatus(id: number, status: string) {
   const item = globalMemory.enquiries.find((e) => e.id === Number(id));
   if (item) {
     item.status = status;
+    if (typeof remark !== "undefined") {
+      item.remark = remark;
+    }
   }
   return item;
 }

@@ -225,7 +225,7 @@ export default function ServicesPage() {
               // Explicit mapping matching the user's requested ceremonial themes:
               // 1. Haldi Ceremony -> No change (service_haldi_decor.jpg)
               // 2. Wedding (Lagna) -> Indian wedding Vedic mandap (our_work_mandap.jpg)
-              // 3. Engagement -> Indian style engagement couple (service_engagement_indian.jpg)
+              // 3. Engagement -> Indian couple in traditional engagement attire (service_engagement_indian_couple.jpg)
               // 4. Mehendi Ceremony -> Indian Mehendi ceremony (service_mehendi.png)
               // 5. Entrance Decor -> No change (service_entrance.jpg)
               // 6. Sangeet Night -> No change (service_sangeet_stage.jpg)
@@ -234,7 +234,7 @@ export default function ServicesPage() {
               const specialtyImages = [
                 "/hello-images/service_haldi_decor.jpg",
                 "/hello-images/our_work_mandap.jpg",
-                "/hello-images/service_engagement_indian.jpg",
+                "/hello-images/service_engagement_indian_couple.jpg",
                 "/hello-images/service_mehendi.png",
                 "/hello-images/service_entrance.jpg",
                 "/hello-images/service_sangeet_stage.jpg",

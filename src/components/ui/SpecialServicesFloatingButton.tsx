@@ -9,12 +9,12 @@ export function SpecialServicesFloatingButton() {
   const pathname = usePathname();
   const [isNearFooter, setIsNearFooter] = useState(false);
 
-  // Hide Special Services floating button on admin routes
-  if (pathname?.startsWith("/admin")) {
-    return null;
-  }
-
   useEffect(() => {
+    // If on admin routes, do not bind scroll listeners
+    if (pathname?.startsWith("/admin")) {
+      return;
+    }
+
     const handleScroll = () => {
       // Hide or fade out when user scrolls down to the footer to never obstruct copyright/links
       const footer = document.querySelector("footer");
@@ -32,7 +32,12 @@ export function SpecialServicesFloatingButton() {
     window.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [pathname]);
+
+  // Hide Special Services floating button on admin routes
+  if (pathname?.startsWith("/admin")) {
+    return null;
+  }
 
   return (
     <div

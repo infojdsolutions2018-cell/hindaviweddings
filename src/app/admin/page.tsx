@@ -15,17 +15,25 @@ export type MilestoneCategory = "Engagement" | "Halad" | "Sangit" | "Vidhi" | "M
 
 interface EnquiryItem {
   id: number;
-  fullName: string;
+  fullName?: string;
+  fullname?: string;
   phone: string;
   email: string;
   eventDate?: string;
+  eventdate?: string;
   eventType?: string;
+  eventtype?: string;
   tentativeMonthYear?: string;
+  tentativemonthyear?: string;
   weddingDates?: string;
+  weddingdates?: string;
   guestCount?: string;
+  guestcount?: string;
   estimatedBudget?: string;
+  estimatedbudget?: string;
   location?: string;
   message?: string;
+  remark?: string;
   status: "new" | "contacted" | "confirmed" | "closed";
   created_at: string;
 }
@@ -94,7 +102,15 @@ export default function AdminDashboardPage() {
   const [loadingEnquiries, setLoadingEnquiries] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [dateRangeFilter, setDateRangeFilter] = useState<"all" | "today" | "week" | "month">("all");
+  const [budgetFilter, setBudgetFilter] = useState<string>("all");
   const [selectedEnquiry, setSelectedEnquiry] = useState<EnquiryItem | null>(null);
+
+  // Status & Remark Update Modal State
+  const [statusModalEnquiry, setStatusModalEnquiry] = useState<EnquiryItem | null>(null);
+  const [targetStatus, setTargetStatus] = useState<"new" | "contacted" | "confirmed" | "closed">("contacted");
+  const [statusRemark, setStatusRemark] = useState("");
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
 
   // Gallery items state
   const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
@@ -195,25 +211,59 @@ export default function AdminDashboardPage() {
     return () => clearInterval(interval);
   }, []);
 
-  // Update enquiry status
-  const handleStatusChange = async (id: number, newStatus: string) => {
+  // Open Status + Remark Update Modal
+  const handleOpenStatusModal = (enquiry: EnquiryItem, newStatus: string) => {
+    setStatusModalEnquiry(enquiry);
+    setTargetStatus(newStatus as any);
+    setStatusRemark(enquiry.remark || "");
+  };
+
+  // Submit Status Change with Optional Remark
+  const handleConfirmStatusChange = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!statusModalEnquiry) return;
+
+    setIsUpdatingStatus(true);
     try {
       const res = await fetch("/api/enquiries", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, status: newStatus }),
+        body: JSON.stringify({
+          id: statusModalEnquiry.id,
+          status: targetStatus,
+          remark: statusRemark.trim() || null,
+        }),
       });
       const json = await res.json();
       if (json.success) {
         setEnquiries((prev) =>
-          prev.map((item) => (item.id === id ? { ...item, status: newStatus as any } : item))
+          prev.map((item) =>
+            item.id === statusModalEnquiry.id
+              ? { ...item, status: targetStatus, remark: statusRemark.trim() || undefined }
+              : item
+          )
         );
-        if (selectedEnquiry && selectedEnquiry.id === id) {
-          setSelectedEnquiry((prev: any) => ({ ...prev, status: newStatus }));
+        if (selectedEnquiry && selectedEnquiry.id === statusModalEnquiry.id) {
+          setSelectedEnquiry((prev: any) => ({
+            ...prev,
+            status: targetStatus,
+            remark: statusRemark.trim() || undefined,
+          }));
         }
+        setStatusModalEnquiry(null);
       }
     } catch (err) {
-      console.error("Failed to update status", err);
+      console.error("Failed to update status and remark", err);
+    } finally {
+      setIsUpdatingStatus(false);
+    }
+  };
+
+  // Update enquiry status directly
+  const handleStatusChange = async (id: number, newStatus: string) => {
+    const item = enquiries.find((e) => e.id === id);
+    if (item) {
+      handleOpenStatusModal(item, newStatus);
     }
   };
 
@@ -365,12 +415,51 @@ export default function AdminDashboardPage() {
   };
 
   const filteredEnquiries = enquiries.filter((item) => {
+    const clientName = item.fullName || item.fullname || "";
+    const clientEmail = item.email || "";
+    const clientPhone = item.phone || "";
+    const clientCity = item.location || "";
+    const clientRemark = item.remark || "";
+
     const matchesSearch =
-      item.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.phone?.includes(searchTerm);
+      clientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      clientEmail.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      clientPhone.includes(searchTerm) ||
+      clientCity.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      clientRemark.toLowerCase().includes(searchTerm.toLowerCase());
+
     const matchesStatus = statusFilter === "all" ? true : item.status === statusFilter;
-    return matchesSearch && matchesStatus;
+
+    // Filter by Submission Date Range
+    let matchesDate = true;
+    if (dateRangeFilter !== "all" && item.created_at) {
+      const createdDate = new Date(item.created_at);
+      const now = new Date();
+      if (dateRangeFilter === "today") {
+        matchesDate = createdDate.toDateString() === now.toDateString();
+      } else if (dateRangeFilter === "week") {
+        const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        matchesDate = createdDate >= oneWeekAgo;
+      } else if (dateRangeFilter === "month") {
+        const oneMonthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        matchesDate = createdDate >= oneMonthAgo;
+      }
+    }
+
+    // Filter by Budget Range
+    let matchesBudget = true;
+    if (budgetFilter !== "all") {
+      const bStr = (item.estimatedBudget || item.estimatedbudget || "").toLowerCase();
+      if (budgetFilter === "under10") {
+        matchesBudget = bStr.includes("5") || bStr.includes("8") || bStr.includes("under") || (parseFloat(bStr) < 10 && !bStr.includes("25") && !bStr.includes("50"));
+      } else if (budgetFilter === "10to25") {
+        matchesBudget = bStr.includes("10") || bStr.includes("12") || bStr.includes("15") || bStr.includes("20") || bStr.includes("25");
+      } else if (budgetFilter === "above25") {
+        matchesBudget = bStr.includes("25") || bStr.includes("30") || bStr.includes("50") || bStr.includes("above") || bStr.includes("crore") || parseFloat(bStr) > 25;
+      }
+    }
+
+    return matchesSearch && matchesStatus && matchesDate && matchesBudget;
   });
 
   const filteredGallery = galleryItems.filter((item) => {
@@ -528,32 +617,95 @@ export default function AdminDashboardPage() {
               </div>
             </div>
 
-            {/* Filter and Search Bar */}
-            <div className="bg-white p-4 rounded-2xl border border-[#F4ABA2]/60 shadow-xs flex flex-col sm:flex-row gap-4 items-center justify-between">
-              <div className="relative w-full sm:w-80">
-                <Search className="w-4 h-4 text-charcoal/40 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                <input
-                  type="text"
-                  placeholder="Search name, phone, or email..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 bg-[#FDF9F8] border border-[#F4ABA2]/60 rounded-xl text-xs text-charcoal placeholder:text-charcoal/40 focus:outline-none focus:border-[#801C30] transition-colors"
-                />
-              </div>
+            {/* Enhanced Filter and Search Bar with Date & Budget Filters */}
+            <div className="bg-white p-4 rounded-2xl border border-[#F4ABA2]/60 shadow-xs space-y-3">
+              <div className="flex flex-col lg:flex-row gap-3 items-stretch lg:items-center justify-between">
+                {/* Search input */}
+                <div className="relative flex-1">
+                  <Search className="w-4 h-4 text-charcoal/40 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    placeholder="Search client name, phone, email, city, or remark..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2 bg-[#FDF9F8] border border-[#F4ABA2]/60 rounded-xl text-xs text-charcoal placeholder:text-charcoal/40 focus:outline-none focus:border-[#801C30] transition-colors"
+                  />
+                  {searchTerm && (
+                    <button
+                      onClick={() => setSearchTerm("")}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-charcoal/40 hover:text-charcoal text-xs"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
 
-              <div className="flex items-center gap-2 w-full sm:w-auto">
-                <Filter className="w-4 h-4 text-charcoal/40" />
-                <select
-                  value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value)}
-                  className="px-3 py-2 bg-[#FDF9F8] border border-[#F4ABA2]/60 rounded-xl text-xs text-charcoal focus:outline-none focus:border-[#801C30] transition-colors"
-                >
-                  <option value="all">All Statuses ({enquiries.length})</option>
-                  <option value="new">New ({enquiries.filter((e) => e.status === "new").length})</option>
-                  <option value="contacted">Contacted ({enquiries.filter((e) => e.status === "contacted").length})</option>
-                  <option value="confirmed">Confirmed ({enquiries.filter((e) => e.status === "confirmed").length})</option>
-                  <option value="closed">Closed ({enquiries.filter((e) => e.status === "closed").length})</option>
-                </select>
+                {/* Filter Selectors Grid */}
+                <div className="flex flex-wrap items-center gap-2">
+                  {/* Status Filter */}
+                  <div className="flex items-center gap-1.5 bg-[#FDF9F8] border border-[#F4ABA2]/60 rounded-xl px-2.5 py-1.5 text-xs">
+                    <Filter className="w-3.5 h-3.5 text-charcoal/40 shrink-0" />
+                    <span className="text-[10px] uppercase font-bold text-charcoal/50">Status:</span>
+                    <select
+                      value={statusFilter}
+                      onChange={(e) => setStatusFilter(e.target.value)}
+                      className="bg-transparent text-xs text-charcoal font-medium focus:outline-none cursor-pointer"
+                    >
+                      <option value="all">All Statuses ({enquiries.length})</option>
+                      <option value="new">New ({enquiries.filter((e) => e.status === "new").length})</option>
+                      <option value="contacted">Contacted ({enquiries.filter((e) => e.status === "contacted").length})</option>
+                      <option value="confirmed">Confirmed ({enquiries.filter((e) => e.status === "confirmed").length})</option>
+                      <option value="closed">Closed ({enquiries.filter((e) => e.status === "closed").length})</option>
+                    </select>
+                  </div>
+
+                  {/* Date Range Filter */}
+                  <div className="flex items-center gap-1.5 bg-[#FDF9F8] border border-[#F4ABA2]/60 rounded-xl px-2.5 py-1.5 text-xs">
+                    <Calendar className="w-3.5 h-3.5 text-charcoal/40 shrink-0" />
+                    <span className="text-[10px] uppercase font-bold text-charcoal/50">Received:</span>
+                    <select
+                      value={dateRangeFilter}
+                      onChange={(e) => setDateRangeFilter(e.target.value as any)}
+                      className="bg-transparent text-xs text-charcoal font-medium focus:outline-none cursor-pointer"
+                    >
+                      <option value="all">All Time</option>
+                      <option value="today">Today</option>
+                      <option value="week">Past 7 Days</option>
+                      <option value="month">Past 30 Days</option>
+                    </select>
+                  </div>
+
+                  {/* Budget Filter */}
+                  <div className="flex items-center gap-1.5 bg-[#FDF9F8] border border-[#F4ABA2]/60 rounded-xl px-2.5 py-1.5 text-xs">
+                    <span className="text-[10px] uppercase font-bold text-charcoal/50">Budget:</span>
+                    <select
+                      value={budgetFilter}
+                      onChange={(e) => setBudgetFilter(e.target.value)}
+                      className="bg-transparent text-xs text-charcoal font-medium focus:outline-none cursor-pointer"
+                    >
+                      <option value="all">All Budgets</option>
+                      <option value="under10">Under ₹10 Lakhs</option>
+                      <option value="10to25">₹10 - 25 Lakhs</option>
+                      <option value="above25">₹25+ Lakhs</option>
+                    </select>
+                  </div>
+
+                  {/* Reset Filters shortcut if filtered */}
+                  {(searchTerm || statusFilter !== "all" || dateRangeFilter !== "all" || budgetFilter !== "all") && (
+                    <button
+                      onClick={() => {
+                        setSearchTerm("");
+                        setStatusFilter("all");
+                        setDateRangeFilter("all");
+                        setBudgetFilter("all");
+                      }}
+                      className="px-2.5 py-1.5 rounded-xl bg-white border border-[#F4ABA2] text-[#801C30] hover:bg-[#F9CFCA]/30 text-xs font-bold transition-colors"
+                      title="Clear all filters"
+                    >
+                      Reset ({filteredEnquiries.length} results)
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -590,7 +742,7 @@ export default function AdminDashboardPage() {
                       filteredEnquiries.map((enquiry) => (
                         <tr key={enquiry.id} className="hover:bg-[#FDF9F8] transition-colors">
                           <td className="py-3.5 px-4 font-semibold text-charcoal">
-                            <div>{enquiry.fullName}</div>
+                            <div>{enquiry.fullName || enquiry.fullname || "Client"}</div>
                             <div className="text-[10px] text-charcoal/50 font-normal">
                               {new Date(enquiry.created_at).toLocaleDateString("en-IN", {
                                 month: "short",
@@ -616,25 +768,29 @@ export default function AdminDashboardPage() {
                           </td>
                           <td className="py-3.5 px-4">
                             <div className="text-charcoal font-medium">
-                              {enquiry.eventDate || "Date TBD"}
+                              {enquiry.weddingDates || enquiry.weddingdates || enquiry.tentativeMonthYear || enquiry.tentativemonthyear || enquiry.eventDate || enquiry.eventdate || "Date TBD"}
                             </div>
                             <div className="text-charcoal/60 text-[11px]">
-                              {enquiry.eventType || "Full Wedding"}
+                              {enquiry.eventType || enquiry.eventtype || "Full Wedding"}
                             </div>
                           </td>
                           <td className="py-3.5 px-4">
                             <div className="text-emerald-700 font-semibold">
-                              {enquiry.estimatedBudget || "Not specified"}
+                              {enquiry.estimatedBudget || enquiry.estimatedbudget
+                                ? (enquiry.estimatedBudget || enquiry.estimatedbudget)?.includes("₹") || (enquiry.estimatedBudget || enquiry.estimatedbudget)?.toLowerCase().includes("lakh")
+                                  ? (enquiry.estimatedBudget || enquiry.estimatedbudget)
+                                  : `₹${enquiry.estimatedBudget || enquiry.estimatedbudget} Lakhs`
+                                : "Not specified"}
                             </div>
                             <div className="text-charcoal/60 text-[11px]">
-                              {enquiry.guestCount ? `${enquiry.guestCount} guests` : "Guests TBD"}
+                              {enquiry.guestCount || enquiry.guestcount ? `${enquiry.guestCount || enquiry.guestcount} guests` : "Guests TBD"}
                             </div>
                           </td>
                           <td className="py-3.5 px-4">
                             <select
                               value={enquiry.status}
                               onChange={(e) => handleStatusChange(enquiry.id, e.target.value)}
-                              className={`px-2.5 py-1 rounded-lg text-[11px] font-bold border transition-colors ${
+                              className={`px-2.5 py-1 rounded-lg text-[11px] font-bold border transition-colors cursor-pointer ${
                                 enquiry.status === "new"
                                   ? "bg-sky-50 text-sky-700 border-sky-300"
                                   : enquiry.status === "contacted"
@@ -649,6 +805,15 @@ export default function AdminDashboardPage() {
                               <option value="confirmed">Confirmed</option>
                               <option value="closed">Closed</option>
                             </select>
+                            {enquiry.remark && (
+                              <div
+                                onClick={() => handleOpenStatusModal(enquiry, enquiry.status)}
+                                className="text-[10px] text-charcoal/70 bg-[#FDF9F8] border border-[#F4ABA2]/50 rounded-md px-1.5 py-0.5 mt-1 max-w-[130px] truncate cursor-pointer hover:border-[#801C30]"
+                                title={`Remark: ${enquiry.remark} (Click to edit)`}
+                              >
+                                📝 {enquiry.remark}
+                              </div>
+                            )}
                           </td>
                           <td className="py-3.5 px-4 text-right">
                             <div className="flex items-center justify-end gap-2">
@@ -704,7 +869,7 @@ export default function AdminDashboardPage() {
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div>
-                        <h4 className="font-bold text-sm text-charcoal">{enquiry.fullName}</h4>
+                        <h4 className="font-bold text-sm text-charcoal">{enquiry.fullName || enquiry.fullname || "Client"}</h4>
                         <span className="text-[10px] text-charcoal/50">
                           {new Date(enquiry.created_at).toLocaleDateString("en-IN", {
                             month: "short",
@@ -716,24 +881,35 @@ export default function AdminDashboardPage() {
                       </div>
                       
                       {/* Status Selector */}
-                      <select
-                        value={enquiry.status}
-                        onChange={(e) => handleStatusChange(enquiry.id, e.target.value)}
-                        className={`px-2 py-0.5 rounded-lg text-[10px] font-bold border ${
-                          enquiry.status === "new"
-                            ? "bg-sky-50 text-sky-700 border-sky-300"
-                            : enquiry.status === "contacted"
-                            ? "bg-amber-50 text-amber-700 border-amber-300"
-                            : enquiry.status === "confirmed"
-                            ? "bg-emerald-50 text-emerald-700 border-emerald-300"
-                            : "bg-gray-100 text-gray-700 border-gray-300"
-                        }`}
-                      >
-                        <option value="new">New</option>
-                        <option value="contacted">Contacted</option>
-                        <option value="confirmed">Confirmed</option>
-                        <option value="closed">Closed</option>
-                      </select>
+                      <div className="flex flex-col items-end gap-1">
+                        <select
+                          value={enquiry.status}
+                          onChange={(e) => handleStatusChange(enquiry.id, e.target.value)}
+                          className={`px-2 py-0.5 rounded-lg text-[10px] font-bold border cursor-pointer ${
+                            enquiry.status === "new"
+                              ? "bg-sky-50 text-sky-700 border-sky-300"
+                              : enquiry.status === "contacted"
+                              ? "bg-amber-50 text-amber-700 border-amber-300"
+                              : enquiry.status === "confirmed"
+                              ? "bg-emerald-50 text-emerald-700 border-emerald-300"
+                              : "bg-gray-100 text-gray-700 border-gray-300"
+                          }`}
+                        >
+                          <option value="new">New</option>
+                          <option value="contacted">Contacted</option>
+                          <option value="confirmed">Confirmed</option>
+                          <option value="closed">Closed</option>
+                        </select>
+                        {enquiry.remark && (
+                          <div
+                            onClick={() => handleOpenStatusModal(enquiry, enquiry.status)}
+                            className="text-[9px] text-charcoal/70 bg-[#FDF9F8] border border-[#F4ABA2]/50 rounded-md px-1.5 py-0.5 max-w-[120px] truncate cursor-pointer hover:border-[#801C30]"
+                            title={`Remark: ${enquiry.remark}`}
+                          >
+                            📝 {enquiry.remark}
+                          </div>
+                        )}
+                      </div>
                     </div>
 
                     <div className="grid grid-cols-2 gap-2 text-[11px] pt-1 border-t border-[#F4ABA2]/30 text-charcoal/80">
@@ -745,11 +921,17 @@ export default function AdminDashboardPage() {
                       </div>
                       <div>
                         <span className="text-[10px] text-charcoal/50 uppercase block font-semibold">Dates</span>
-                        <span className="font-medium">{enquiry.eventDate || "TBD"}</span>
+                        <span className="font-medium">{enquiry.weddingDates || enquiry.weddingdates || enquiry.tentativeMonthYear || enquiry.tentativemonthyear || enquiry.eventDate || enquiry.eventdate || "TBD"}</span>
                       </div>
                       <div>
                         <span className="text-[10px] text-charcoal/50 uppercase block font-semibold">Budget</span>
-                        <span className="font-bold text-emerald-700">{enquiry.estimatedBudget || "TBD"}</span>
+                        <span className="font-bold text-emerald-700">
+                          {enquiry.estimatedBudget || enquiry.estimatedbudget
+                            ? (enquiry.estimatedBudget || enquiry.estimatedbudget)?.includes("₹") || (enquiry.estimatedBudget || enquiry.estimatedbudget)?.toLowerCase().includes("lakh")
+                              ? (enquiry.estimatedBudget || enquiry.estimatedbudget)
+                              : `₹${enquiry.estimatedBudget || enquiry.estimatedbudget} Lakhs`
+                            : "TBD"}
+                        </span>
                       </div>
                       <div>
                         <span className="text-[10px] text-charcoal/50 uppercase block font-semibold">City / Location</span>
@@ -768,7 +950,7 @@ export default function AdminDashboardPage() {
 
                       <div className="flex items-center gap-1.5">
                         <a
-                          href={`https://wa.me/${enquiry.phone.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(`Namaskar ${enquiry.fullName}, this is from Hindavi Wedding Family regarding your enquiry!`)}`}
+                          href={`https://wa.me/${enquiry.phone.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(`Namaskar ${enquiry.fullName || enquiry.fullname || ""}, this is from Hindavi Wedding Family regarding your enquiry!`)}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="p-2 rounded-xl bg-green-50 text-green-700 border border-green-300"
@@ -1303,47 +1485,61 @@ export default function AdminDashboardPage() {
 
       {/* Enquiry Detail Modal */}
       {selectedEnquiry && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4 animate-in fade-in">
-          <div className="bg-white rounded-3xl border border-[#F4ABA2] w-full max-w-lg overflow-hidden shadow-2xl">
-            <div className="p-6 border-b border-[#F4ABA2]/40 bg-[#F9CFCA]/30 flex items-center justify-between">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-3 sm:p-4 animate-in fade-in">
+          <div className="bg-white rounded-2xl sm:rounded-3xl border border-[#F4ABA2] w-full max-w-lg overflow-hidden shadow-2xl transition-all">
+            {/* Modal Header */}
+            <div className="px-5 py-4 sm:px-6 sm:py-5 border-b border-[#F4ABA2]/40 bg-[#F9CFCA]/30 flex items-center justify-between">
               <div>
-                <h3 className="font-serif text-xl font-bold text-charcoal">
-                  {selectedEnquiry.fullName}
+                <h3 className="font-serif text-lg sm:text-xl font-bold text-charcoal tracking-tight">
+                  {selectedEnquiry.fullName || selectedEnquiry.fullname || "Client Enquiry"}
                 </h3>
-                <p className="text-xs text-charcoal/60">
-                  Received on {new Date(selectedEnquiry.created_at).toLocaleString()}
+                <p className="text-[11px] sm:text-xs text-charcoal/60 mt-0.5">
+                  Received on {new Date(selectedEnquiry.created_at).toLocaleString("en-IN", {
+                    dateStyle: "medium",
+                    timeStyle: "short",
+                  })}
                 </p>
               </div>
               <button
                 onClick={() => setSelectedEnquiry(null)}
-                className="p-1.5 rounded-lg bg-white text-charcoal/60 hover:text-charcoal border border-[#F4ABA2]/60"
+                className="p-1.5 sm:p-2 rounded-xl bg-white text-charcoal/60 hover:text-charcoal border border-[#F4ABA2]/60 hover:border-[#801C30] transition-colors shadow-xs"
+                title="Close modal"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
             </div>
 
-            <div className="p-6 space-y-4 text-xs max-h-[75vh] overflow-y-auto">
+            {/* Modal Body */}
+            <div className="p-4 sm:p-6 space-y-4 text-xs max-h-[75vh] overflow-y-auto">
               {/* Primary Contact Details */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                <div className="p-3.5 rounded-2xl bg-[#FDF9F8] border border-[#F4ABA2]/40 space-y-0.5">
-                  <span className="text-[10px] text-charcoal/50 uppercase font-bold tracking-wider">Full Name</span>
-                  <div className="font-bold text-sm text-charcoal">{selectedEnquiry.fullName}</div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
+                <div className="p-3 sm:p-3.5 rounded-xl sm:rounded-2xl bg-[#FDF9F8] border border-[#F4ABA2]/40 space-y-1">
+                  <span className="text-[10px] text-charcoal/50 uppercase font-bold tracking-wider block">
+                    Full Name
+                  </span>
+                  <div className="font-bold text-sm sm:text-base text-charcoal break-words">
+                    {selectedEnquiry.fullName || selectedEnquiry.fullname || "Not specified"}
+                  </div>
                 </div>
 
-                <div className="p-3.5 rounded-2xl bg-[#FDF9F8] border border-[#F4ABA2]/40 space-y-0.5">
-                  <span className="text-[10px] text-charcoal/50 uppercase font-bold tracking-wider">Phone Number</span>
-                  <div className="font-bold text-sm text-[#801C30] flex items-center gap-1.5">
-                    <Phone className="w-3.5 h-3.5" />
+                <div className="p-3 sm:p-3.5 rounded-xl sm:rounded-2xl bg-[#FDF9F8] border border-[#F4ABA2]/40 space-y-1">
+                  <span className="text-[10px] text-charcoal/50 uppercase font-bold tracking-wider block">
+                    Phone Number
+                  </span>
+                  <div className="font-bold text-sm sm:text-base text-[#801C30] flex items-center gap-1.5">
+                    <Phone className="w-3.5 h-3.5 shrink-0" />
                     <a href={`tel:${selectedEnquiry.phone}`} className="hover:underline">
                       {selectedEnquiry.phone}
                     </a>
                   </div>
                 </div>
 
-                <div className="p-3.5 rounded-2xl bg-[#FDF9F8] border border-[#F4ABA2]/40 space-y-0.5 sm:col-span-2">
-                  <span className="text-[10px] text-charcoal/50 uppercase font-bold tracking-wider">Email Address</span>
-                  <div className="font-semibold text-charcoal flex items-center gap-1.5">
-                    <Mail className="w-3.5 h-3.5 text-charcoal/40" />
+                <div className="p-3 sm:p-3.5 rounded-xl sm:rounded-2xl bg-[#FDF9F8] border border-[#F4ABA2]/40 space-y-1 sm:col-span-2">
+                  <span className="text-[10px] text-charcoal/50 uppercase font-bold tracking-wider block">
+                    Email Address
+                  </span>
+                  <div className="font-semibold text-xs sm:text-sm text-charcoal flex items-center gap-1.5 break-all">
+                    <Mail className="w-3.5 h-3.5 text-charcoal/40 shrink-0" />
                     <a href={`mailto:${selectedEnquiry.email}`} className="hover:underline">
                       {selectedEnquiry.email}
                     </a>
@@ -1353,49 +1549,68 @@ export default function AdminDashboardPage() {
 
               {/* Event Timing & Planning Details */}
               <div className="border-t border-[#F4ABA2]/30 pt-3">
-                <h4 className="text-[11px] font-bold uppercase tracking-wider text-[#801C30] mb-2.5">
-                  Wedding Event Specifications
+                <h4 className="text-[11px] font-bold uppercase tracking-wider text-[#801C30] mb-2.5 flex items-center gap-1.5">
+                  <Calendar className="w-3.5 h-3.5" />
+                  <span>Wedding Event Specifications</span>
                 </h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="p-3 rounded-xl bg-[#FDF9F8] border border-[#F4ABA2]/40 space-y-0.5">
-                    <span className="text-[10px] text-charcoal/50 uppercase font-bold">Tentative Month &amp; Year</span>
-                    <div className="font-medium text-charcoal">
-                      {selectedEnquiry.tentativeMonthYear || selectedEnquiry.eventDate || "Not selected"}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
+                  <div className="p-3 rounded-xl bg-[#FDF9F8] border border-[#F4ABA2]/40 space-y-1">
+                    <span className="text-[10px] text-charcoal/50 uppercase font-bold block">
+                      Tentative Month &amp; Year
+                    </span>
+                    <div className="font-semibold text-charcoal text-xs sm:text-sm">
+                      {selectedEnquiry.tentativeMonthYear || selectedEnquiry.tentativemonthyear || selectedEnquiry.eventDate || selectedEnquiry.eventdate || "Not selected"}
                     </div>
                   </div>
 
-                  <div className="p-3 rounded-xl bg-[#FDF9F8] border border-[#F4ABA2]/40 space-y-0.5">
-                    <span className="text-[10px] text-charcoal/50 uppercase font-bold">Exact Wedding Dates</span>
-                    <div className="font-medium text-charcoal">
-                      {selectedEnquiry.weddingDates || "Not finalised yet"}
+                  <div className="p-3 rounded-xl bg-[#FDF9F8] border border-[#F4ABA2]/40 space-y-1">
+                    <span className="text-[10px] text-charcoal/50 uppercase font-bold block">
+                      Exact Wedding Dates
+                    </span>
+                    <div className="font-semibold text-charcoal text-xs sm:text-sm">
+                      {selectedEnquiry.weddingDates || selectedEnquiry.weddingdates || "Not finalised yet"}
                     </div>
                   </div>
 
-                  <div className="p-3 rounded-xl bg-[#FDF9F8] border border-[#F4ABA2]/40 space-y-0.5">
-                    <span className="text-[10px] text-charcoal/50 uppercase font-bold">Event Location / City</span>
-                    <div className="font-medium text-charcoal">
+                  <div className="p-3 rounded-xl bg-[#FDF9F8] border border-[#F4ABA2]/40 space-y-1">
+                    <span className="text-[10px] text-charcoal/50 uppercase font-bold block">
+                      Event Location / City
+                    </span>
+                    <div className="font-semibold text-charcoal text-xs sm:text-sm">
                       {selectedEnquiry.location || "Pune / Maharashtra"}
                     </div>
                   </div>
 
-                  <div className="p-3 rounded-xl bg-[#FDF9F8] border border-[#F4ABA2]/40 space-y-0.5">
-                    <span className="text-[10px] text-charcoal/50 uppercase font-bold">Expected Number of Guests</span>
-                    <div className="font-medium text-charcoal">
-                      {selectedEnquiry.guestCount ? `${selectedEnquiry.guestCount} Guests` : "Not specified"}
+                  <div className="p-3 rounded-xl bg-[#FDF9F8] border border-[#F4ABA2]/40 space-y-1">
+                    <span className="text-[10px] text-charcoal/50 uppercase font-bold block">
+                      Expected Number of Guests
+                    </span>
+                    <div className="font-semibold text-charcoal text-xs sm:text-sm">
+                      {selectedEnquiry.guestCount || selectedEnquiry.guestcount
+                        ? `${selectedEnquiry.guestCount || selectedEnquiry.guestcount} Guests`
+                        : "Not specified"}
                     </div>
                   </div>
 
-                  <div className="p-3 rounded-xl bg-[#FDF9F8] border border-[#F4ABA2]/40 space-y-0.5">
-                    <span className="text-[10px] text-charcoal/50 uppercase font-bold">Estimated Budget</span>
-                    <div className="font-bold text-emerald-700">
-                      {selectedEnquiry.estimatedBudget || "Not specified"}
+                  <div className="p-3 rounded-xl bg-[#FDF9F8] border border-[#F4ABA2]/40 space-y-1">
+                    <span className="text-[10px] text-charcoal/50 uppercase font-bold block">
+                      Estimated Budget
+                    </span>
+                    <div className="font-bold text-emerald-700 text-xs sm:text-sm">
+                      {selectedEnquiry.estimatedBudget || selectedEnquiry.estimatedbudget
+                        ? (selectedEnquiry.estimatedBudget || selectedEnquiry.estimatedbudget)?.includes("₹") || (selectedEnquiry.estimatedBudget || selectedEnquiry.estimatedbudget)?.toLowerCase().includes("lakh")
+                          ? (selectedEnquiry.estimatedBudget || selectedEnquiry.estimatedbudget)
+                          : `₹${selectedEnquiry.estimatedBudget || selectedEnquiry.estimatedbudget} Lakhs`
+                        : "Not specified"}
                     </div>
                   </div>
 
-                  <div className="p-3 rounded-xl bg-[#FDF9F8] border border-[#F4ABA2]/40 space-y-0.5">
-                    <span className="text-[10px] text-charcoal/50 uppercase font-bold">Event Type / Scope</span>
-                    <div className="font-medium text-charcoal">
-                      {selectedEnquiry.eventType || "Full Wedding Planning & Decor"}
+                  <div className="p-3 rounded-xl bg-[#FDF9F8] border border-[#F4ABA2]/40 space-y-1">
+                    <span className="text-[10px] text-charcoal/50 uppercase font-bold block">
+                      Event Type / Scope
+                    </span>
+                    <div className="font-semibold text-charcoal text-xs sm:text-sm">
+                      {selectedEnquiry.eventType || selectedEnquiry.eventtype || "Full Wedding Planning & Decor"}
                     </div>
                   </div>
                 </div>
@@ -1403,25 +1618,181 @@ export default function AdminDashboardPage() {
 
               {/* Additional Notes & Envisioned Details */}
               {selectedEnquiry.message && (
-                <div className="p-4 rounded-2xl bg-[#FDF9F8] border border-[#F4ABA2]/40 space-y-1">
-                  <span className="text-[10px] text-charcoal/50 uppercase font-bold tracking-wider">
+                <div className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-[#FDF9F8] border border-[#F4ABA2]/40 space-y-1">
+                  <span className="text-[10px] text-charcoal/50 uppercase font-bold tracking-wider block">
                     Additional Notes / Envisioned Details
                   </span>
-                  <p className="text-charcoal leading-relaxed whitespace-pre-wrap font-medium">
+                  <p className="text-charcoal leading-relaxed whitespace-pre-wrap font-medium text-xs sm:text-sm">
                     {selectedEnquiry.message}
                   </p>
                 </div>
               )}
+
+              {/* Internal Admin Remark */}
+              <div className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-amber-50/50 border border-amber-200/80 space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] text-amber-800 uppercase font-bold tracking-wider block">
+                    Admin Status &amp; Remark Note
+                  </span>
+                  <button
+                    onClick={() => {
+                      const cur = selectedEnquiry;
+                      handleOpenStatusModal(cur, cur.status);
+                    }}
+                    className="text-[11px] font-bold text-[#801C30] hover:underline flex items-center gap-1"
+                  >
+                    <Edit2 className="w-3 h-3" />
+                    <span>Change Status / Add Remark</span>
+                  </button>
+                </div>
+                {selectedEnquiry.remark ? (
+                  <p className="text-charcoal font-medium text-xs sm:text-sm whitespace-pre-wrap bg-white/70 p-2.5 rounded-lg border border-amber-200/60">
+                    {selectedEnquiry.remark}
+                  </p>
+                ) : (
+                  <p className="text-charcoal/50 italic text-xs">
+                    No admin remarks added yet. Click &quot;Change Status / Add Remark&quot; to log follow-up notes, discussion points, or dates.
+                  </p>
+                )}
+              </div>
             </div>
 
-            <div className="p-4 bg-[#F9CFCA]/20 border-t border-[#F4ABA2]/40 flex justify-end gap-2">
-              <button
-                onClick={() => setSelectedEnquiry(null)}
-                className="px-4 py-2 rounded-xl bg-white border border-[#F4ABA2] hover:bg-[#FDF9F8] text-charcoal font-semibold text-xs"
+            {/* Modal Footer */}
+            <div className="p-3.5 sm:p-4 bg-[#F9CFCA]/20 border-t border-[#F4ABA2]/40 flex items-center justify-between gap-2">
+              <a
+                href={`https://wa.me/${selectedEnquiry.phone.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(`Namaskar ${selectedEnquiry.fullName || selectedEnquiry.fullname || ""}, this is from Hindavi Wedding Family regarding your wedding enquiry!`)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-3.5 py-2 rounded-xl bg-green-50 hover:bg-green-100 text-green-700 font-semibold text-xs border border-green-300 transition-colors flex items-center gap-1.5"
               >
-                Close
+                <Phone className="w-3.5 h-3.5 text-[#25D366]" />
+                <span>WhatsApp Client</span>
+              </a>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    const cur = selectedEnquiry;
+                    handleOpenStatusModal(cur, cur.status);
+                  }}
+                  className="px-3.5 py-2 rounded-xl bg-amber-100/70 hover:bg-amber-100 border border-amber-300 text-amber-900 font-semibold text-xs transition-colors"
+                >
+                  Edit Status / Remark
+                </button>
+                <button
+                  onClick={() => setSelectedEnquiry(null)}
+                  className="px-5 py-2 rounded-xl bg-white border border-[#F4ABA2] hover:border-[#801C30] hover:bg-[#FDF9F8] text-charcoal font-semibold text-xs transition-colors shadow-xs"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Admin Status & Optional Remark Modal */}
+      {statusModalEnquiry && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in">
+          <div className="bg-white rounded-3xl border border-[#F4ABA2] w-full max-w-md overflow-hidden shadow-2xl">
+            {/* Modal Header */}
+            <div className="p-5 border-b border-[#F4ABA2]/40 bg-[#F9CFCA]/30 flex items-center justify-between">
+              <div>
+                <h3 className="font-serif text-lg font-bold text-charcoal">
+                  Update Enquiry Status
+                </h3>
+                <p className="text-xs text-charcoal/60 mt-0.5">
+                  Client: <span className="font-bold text-charcoal">{statusModalEnquiry.fullName || statusModalEnquiry.fullname}</span>
+                </p>
+              </div>
+              <button
+                onClick={() => setStatusModalEnquiry(null)}
+                className="p-1.5 rounded-lg bg-white text-charcoal/60 hover:text-charcoal border border-[#F4ABA2]/60 hover:border-[#801C30] transition-colors"
+              >
+                <X className="w-4 h-4" />
               </button>
             </div>
+
+            {/* Modal Form */}
+            <form onSubmit={handleConfirmStatusChange} className="p-5 space-y-4">
+              {/* Status Select */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold uppercase tracking-wider text-charcoal/70 block">
+                  Select Status:
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  {[
+                    { val: "new", label: "New Lead", bg: "hover:border-sky-400 checked:bg-sky-50" },
+                    { val: "contacted", label: "Contacted", bg: "hover:border-amber-400" },
+                    { val: "confirmed", label: "Confirmed (Booked)", bg: "hover:border-emerald-400" },
+                    { val: "closed", label: "Closed", bg: "hover:border-gray-400" },
+                  ].map((s) => (
+                    <button
+                      key={s.val}
+                      type="button"
+                      onClick={() => setTargetStatus(s.val as any)}
+                      className={`p-2.5 rounded-xl border text-xs font-bold text-left transition-all ${
+                        targetStatus === s.val
+                          ? s.val === "new"
+                            ? "bg-sky-50 text-sky-700 border-sky-400 ring-2 ring-sky-300"
+                            : s.val === "contacted"
+                            ? "bg-amber-50 text-amber-700 border-amber-400 ring-2 ring-amber-300"
+                            : s.val === "confirmed"
+                            ? "bg-emerald-50 text-emerald-700 border-emerald-400 ring-2 ring-emerald-300"
+                            : "bg-gray-100 text-gray-700 border-gray-400 ring-2 ring-gray-300"
+                          : "bg-[#FDF9F8] border-[#F4ABA2]/50 text-charcoal/70 hover:border-[#801C30]"
+                      }`}
+                    >
+                      {s.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Optional Admin Remark Textarea */}
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold uppercase tracking-wider text-charcoal/70 block">
+                    Admin Remark / Note:
+                  </label>
+                  <span className="text-[10px] text-charcoal/50 font-normal">Optional</span>
+                </div>
+                <textarea
+                  rows={3}
+                  value={statusRemark}
+                  onChange={(e) => setStatusRemark(e.target.value)}
+                  placeholder="e.g. Called client on WhatsApp. Budget approved. Advance meeting scheduled for Saturday."
+                  className="w-full p-3 bg-[#FDF9F8] border border-[#F4ABA2]/60 rounded-xl text-xs text-charcoal placeholder:text-charcoal/40 focus:outline-none focus:border-[#801C30] transition-colors resize-none"
+                />
+              </div>
+
+              {/* Modal Actions */}
+              <div className="pt-2 flex justify-end gap-2 border-t border-[#F4ABA2]/30">
+                <button
+                  type="button"
+                  onClick={() => setStatusModalEnquiry(null)}
+                  className="px-4 py-2 rounded-xl bg-white border border-[#F4ABA2] text-charcoal text-xs font-semibold hover:bg-[#FDF9F8] transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isUpdatingStatus}
+                  className="px-5 py-2 rounded-xl bg-[#801C30] hover:bg-[#6F1829] text-white text-xs font-bold shadow-xs transition-colors flex items-center gap-1.5"
+                >
+                  {isUpdatingStatus ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>Updating...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Check className="w-3.5 h-3.5" />
+                      <span>Save Status &amp; Remark</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
