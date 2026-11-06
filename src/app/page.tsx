@@ -29,16 +29,16 @@ export default function HomePage() {
           </div>
 
           <div className="relative py-1">
-            <h2 className="font-sans text-2xl sm:text-3xl lg:text-5xl font-black uppercase tracking-tight leading-tight bg-gradient-to-r from-charcoal via-coral to-[#C6A15B] bg-clip-text text-transparent animate-text-shine animate-title-float select-none">
+            <h2 className="font-sans text-xl sm:text-3xl lg:text-5xl font-black uppercase tracking-tight leading-snug sm:leading-tight bg-gradient-to-r from-charcoal via-coral to-[#C6A15B] bg-clip-text text-transparent animate-text-shine animate-title-float select-none">
               We Are The New Age Wedding Planners
             </h2>
           </div>
 
-          <div className="relative w-32 h-1.5 mx-auto rounded-full overflow-hidden bg-coral/20">
+          <div className="relative w-24 sm:w-32 h-1.5 mx-auto rounded-full overflow-hidden bg-coral/20">
             <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-coral to-transparent -translate-x-full animate-[shimmer_2s_infinite]" />
           </div>
           
-          <div className="font-sans text-charcoal/80 text-base sm:text-lg leading-relaxed space-y-4 pt-2 font-normal">
+          <div className="font-sans text-charcoal/80 text-sm sm:text-lg leading-relaxed space-y-3 sm:space-y-4 pt-1 sm:pt-2 font-normal">
             <p>
               A wedding is, more than anything, a shining memory. It is a grand production,
               with the couple playing the protagonists, while every element serves to elevate their joy.
@@ -47,7 +47,7 @@ export default function HomePage() {
               Hindavi Wedding Family works behind the scenes, ensuring flawless choreography and absolute serenity.
               From sacred Vedic mandap architecture to ambient evening illumination, not a single petal, drape, or detail is out of place.
             </p>
-            <p className="font-medium text-charcoal italic font-serif text-lg sm:text-xl pt-2">
+            <p className="font-medium text-charcoal italic font-serif text-base sm:text-xl pt-1 sm:pt-2">
               “Let us begin creating your story—your gateway to the rest of your lives.”
             </p>
           </div>
@@ -125,18 +125,18 @@ export default function HomePage() {
           PORTFOLIO ALBUMS: SHAADI SQUAD "OUR WORK" STYLE
           ======================================================== */}
       <Section background="white">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-8">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 sm:mb-8">
           <div>
             <span className="text-xs uppercase tracking-[0.25em] text-coral font-sans font-bold">
               Our Work
             </span>
-            <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-charcoal mt-2">
+            <h2 className="font-serif text-2xl sm:text-4xl lg:text-5xl text-charcoal mt-1.5 sm:mt-2">
               Atmosphere &amp; Aesthetic Visions
             </h2>
           </div>
           <Link
             href="/gallery"
-            className="mt-4 md:mt-0 inline-flex items-center space-x-2 text-coral hover:text-coral-dark font-sans text-xs uppercase tracking-widest font-bold group"
+            className="mt-3 md:mt-0 inline-flex items-center space-x-2 text-coral hover:text-coral-dark font-sans text-xs uppercase tracking-widest font-bold group"
           >
             <span>View All Works</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -148,22 +148,22 @@ export default function HomePage() {
             title="Sacred Mandap Architecture"
             category="Decor Design"
             imageUrl="/hello-images/our_work_mandap.jpg"
-            altText="Illustrative royal mandap floral setup"
-            isPlaceholder={true}
+            altText="Royal mandap floral setup"
+            isPlaceholder={false}
           />
           <GalleryCard
             title="Haldi Courtyard Atmosphere"
             category="Traditional Rituals"
             imageUrl="/hello-images/our_work_haldi.jpg"
-            altText="Illustrative marigold Haldi courtyard design"
-            isPlaceholder={true}
+            altText="Marigold Haldi courtyard design"
+            isPlaceholder={false}
           />
           <GalleryCard
             title="Reception Dinner Banquet"
             category="Event Production"
             imageUrl="/hello-images/our_work_reception.jpg"
-            altText="Illustrative banquet table setting with chandeliers"
-            isPlaceholder={true}
+            altText="Banquet table setting with chandeliers"
+            isPlaceholder={false}
           />
         </div>
       </Section>
@@ -184,9 +184,9 @@ export default function HomePage() {
           </div>
 
           {/* Featured Quote Carousel Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 text-left">
-            <div className="bg-white/90 backdrop-blur-sm p-6 sm:p-7 rounded-2xl shadow-sm border border-white/60 space-y-3 flex flex-col justify-between">
-              <p className="font-serif text-base sm:text-lg text-charcoal italic leading-relaxed">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 text-left">
+            <div className="bg-white/90 backdrop-blur-sm p-5 sm:p-7 rounded-2xl shadow-sm border border-white/60 space-y-3 flex flex-col justify-between">
+              <p className="font-serif text-sm sm:text-lg text-charcoal italic leading-relaxed">
                 “The people responsible for making the most memorable occasion of our lives peaceful, joyous, and beyond beautiful.”
               </p>
               <div className="pt-3 border-t border-blush/40">
@@ -199,8 +199,8 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="bg-white/90 backdrop-blur-sm p-6 sm:p-7 rounded-2xl shadow-sm border border-white/60 space-y-3 flex flex-col justify-between">
-              <p className="font-serif text-base sm:text-lg text-charcoal italic leading-relaxed">
+            <div className="bg-white/90 backdrop-blur-sm p-5 sm:p-7 rounded-2xl shadow-sm border border-white/60 space-y-3 flex flex-col justify-between">
+              <p className="font-serif text-sm sm:text-lg text-charcoal italic leading-relaxed">
                 “Every detail was meticulously executed without stress. We felt like family throughout the entire three-day celebration!”
               </p>
               <div className="pt-3 border-t border-blush/40">
@@ -232,15 +232,15 @@ export default function HomePage() {
           subtitle="A structured, transparent roadmap ensuring every celebration is orchestrated with clarity and peace of mind."
         />
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="bg-blush-50/60 p-8 rounded-xl border border-blush/40 relative group hover:border-coral transition-all shadow-xs">
-            <span className="font-serif text-5xl text-coral/25 font-normal absolute top-4 right-4 group-hover:text-coral/50 transition-colors">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          <div className="bg-blush-50/60 p-5 sm:p-8 rounded-xl border border-blush/40 relative group hover:border-coral transition-all shadow-xs">
+            <span className="font-serif text-4xl sm:text-5xl text-coral/25 font-normal absolute top-3 sm:top-4 right-3 sm:right-4 group-hover:text-coral/50 transition-colors">
               01
             </span>
-            <span className="text-xs uppercase tracking-widest text-coral font-sans font-bold block mb-2">
+            <span className="text-xs uppercase tracking-widest text-coral font-sans font-bold block mb-1.5 sm:mb-2">
               Phase One
             </span>
-            <h3 className="font-sans text-lg font-bold uppercase text-charcoal mb-2">
+            <h3 className="font-sans text-base sm:text-lg font-bold uppercase text-charcoal mb-1.5 sm:mb-2">
               Consultation
             </h3>
             <p className="font-sans text-xs text-charcoal/70 leading-relaxed">
@@ -249,14 +249,14 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="bg-blush-50/60 p-8 rounded-xl border border-blush/40 relative group hover:border-coral transition-all shadow-xs">
-            <span className="font-serif text-5xl text-coral/25 font-normal absolute top-4 right-4 group-hover:text-coral/50 transition-colors">
+          <div className="bg-blush-50/60 p-5 sm:p-8 rounded-xl border border-blush/40 relative group hover:border-coral transition-all shadow-xs">
+            <span className="font-serif text-4xl sm:text-5xl text-coral/25 font-normal absolute top-3 sm:top-4 right-3 sm:right-4 group-hover:text-coral/50 transition-colors">
               02
             </span>
-            <span className="text-xs uppercase tracking-widest text-coral font-sans font-bold block mb-2">
+            <span className="text-xs uppercase tracking-widest text-coral font-sans font-bold block mb-1.5 sm:mb-2">
               Phase Two
             </span>
-            <h3 className="font-sans text-lg font-bold uppercase text-charcoal mb-2">
+            <h3 className="font-sans text-base sm:text-lg font-bold uppercase text-charcoal mb-1.5 sm:mb-2">
               Concept &amp; Planning
             </h3>
             <p className="font-sans text-xs text-charcoal/70 leading-relaxed">
@@ -265,14 +265,14 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="bg-blush-50/60 p-8 rounded-xl border border-blush/40 relative group hover:border-coral transition-all shadow-xs">
-            <span className="font-serif text-5xl text-coral/25 font-normal absolute top-4 right-4 group-hover:text-coral/50 transition-colors">
+          <div className="bg-blush-50/60 p-5 sm:p-8 rounded-xl border border-blush/40 relative group hover:border-coral transition-all shadow-xs">
+            <span className="font-serif text-4xl sm:text-5xl text-coral/25 font-normal absolute top-3 sm:top-4 right-3 sm:right-4 group-hover:text-coral/50 transition-colors">
               03
             </span>
-            <span className="text-xs uppercase tracking-widest text-coral font-sans font-bold block mb-2">
+            <span className="text-xs uppercase tracking-widest text-coral font-sans font-bold block mb-1.5 sm:mb-2">
               Phase Three
             </span>
-            <h3 className="font-sans text-lg font-bold uppercase text-charcoal mb-2">
+            <h3 className="font-sans text-base sm:text-lg font-bold uppercase text-charcoal mb-1.5 sm:mb-2">
               Design &amp; Styling
             </h3>
             <p className="font-sans text-xs text-charcoal/70 leading-relaxed">
@@ -281,14 +281,14 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="bg-blush-50/60 p-8 rounded-xl border border-blush/40 relative group hover:border-coral transition-all shadow-xs">
-            <span className="font-serif text-5xl text-coral/25 font-normal absolute top-4 right-4 group-hover:text-coral/50 transition-colors">
+          <div className="bg-blush-50/60 p-5 sm:p-8 rounded-xl border border-blush/40 relative group hover:border-coral transition-all shadow-xs">
+            <span className="font-serif text-4xl sm:text-5xl text-coral/25 font-normal absolute top-3 sm:top-4 right-3 sm:right-4 group-hover:text-coral/50 transition-colors">
               04
             </span>
-            <span className="text-xs uppercase tracking-widest text-coral font-sans font-bold block mb-2">
+            <span className="text-xs uppercase tracking-widest text-coral font-sans font-bold block mb-1.5 sm:mb-2">
               Phase Four
             </span>
-            <h3 className="font-sans text-lg font-bold uppercase text-charcoal mb-2">
+            <h3 className="font-sans text-base sm:text-lg font-bold uppercase text-charcoal mb-1.5 sm:mb-2">
               Execution
             </h3>
             <p className="font-sans text-xs text-charcoal/70 leading-relaxed">

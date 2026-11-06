@@ -10,7 +10,7 @@ import { ThreadsIcon } from "@/components/ui/ThreadsIcon";
 import { FacebookIcon } from "@/components/ui/FacebookIcon";
 import { Play, Film, Grid, X, Heart, Sparkles, Music, Sun, Flame } from "lucide-react";
 
-export type CeremonyCategory = "All" | "Engagement" | "Halad" | "Sangit" | "Vidhi" | "Marriage" | "Other";
+export type CeremonyCategory = "All" | "Marriage" | "Engagement" | "Halad" | "Sangit" | "Vidhi" | "Other";
 
 interface MediaItem {
   id: string;
@@ -18,16 +18,16 @@ interface MediaItem {
   src: string;
   title: string;
   aspect: "square" | "tall" | "wide";
-  category: "Engagement" | "Halad" | "Sangit" | "Vidhi" | "Marriage" | "Other";
+  category: "Marriage" | "Engagement" | "Halad" | "Sangit" | "Vidhi" | "Other";
 }
 
 const CEREMONY_TABS: { label: CeremonyCategory; sub: string }[] = [
   { label: "All", sub: "Complete Gallery" },
+  { label: "Marriage", sub: "Mandap & Reception" },
   { label: "Engagement", sub: "Ring Ceremony" },
   { label: "Halad", sub: "Haldi Courtyard" },
   { label: "Sangit", sub: "Sangeet & Dance" },
   { label: "Vidhi", sub: "Vedic Rituals" },
-  { label: "Marriage", sub: "Mandap & Reception" },
   { label: "Other", sub: "Special Highlights" },
 ];
 
@@ -85,12 +85,12 @@ export default function GalleryPage() {
           <div className="absolute inset-0 bg-gradient-to-t from-charcoal via-charcoal/75 to-black/30" />
         </div>
 
-        <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 py-10 sm:py-14 text-center space-y-3 sm:space-y-4">
-          <div className="inline-flex items-center px-3.5 py-1 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white text-[11px] uppercase tracking-[0.25em] font-sans font-bold">
+        <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-14 text-center space-y-2.5 sm:space-y-4">
+          <div className="inline-flex items-center px-3 py-0.5 sm:px-3.5 sm:py-1 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white text-[10px] sm:text-[11px] uppercase tracking-[0.2em] sm:tracking-[0.25em] font-sans font-bold">
             <span>Ritual &amp; Celebration Showcase</span>
           </div>
 
-          <h1 className="font-serif text-3xl sm:text-5xl md:text-6xl font-normal text-white tracking-tight leading-[1.1]">
+          <h1 className="font-serif text-2xl sm:text-5xl md:text-6xl font-normal text-white tracking-tight leading-[1.15] sm:leading-[1.1]">
             Wedding Gallery
           </h1>
 
@@ -98,12 +98,12 @@ export default function GalleryPage() {
             Explore curated photographs and cinematic reels categorized across sacred wedding milestones.
           </p>
 
-          <div className="flex flex-wrap items-center justify-center gap-2.5 pt-1">
+          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-2.5 pt-1">
             <a
               href={BUSINESS_CONFIG.socials.instagram.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-white/15 hover:bg-white/25 border border-white/30 text-white text-xs font-sans uppercase tracking-wider font-semibold transition-all backdrop-blur-xs"
+              className="inline-flex items-center space-x-1.5 sm:space-x-2 px-3 sm:px-3.5 py-1.5 rounded-full bg-white/15 hover:bg-white/25 border border-white/30 text-white text-[11px] sm:text-xs font-sans uppercase tracking-wider font-semibold transition-all backdrop-blur-xs"
             >
               <InstagramIcon className="w-3.5 h-3.5" />
               <span>Instagram</span>
@@ -112,7 +112,7 @@ export default function GalleryPage() {
               href={BUSINESS_CONFIG.socials.threads.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-white/15 hover:bg-white/25 border border-white/30 text-white text-xs font-sans uppercase tracking-wider font-semibold transition-all backdrop-blur-xs"
+              className="inline-flex items-center space-x-1.5 sm:space-x-2 px-3 sm:px-3.5 py-1.5 rounded-full bg-white/15 hover:bg-white/25 border border-white/30 text-white text-[11px] sm:text-xs font-sans uppercase tracking-wider font-semibold transition-all backdrop-blur-xs"
             >
               <ThreadsIcon className="w-3.5 h-3.5" />
               <span>Threads</span>
@@ -121,7 +121,7 @@ export default function GalleryPage() {
               href={BUSINESS_CONFIG.socials.facebook.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-white/15 hover:bg-white/25 border border-white/30 text-white text-xs font-sans uppercase tracking-wider font-semibold transition-all backdrop-blur-xs"
+              className="inline-flex items-center space-x-1.5 sm:space-x-2 px-3 sm:px-3.5 py-1.5 rounded-full bg-white/15 hover:bg-white/25 border border-white/30 text-white text-[11px] sm:text-xs font-sans uppercase tracking-wider font-semibold transition-all backdrop-blur-xs"
             >
               <FacebookIcon className="w-3.5 h-3.5" />
               <span>Facebook</span>
@@ -137,7 +137,7 @@ export default function GalleryPage() {
         <div className="max-w-5xl mx-auto space-y-6 sm:space-y-8">
           
           {/* Main 5 Ceremonial Navigation Tabs */}
-          <div className="flex items-center justify-start sm:justify-center overflow-x-auto no-scrollbar gap-2 sm:gap-3 pb-2 pt-1 border-b border-blush/60">
+          <div className="flex items-center justify-start sm:justify-center overflow-x-auto no-scrollbar gap-1.5 sm:gap-3 pb-2 pt-1 border-b border-blush/60 -mx-4 px-4 sm:mx-0 sm:px-0">
             {CEREMONY_TABS.map((tab, idx) => {
               const isActive = selectedCategory === tab.label;
               return (
@@ -145,7 +145,7 @@ export default function GalleryPage() {
                   key={tab.label}
                   type="button"
                   onClick={() => setSelectedCategory(tab.label)}
-                  className={`flex-shrink-0 px-4 sm:px-5 py-2.5 rounded-2xl font-sans transition-all duration-300 text-left sm:text-center ${
+                  className={`shrink-0 px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl font-sans transition-all duration-300 text-left sm:text-center ${
                     isActive
                       ? "bg-gradient-to-r from-[#801C30] to-[#A82835] text-white shadow-md scale-102"
                       : "bg-[#F8FAFC] text-charcoal/80 hover:bg-blush/20 hover:text-coral border border-[#E2E8F0]"
@@ -155,7 +155,7 @@ export default function GalleryPage() {
                     {tab.label !== "All" && <span className="opacity-75 mr-1">{idx}.</span>}
                     {tab.label}
                   </span>
-                  <span className={`block text-[10px] tracking-wider uppercase ${isActive ? "text-white/80" : "text-charcoal/50"}`}>
+                  <span className={`block text-[9px] sm:text-[10px] tracking-wider uppercase ${isActive ? "text-white/80" : "text-charcoal/50"}`}>
                     {tab.sub}
                   </span>
                 </button>
@@ -164,17 +164,17 @@ export default function GalleryPage() {
           </div>
 
           {/* Subfilter: Type toggle (All / Photos / Reels) */}
-          <div className="flex items-center justify-between flex-wrap gap-3 pt-1">
+          <div className="flex items-center justify-between flex-wrap gap-2.5 pt-1">
             <span className="font-sans text-xs sm:text-sm text-charcoal/70 font-medium">
               Showing <strong className="text-charcoal font-bold">{filteredItems.length}</strong> items in{" "}
               <span className="text-coral font-bold">{selectedCategory}</span>
             </span>
 
-            <div className="inline-flex p-1 rounded-xl bg-[#F1F5F9] border border-[#E2E8F0] text-xs font-sans font-semibold">
+            <div className="inline-flex p-0.5 sm:p-1 rounded-lg sm:rounded-xl bg-[#F1F5F9] border border-[#E2E8F0] text-xs font-sans font-semibold">
               <button
                 type="button"
                 onClick={() => setMediaTypeFilter("all")}
-                className={`px-3 py-1 rounded-lg transition-all ${
+                className={`px-2.5 sm:px-3 py-1 rounded-md sm:rounded-lg text-[11px] sm:text-xs transition-all ${
                   mediaTypeFilter === "all" ? "bg-white text-charcoal shadow-xs" : "text-charcoal/60 hover:text-charcoal"
                 }`}
               >
@@ -183,7 +183,7 @@ export default function GalleryPage() {
               <button
                 type="button"
                 onClick={() => setMediaTypeFilter("images")}
-                className={`px-3 py-1 rounded-lg transition-all ${
+                className={`px-2.5 sm:px-3 py-1 rounded-md sm:rounded-lg text-[11px] sm:text-xs transition-all ${
                   mediaTypeFilter === "images" ? "bg-white text-charcoal shadow-xs" : "text-charcoal/60 hover:text-charcoal"
                 }`}
               >
@@ -192,7 +192,7 @@ export default function GalleryPage() {
               <button
                 type="button"
                 onClick={() => setMediaTypeFilter("reels")}
-                className={`px-3 py-1 rounded-lg transition-all ${
+                className={`px-2.5 sm:px-3 py-1 rounded-md sm:rounded-lg text-[11px] sm:text-xs transition-all ${
                   mediaTypeFilter === "reels" ? "bg-white text-charcoal shadow-xs" : "text-charcoal/60 hover:text-charcoal"
                 }`}
               >
@@ -302,10 +302,10 @@ export default function GalleryPage() {
             <button
               type="button"
               onClick={() => setSelectedMedia(null)}
-              className="absolute top-3 right-3 z-10 w-9 h-9 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center transition-colors border border-white/30"
+              className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 z-10 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-black/70 hover:bg-black/90 text-white flex items-center justify-center transition-colors border border-white/30"
               aria-label="Close"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
 
             {/* Media Presentation */}
@@ -316,10 +316,10 @@ export default function GalleryPage() {
                   controls
                   autoPlay
                   playsInline
-                  className="max-h-[75vh] w-auto object-contain"
+                  className="max-h-[65vh] sm:max-h-[75vh] w-auto object-contain"
                 />
               ) : (
-                <div className="relative w-full h-[65vh] sm:h-[75vh]">
+                <div className="relative w-full h-[55vh] sm:h-[75vh]">
                   <Image
                     src={selectedMedia.src}
                     alt={selectedMedia.title}
@@ -332,18 +332,18 @@ export default function GalleryPage() {
             </div>
 
             {/* Caption Footer */}
-            <div className="w-full p-4 bg-charcoal/95 border-t border-white/10 flex items-center justify-between text-white">
-              <div>
-                <span className="text-[10px] uppercase font-sans font-bold tracking-widest text-coral block">
+            <div className="w-full p-3 sm:p-4 bg-charcoal/95 border-t border-white/10 flex items-center justify-between text-white gap-2">
+              <div className="min-w-0 flex-1">
+                <span className="text-[9px] sm:text-[10px] uppercase font-sans font-bold tracking-widest text-coral block truncate">
                   {selectedMedia.category} • {selectedMedia.type === "reel" ? "Reel Video" : "Photograph"}
                 </span>
-                <h3 className="font-serif text-base sm:text-lg">{selectedMedia.title}</h3>
+                <h3 className="font-serif text-sm sm:text-lg truncate">{selectedMedia.title}</h3>
               </div>
               <a
                 href={BUSINESS_CONFIG.socials.instagram.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center space-x-1.5 text-xs text-coral hover:text-white transition-colors uppercase font-sans font-bold tracking-wider"
+                className="shrink-0 inline-flex items-center space-x-1 sm:space-x-1.5 text-[11px] sm:text-xs text-coral hover:text-white transition-colors uppercase font-sans font-bold tracking-wider"
               >
                 <span>View on IG</span>
               </a>

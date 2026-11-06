@@ -224,12 +224,12 @@ export function EnquiryForm({
   const whatsappMessage = encodeURIComponent(whatsappRawText);
 
   return (
-    <div className="bg-blush-50/70 p-6 sm:p-8 md:p-10 rounded-2xl border border-blush/60 shadow-xs">
-      <div className="mb-6">
-        <span className="text-xs uppercase tracking-[0.25em] text-coral font-sans font-bold">
+    <div className="bg-blush-50/70 p-4 sm:p-8 md:p-10 rounded-2xl border border-blush/60 shadow-xs">
+      <div className="mb-4 sm:mb-6">
+        <span className="text-[11px] sm:text-xs uppercase tracking-[0.25em] text-coral font-sans font-bold">
           Custom Proposal Enquiry
         </span>
-        <h3 className="font-sans text-xl sm:text-2xl font-extrabold uppercase tracking-tight text-charcoal mt-1">
+        <h3 className="font-sans text-lg sm:text-2xl font-extrabold uppercase tracking-tight text-charcoal mt-1 leading-snug">
           {headingTitle}
         </h3>
         <p className="text-xs text-charcoal/70 font-sans mt-1">

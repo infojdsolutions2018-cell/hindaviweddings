@@ -82,20 +82,20 @@ export function HeroRotation() {
       })}
 
       {/* Hero Content */}
-      <div className="relative z-10 max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+      <div className="relative z-10 max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8 py-8 sm:py-16">
         <div key={currentIndex} className="animate-fade-slide-up">
-          <div className="inline-flex items-center px-3.5 py-1 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white text-[11px] uppercase tracking-[0.25em] font-sans font-semibold mb-4 shadow-sm">
+          <div className="inline-flex items-center px-3 py-0.5 sm:px-3.5 sm:py-1 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white text-[10px] sm:text-[11px] uppercase tracking-[0.2em] sm:tracking-[0.25em] font-sans font-semibold mb-3 sm:mb-4 shadow-sm">
             <span>{ROTATING_SLIDES[currentIndex].eyebrow}</span>
           </div>
 
-          <h1 className="font-serif text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-normal text-white tracking-tight leading-[1.1] mb-4 drop-shadow-md min-h-[1.2em]">
+          <h1 className="font-serif text-2xl sm:text-5xl md:text-6xl lg:text-7xl font-normal text-white tracking-tight leading-[1.15] sm:leading-[1.1] mb-3 sm:mb-4 drop-shadow-md min-h-[1.2em]">
             {ROTATING_SLIDES[currentIndex].titlePrimary} <br className="hidden sm:inline" />
             <span className="italic font-light text-blush-200">
               {ROTATING_SLIDES[currentIndex].titleHighlight}
             </span>
           </h1>
 
-          <p className="font-sans text-xs sm:text-base md:text-lg text-white/90 max-w-2xl mx-auto leading-relaxed mb-6 sm:mb-8 font-light">
+          <p className="font-sans text-xs sm:text-base md:text-lg text-white/90 max-w-2xl mx-auto leading-relaxed mb-5 sm:mb-8 font-light">
             Welcome to {BUSINESS_CONFIG.displayName}. We curate bespoke wedding
             planning, full-scale event production, and breathtaking decor design
             tailored for modern love stories.

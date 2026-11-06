@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { BUSINESS_CONFIG } from "@/config/business";
 
-export type MilestoneCategory = "Engagement" | "Halad" | "Sangit" | "Vidhi" | "Marriage" | "Other";
+export type MilestoneCategory = "Marriage" | "Engagement" | "Halad" | "Sangit" | "Vidhi" | "Other";
 
 interface EnquiryItem {
   id: number;
@@ -48,8 +48,29 @@ interface GalleryItem {
   fileId?: string;
 }
 
-// 4-5 Pre-set wedding captions according to milestone
+// Helper to format ISO date strings (e.g. "2026-11-28") to readable Indian/Wedding format (e.g. "28 Nov 2026")
+function formatWeddingDate(rawDate?: string): string {
+  if (!rawDate) return "Not finalised yet";
+  // If it's a standard YYYY-MM-DD from HTML date picker
+  if (/^\d{4}-\d{2}-\d{2}$/.test(rawDate)) {
+    const [year, month, day] = rawDate.split("-");
+    const d = new Date(Number(year), Number(month) - 1, Number(day));
+    return d.toLocaleDateString("en-IN", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+  }
+  return rawDate;
+}
 const DEFAULT_CAPTIONS: Record<MilestoneCategory, string[]> = {
+  Marriage: [
+    "Sacred Royal Mandap Architecture & Muhurat",
+    "Grand Royal Varmala Ceremony Stage Design",
+    "Luminous Wedding Reception Banquet & Crystal Chandeliers",
+    "Bespoke Maharashtrian Royal Wedding Celebration",
+    "Dreamy Floral Mandap with Intricate Vedic Pillar Carvings",
+  ],
   Engagement: [
     "Romantic Ring Ceremony & Floral Arch Decor",
     "Bespoke Royal Engagement Celebration Setup",
@@ -78,13 +99,6 @@ const DEFAULT_CAPTIONS: Record<MilestoneCategory, string[]> = {
     "Authentic Maharashtrian Vedic Ceremony Architecture",
     "Ornate Mandap Rituals with Traditional Brass Bells",
   ],
-  Marriage: [
-    "Sacred Royal Mandap Architecture & Muhurat",
-    "Grand Royal Varmala Ceremony Stage Design",
-    "Luminous Wedding Reception Banquet & Crystal Chandeliers",
-    "Bespoke Maharashtrian Royal Wedding Celebration",
-    "Dreamy Floral Mandap with Intricate Vedic Pillar Carvings",
-  ],
   Other: [
     "Hindavi Weddings Exclusive Event Production",
     "Luxury Floral Architecture & Celebration Styling",
@@ -102,8 +116,12 @@ export default function AdminDashboardPage() {
   const [loadingEnquiries, setLoadingEnquiries] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [dateRangeFilter, setDateRangeFilter] = useState<"all" | "today" | "week" | "month">("all");
+  const [dateRangeFilter, setDateRangeFilter] = useState<"all" | "today" | "week" | "month" | "custom">("all");
+  const [customStartDate, setCustomStartDate] = useState<string>("");
+  const [customEndDate, setCustomEndDate] = useState<string>("");
   const [budgetFilter, setBudgetFilter] = useState<string>("all");
+  const [customMinBudget, setCustomMinBudget] = useState<string>("");
+  const [customMaxBudget, setCustomMaxBudget] = useState<string>("");
   const [selectedEnquiry, setSelectedEnquiry] = useState<EnquiryItem | null>(null);
 
   // Status & Remark Update Modal State
@@ -130,7 +148,7 @@ export default function AdminDashboardPage() {
   // ImageKit Media Upload State (Multiple Selection Support)
   const [uploadFiles, setUploadFiles] = useState<File[]>([]);
   const [mediaTitle, setMediaTitle] = useState("");
-  const [mediaCategory, setMediaCategory] = useState<MilestoneCategory>("Other");
+  const [mediaCategory, setMediaCategory] = useState<MilestoneCategory>("Marriage");
   const [mediaType, setMediaType] = useState<"all" | "image" | "reel">("all");
   const [isUploading, setIsUploading] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState<string | null>(null);
@@ -443,19 +461,43 @@ export default function AdminDashboardPage() {
       } else if (dateRangeFilter === "month") {
         const oneMonthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
         matchesDate = createdDate >= oneMonthAgo;
+      } else if (dateRangeFilter === "custom") {
+        if (customStartDate) {
+          const start = new Date(customStartDate);
+          start.setHours(0, 0, 0, 0);
+          if (createdDate < start) matchesDate = false;
+        }
+        if (customEndDate) {
+          const end = new Date(customEndDate);
+          end.setHours(23, 59, 59, 999);
+          if (createdDate > end) matchesDate = false;
+        }
       }
     }
 
     // Filter by Budget Range
     let matchesBudget = true;
     if (budgetFilter !== "all") {
-      const bStr = (item.estimatedBudget || item.estimatedbudget || "").toLowerCase();
+      const bRaw = (item.estimatedBudget || item.estimatedbudget || "").toLowerCase();
+      // Extract numeric value from budget string (e.g., "12", "₹15 Lakhs", "25", "10,0000")
+      const numMatch = bRaw.match(/(\d+(?:\.\d+)?)/);
+      const numVal = numMatch ? parseFloat(numMatch[1]) : 0;
+
       if (budgetFilter === "under10") {
-        matchesBudget = bStr.includes("5") || bStr.includes("8") || bStr.includes("under") || (parseFloat(bStr) < 10 && !bStr.includes("25") && !bStr.includes("50"));
+        matchesBudget = (numVal > 0 && numVal < 10) || bRaw.includes("5") || bRaw.includes("8") || bRaw.includes("under");
       } else if (budgetFilter === "10to25") {
-        matchesBudget = bStr.includes("10") || bStr.includes("12") || bStr.includes("15") || bStr.includes("20") || bStr.includes("25");
+        matchesBudget = (numVal >= 10 && numVal <= 25) || bRaw.includes("10") || bRaw.includes("12") || bRaw.includes("15") || bRaw.includes("20") || bRaw.includes("25");
       } else if (budgetFilter === "above25") {
-        matchesBudget = bStr.includes("25") || bStr.includes("30") || bStr.includes("50") || bStr.includes("above") || bStr.includes("crore") || parseFloat(bStr) > 25;
+        matchesBudget = numVal > 25 || bRaw.includes("above") || bRaw.includes("crore") || bRaw.includes("30") || bRaw.includes("50");
+      } else if (budgetFilter === "custom") {
+        const min = customMinBudget ? parseFloat(customMinBudget) : 0;
+        const max = customMaxBudget ? parseFloat(customMaxBudget) : Infinity;
+        if (numVal > 0) {
+          matchesBudget = numVal >= min && numVal <= max;
+        } else {
+          // If no parsed number, keep unless filters strictly exclude
+          matchesBudget = true;
+        }
       }
     }
 
@@ -583,36 +625,73 @@ export default function AdminDashboardPage() {
             ======================================================== */}
         {activeTab === "enquiries" && (
           <div className="space-y-6 animate-in fade-in duration-300">
-            {/* KPI Stat Cards in Warm Signature Palette */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              <div className="bg-white p-5 rounded-2xl border border-[#F4ABA2]/50 shadow-xs space-y-1">
-                <span className="text-[11px] uppercase font-bold tracking-wider text-charcoal/60">
+            {/* KPI Stat Cards in Warm Signature Palette (5 Columns to include Closed Leads) */}
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 sm:gap-4">
+              <div 
+                onClick={() => setStatusFilter("all")}
+                className={`bg-white p-4 sm:p-5 rounded-2xl border transition-all cursor-pointer shadow-xs space-y-1 ${
+                  statusFilter === "all" ? "border-[#801C30] ring-2 ring-[#801C30]/20" : "border-[#F4ABA2]/50 hover:border-[#801C30]/60"
+                }`}
+              >
+                <span className="text-[10px] sm:text-[11px] uppercase font-bold tracking-wider text-charcoal/60">
                   Total Leads
                 </span>
-                <div className="font-serif text-3xl font-bold text-charcoal">{enquiries.length}</div>
+                <div className="font-serif text-2xl sm:text-3xl font-bold text-charcoal">{enquiries.length}</div>
               </div>
-              <div className="bg-white p-5 rounded-2xl border border-sky-300 shadow-xs space-y-1">
-                <span className="text-[11px] uppercase font-bold tracking-wider text-sky-700">
+
+              <div 
+                onClick={() => setStatusFilter("new")}
+                className={`bg-white p-4 sm:p-5 rounded-2xl border transition-all cursor-pointer shadow-xs space-y-1 ${
+                  statusFilter === "new" ? "border-sky-500 ring-2 ring-sky-300" : "border-sky-300 hover:border-sky-500"
+                }`}
+              >
+                <span className="text-[10px] sm:text-[11px] uppercase font-bold tracking-wider text-sky-700">
                   New Uncontacted
                 </span>
-                <div className="font-serif text-3xl font-bold text-sky-700">
+                <div className="font-serif text-2xl sm:text-3xl font-bold text-sky-700">
                   {enquiries.filter((e) => e.status === "new").length}
                 </div>
               </div>
-              <div className="bg-white p-5 rounded-2xl border border-amber-300 shadow-xs space-y-1">
-                <span className="text-[11px] uppercase font-bold tracking-wider text-amber-700">
+
+              <div 
+                onClick={() => setStatusFilter("contacted")}
+                className={`bg-white p-4 sm:p-5 rounded-2xl border transition-all cursor-pointer shadow-xs space-y-1 ${
+                  statusFilter === "contacted" ? "border-amber-500 ring-2 ring-amber-300" : "border-amber-300 hover:border-amber-500"
+                }`}
+              >
+                <span className="text-[10px] sm:text-[11px] uppercase font-bold tracking-wider text-amber-700">
                   In Discussion
                 </span>
-                <div className="font-serif text-3xl font-bold text-amber-700">
+                <div className="font-serif text-2xl sm:text-3xl font-bold text-amber-700">
                   {enquiries.filter((e) => e.status === "contacted").length}
                 </div>
               </div>
-              <div className="bg-white p-5 rounded-2xl border border-emerald-300 shadow-xs space-y-1">
-                <span className="text-[11px] uppercase font-bold tracking-wider text-emerald-700">
-                  Booked &amp; Confirmed
+
+              <div 
+                onClick={() => setStatusFilter("confirmed")}
+                className={`bg-white p-4 sm:p-5 rounded-2xl border transition-all cursor-pointer shadow-xs space-y-1 ${
+                  statusFilter === "confirmed" ? "border-emerald-500 ring-2 ring-emerald-300" : "border-emerald-300 hover:border-emerald-500"
+                }`}
+              >
+                <span className="text-[10px] sm:text-[11px] uppercase font-bold tracking-wider text-emerald-700">
+                  Confirmed (Booked)
                 </span>
-                <div className="font-serif text-3xl font-bold text-emerald-700">
+                <div className="font-serif text-2xl sm:text-3xl font-bold text-emerald-700">
                   {enquiries.filter((e) => e.status === "confirmed").length}
+                </div>
+              </div>
+
+              <div 
+                onClick={() => setStatusFilter("closed")}
+                className={`col-span-2 sm:col-span-1 bg-white p-4 sm:p-5 rounded-2xl border transition-all cursor-pointer shadow-xs space-y-1 ${
+                  statusFilter === "closed" ? "border-gray-500 ring-2 ring-gray-300" : "border-gray-300 hover:border-gray-500"
+                }`}
+              >
+                <span className="text-[10px] sm:text-[11px] uppercase font-bold tracking-wider text-gray-700">
+                  Closed / Archived
+                </span>
+                <div className="font-serif text-2xl sm:text-3xl font-bold text-gray-700">
+                  {enquiries.filter((e) => e.status === "closed").length}
                 </div>
               </div>
             </div>
@@ -672,6 +751,7 @@ export default function AdminDashboardPage() {
                       <option value="today">Today</option>
                       <option value="week">Past 7 Days</option>
                       <option value="month">Past 30 Days</option>
+                      <option value="custom">Custom Date Range...</option>
                     </select>
                   </div>
 
@@ -687,17 +767,22 @@ export default function AdminDashboardPage() {
                       <option value="under10">Under ₹10 Lakhs</option>
                       <option value="10to25">₹10 - 25 Lakhs</option>
                       <option value="above25">₹25+ Lakhs</option>
+                      <option value="custom">Custom Budget Range...</option>
                     </select>
                   </div>
 
                   {/* Reset Filters shortcut if filtered */}
-                  {(searchTerm || statusFilter !== "all" || dateRangeFilter !== "all" || budgetFilter !== "all") && (
+                  {(searchTerm || statusFilter !== "all" || dateRangeFilter !== "all" || budgetFilter !== "all" || customStartDate || customEndDate || customMinBudget || customMaxBudget) && (
                     <button
                       onClick={() => {
                         setSearchTerm("");
                         setStatusFilter("all");
                         setDateRangeFilter("all");
+                        setCustomStartDate("");
+                        setCustomEndDate("");
                         setBudgetFilter("all");
+                        setCustomMinBudget("");
+                        setCustomMaxBudget("");
                       }}
                       className="px-2.5 py-1.5 rounded-xl bg-white border border-[#F4ABA2] text-[#801C30] hover:bg-[#F9CFCA]/30 text-xs font-bold transition-colors"
                       title="Clear all filters"
@@ -707,6 +792,51 @@ export default function AdminDashboardPage() {
                   )}
                 </div>
               </div>
+
+              {/* Custom Date / Budget Range Pickers Row (Visible when Custom is Selected) */}
+              {(dateRangeFilter === "custom" || budgetFilter === "custom") && (
+                <div className="pt-2 border-t border-[#F4ABA2]/30 flex flex-wrap items-center gap-3 text-xs bg-[#FDF9F8] p-2.5 rounded-xl">
+                  {dateRangeFilter === "custom" && (
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-[11px] font-bold text-charcoal/70">From:</span>
+                      <input
+                        type="date"
+                        value={customStartDate}
+                        onChange={(e) => setCustomStartDate(e.target.value)}
+                        className="px-2 py-1 rounded-lg border border-[#F4ABA2]/60 bg-white text-xs text-charcoal focus:outline-none focus:border-[#801C30]"
+                      />
+                      <span className="text-[11px] font-bold text-charcoal/70">To:</span>
+                      <input
+                        type="date"
+                        value={customEndDate}
+                        onChange={(e) => setCustomEndDate(e.target.value)}
+                        className="px-2 py-1 rounded-lg border border-[#F4ABA2]/60 bg-white text-xs text-charcoal focus:outline-none focus:border-[#801C30]"
+                      />
+                    </div>
+                  )}
+
+                  {budgetFilter === "custom" && (
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-[11px] font-bold text-charcoal/70">Min Budget (Lakhs):</span>
+                      <input
+                        type="number"
+                        placeholder="e.g. 5"
+                        value={customMinBudget}
+                        onChange={(e) => setCustomMinBudget(e.target.value)}
+                        className="w-20 px-2 py-1 rounded-lg border border-[#F4ABA2]/60 bg-white text-xs text-charcoal focus:outline-none focus:border-[#801C30]"
+                      />
+                      <span className="text-[11px] font-bold text-charcoal/70">Max (Lakhs):</span>
+                      <input
+                        type="number"
+                        placeholder="e.g. 35"
+                        value={customMaxBudget}
+                        onChange={(e) => setCustomMaxBudget(e.target.value)}
+                        className="w-20 px-2 py-1 rounded-lg border border-[#F4ABA2]/60 bg-white text-xs text-charcoal focus:outline-none focus:border-[#801C30]"
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Responsive Client Enquiries: Mobile Cards + Desktop Table */}
@@ -768,7 +898,9 @@ export default function AdminDashboardPage() {
                           </td>
                           <td className="py-3.5 px-4">
                             <div className="text-charcoal font-medium">
-                              {enquiry.weddingDates || enquiry.weddingdates || enquiry.tentativeMonthYear || enquiry.tentativemonthyear || enquiry.eventDate || enquiry.eventdate || "Date TBD"}
+                              {enquiry.weddingDates || enquiry.weddingdates 
+                                ? formatWeddingDate(enquiry.weddingDates || enquiry.weddingdates)
+                                : enquiry.tentativeMonthYear || enquiry.tentativemonthyear || enquiry.eventDate || enquiry.eventdate || "Date TBD"}
                             </div>
                             <div className="text-charcoal/60 text-[11px]">
                               {enquiry.eventType || enquiry.eventtype || "Full Wedding"}
@@ -921,7 +1053,11 @@ export default function AdminDashboardPage() {
                       </div>
                       <div>
                         <span className="text-[10px] text-charcoal/50 uppercase block font-semibold">Dates</span>
-                        <span className="font-medium">{enquiry.weddingDates || enquiry.weddingdates || enquiry.tentativeMonthYear || enquiry.tentativemonthyear || enquiry.eventDate || enquiry.eventdate || "TBD"}</span>
+                        <span className="font-medium">
+                          {enquiry.weddingDates || enquiry.weddingdates 
+                            ? formatWeddingDate(enquiry.weddingDates || enquiry.weddingdates)
+                            : enquiry.tentativeMonthYear || enquiry.tentativemonthyear || enquiry.eventDate || enquiry.eventdate || "TBD"}
+                        </span>
                       </div>
                       <div>
                         <span className="text-[10px] text-charcoal/50 uppercase block font-semibold">Budget</span>
@@ -981,10 +1117,10 @@ export default function AdminDashboardPage() {
           <div className="space-y-6 animate-in fade-in duration-300">
             {/* Filter Pills in Pink Theme with Format Toggle */}
             <div className="bg-white p-4 rounded-2xl border border-[#F4ABA2]/60 shadow-xs space-y-3.5">
+              {/* Milestone Filter Pills */}
               <div className="flex items-center justify-between flex-wrap gap-3">
-                {/* Milestone Filter Pills */}
                 <div className="flex items-center gap-1.5 flex-wrap">
-                  {["all", "Engagement", "Halad", "Sangit", "Vidhi", "Marriage", "Other"].map((cat) => (
+                  {["all", "Marriage", "Engagement", "Halad", "Sangit", "Vidhi", "Other"].map((cat) => (
                     <button
                       key={cat}
                       onClick={() => setGalleryFilter(cat)}
@@ -1008,47 +1144,47 @@ export default function AdminDashboardPage() {
                 </button>
               </div>
 
-              {/* Media Format Filter: All / Photos / Reels */}
-              <div className="flex items-center justify-between flex-wrap gap-2 pt-3 border-t border-[#F4ABA2]/30">
-                <div className="flex items-center gap-2">
+              {/* Media Format Filter: All / Photos / Reels (Responsive for Mobile & Desktop) */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pt-3 border-t border-[#F4ABA2]/30">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                   <span className="text-[11px] font-bold text-charcoal/70 uppercase tracking-wider">Format Filter:</span>
-                  <div className="inline-flex p-1 rounded-xl bg-[#FDF9F8] border border-[#F4ABA2]/50 text-xs font-semibold">
+                  <div className="grid grid-cols-3 sm:inline-flex p-1 rounded-xl bg-[#FDF9F8] border border-[#F4ABA2]/50 text-xs font-semibold gap-1 sm:gap-0">
                     <button
                       onClick={() => setGalleryTypeFilter("all")}
-                      className={`px-3 py-1 rounded-lg transition-all ${
+                      className={`px-2.5 sm:px-3 py-1.5 sm:py-1 rounded-lg text-center transition-all ${
                         galleryTypeFilter === "all"
                           ? "bg-[#801C30] text-white font-bold shadow-xs"
                           : "text-charcoal/70 hover:text-charcoal"
                       }`}
                     >
-                      All Formats ({galleryItems.length})
+                      All ({galleryItems.length})
                     </button>
                     <button
                       onClick={() => setGalleryTypeFilter("image")}
-                      className={`px-3 py-1 rounded-lg transition-all flex items-center gap-1 ${
+                      className={`px-2.5 sm:px-3 py-1.5 sm:py-1 rounded-lg transition-all flex items-center justify-center gap-1 ${
                         galleryTypeFilter === "image"
                           ? "bg-[#801C30] text-white font-bold shadow-xs"
                           : "text-charcoal/70 hover:text-charcoal"
                       }`}
                     >
-                      <ImageIcon className="w-3.5 h-3.5" />
+                      <ImageIcon className="w-3.5 h-3.5 shrink-0" />
                       <span>Photos ({galleryItems.filter((i) => i.type === "image").length})</span>
                     </button>
                     <button
                       onClick={() => setGalleryTypeFilter("reel")}
-                      className={`px-3 py-1 rounded-lg transition-all flex items-center gap-1 ${
+                      className={`px-2.5 sm:px-3 py-1.5 sm:py-1 rounded-lg transition-all flex items-center justify-center gap-1 ${
                         galleryTypeFilter === "reel"
                           ? "bg-[#801C30] text-white font-bold shadow-xs"
                           : "text-charcoal/70 hover:text-charcoal"
                       }`}
                     >
-                      <Film className="w-3.5 h-3.5" />
-                      <span>Reels / Videos ({galleryItems.filter((i) => i.type === "reel").length})</span>
+                      <Film className="w-3.5 h-3.5 shrink-0" />
+                      <span>Reels ({galleryItems.filter((i) => i.type === "reel").length})</span>
                     </button>
                   </div>
                 </div>
 
-                <div className="text-xs text-charcoal/60">
+                <div className="text-[11px] sm:text-xs text-charcoal/60">
                   Showing <span className="font-bold text-[#801C30]">{filteredGallery.length}</span> media item{filteredGallery.length !== 1 ? "s" : ""}
                 </div>
               </div>
@@ -1296,14 +1432,14 @@ export default function AdminDashboardPage() {
                   <select
                     value={mediaCategory}
                     onChange={(e: any) => setMediaCategory(e.target.value)}
-                    className="w-full p-3 bg-[#FDF9F8] border border-[#F4ABA2]/60 rounded-xl text-charcoal font-medium focus:outline-none focus:border-[#801C30]"
+                    className="w-full max-w-full truncate p-2.5 sm:p-3 bg-[#FDF9F8] border border-[#F4ABA2]/60 rounded-xl text-charcoal font-medium text-xs sm:text-sm focus:outline-none focus:border-[#801C30]"
                   >
-                    <option value="Other">Other / General Highlights (Default if not selected)</option>
-                    <option value="Engagement">1. Engagement (Ring Ceremony)</option>
-                    <option value="Halad">2. Halad (Haldi Courtyard)</option>
-                    <option value="Sangit">3. Sangit (Sangeet &amp; Concert Stage)</option>
-                    <option value="Vidhi">4. Vidhi (Vedic Rituals &amp; Customs)</option>
-                    <option value="Marriage">5. Marriage (Mandap, Varmala &amp; Reception)</option>
+                    <option value="Marriage">1. Marriage (Mandap &amp; Reception)</option>
+                    <option value="Engagement">2. Engagement (Ring Ceremony)</option>
+                    <option value="Halad">3. Halad (Haldi Courtyard)</option>
+                    <option value="Sangit">4. Sangit (Sangeet &amp; Stage)</option>
+                    <option value="Vidhi">5. Vidhi (Vedic Rituals)</option>
+                    <option value="Other">6. Other / Highlights</option>
                   </select>
                 </div>
 
@@ -1368,44 +1504,44 @@ export default function AdminDashboardPage() {
 
       {/* EDIT MODAL: Update Category & Description */}
       {editingItem && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4 animate-in fade-in">
-          <div className="bg-white rounded-3xl border border-[#F4ABA2] w-full max-w-md overflow-hidden shadow-2xl">
-            <div className="p-6 border-b border-[#F4ABA2]/40 bg-[#F9CFCA]/30 flex items-center justify-between">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-3 sm:p-4 animate-in fade-in overflow-y-auto">
+          <div className="bg-white rounded-2xl sm:rounded-3xl border border-[#F4ABA2] w-full max-w-md my-auto max-h-[92vh] sm:max-h-[88vh] flex flex-col shadow-2xl overflow-hidden">
+            <div className="px-5 py-4 sm:px-6 sm:py-5 border-b border-[#F4ABA2]/40 bg-[#F9CFCA]/30 flex items-center justify-between flex-shrink-0">
               <div className="flex items-center gap-2">
-                <Edit2 className="w-5 h-5 text-[#801C30]" />
-                <h3 className="font-serif text-xl font-bold text-charcoal">
+                <Edit2 className="w-4 h-4 sm:w-5 sm:h-5 text-[#801C30]" />
+                <h3 className="font-serif text-lg sm:text-xl font-bold text-charcoal">
                   Edit Media Information
                 </h3>
               </div>
               <button
                 onClick={() => setEditingItem(null)}
-                className="p-1.5 rounded-lg bg-white text-charcoal/60 hover:text-charcoal border border-[#F4ABA2]/60"
+                className="p-1.5 sm:p-2 rounded-xl bg-white text-charcoal/60 hover:text-charcoal border border-[#F4ABA2]/60 hover:border-[#801C30] transition-colors shadow-xs flex-shrink-0"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
             </div>
 
-            <form onSubmit={handleSaveMediaEdit} className="p-6 space-y-4 text-xs font-sans">
-              {/* Preview Thumbnail */}
-              <div className="flex items-center gap-3 p-3 rounded-2xl bg-[#FDF9F8] border border-[#F4ABA2]/40">
-                <div className="relative w-14 h-14 rounded-xl overflow-hidden bg-black/10 flex-shrink-0">
+            <form onSubmit={handleSaveMediaEdit} className="p-4 sm:p-6 space-y-4 text-xs font-sans overflow-y-auto flex-1">
+              {/* Preview Thumbnail - Fully constrained to prevent overflowing on mobile */}
+              <div className="flex items-center gap-3 p-3 rounded-2xl bg-[#FDF9F8] border border-[#F4ABA2]/40 min-w-0">
+                <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-xl overflow-hidden bg-black/10 flex-shrink-0 border border-[#F4ABA2]/40">
                   {editingItem.type === "reel" ? (
                     <video src={editingItem.src} className="w-full h-full object-cover" muted />
                   ) : (
                     <Image src={editingItem.src} alt={editingItem.title} fill className="object-cover" />
                   )}
                 </div>
-                <div>
-                  <span className="text-[10px] uppercase font-bold text-[#801C30]">
+                <div className="min-w-0 flex-1">
+                  <span className="text-[10px] uppercase font-bold text-[#801C30] block">
                     {editingItem.type.toUpperCase()}
                   </span>
-                  <div className="font-medium text-charcoal/80 text-[11px] truncate max-w-[220px]">
-                    {editingItem.title}
+                  <div className="font-medium text-charcoal/80 text-[11px] truncate w-full" title={editingItem.title}>
+                    {editingItem.title || "Untitled Media"}
                   </div>
                 </div>
               </div>
 
-              {/* Edit Category */}
+              {/* Edit Category (Marriage #1 and Other #6) */}
               <div>
                 <label className="block font-bold text-charcoal mb-1.5">
                   Change Ritual / Category
@@ -1413,14 +1549,14 @@ export default function AdminDashboardPage() {
                 <select
                   value={editCategory}
                   onChange={(e: any) => setEditCategory(e.target.value)}
-                  className="w-full p-2.5 bg-[#FDF9F8] border border-[#F4ABA2]/60 rounded-xl text-charcoal font-medium focus:outline-none focus:border-[#801C30]"
+                  className="w-full max-w-full truncate p-2 sm:p-2.5 bg-[#FDF9F8] border border-[#F4ABA2]/60 rounded-xl text-charcoal font-medium text-xs focus:outline-none focus:border-[#801C30]"
                 >
-                  <option value="Engagement">1. Engagement (Ring Ceremony)</option>
-                  <option value="Halad">2. Halad (Haldi Courtyard)</option>
-                  <option value="Sangit">3. Sangit (Sangeet &amp; Concert Stage)</option>
-                  <option value="Vidhi">4. Vidhi (Vedic Rituals &amp; Customs)</option>
-                  <option value="Marriage">5. Marriage (Mandap, Varmala &amp; Reception)</option>
-                  <option value="Other">Other / General Highlights</option>
+                  <option value="Marriage">1. Marriage (Mandap &amp; Reception)</option>
+                  <option value="Engagement">2. Engagement (Ring Ceremony)</option>
+                  <option value="Halad">3. Halad (Haldi Courtyard)</option>
+                  <option value="Sangit">4. Sangit (Sangeet &amp; Stage)</option>
+                  <option value="Vidhi">5. Vidhi (Vedic Rituals)</option>
+                  <option value="Other">6. Other / Highlights</option>
                 </select>
               </div>
 
@@ -1452,18 +1588,18 @@ export default function AdminDashboardPage() {
                 </div>
               </div>
 
-              <div className="pt-2 flex justify-end gap-2">
+              <div className="pt-2 flex justify-end gap-2 border-t border-[#F4ABA2]/30">
                 <button
                   type="button"
                   onClick={() => setEditingItem(null)}
-                  className="px-4 py-2 rounded-xl bg-white border border-[#F4ABA2] text-charcoal font-semibold hover:bg-[#FDF9F8]"
+                  className="px-4 py-2 rounded-xl bg-white border border-[#F4ABA2] text-charcoal font-semibold hover:bg-[#FDF9F8] transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSavingEdit}
-                  className="px-4 py-2 rounded-xl bg-[#801C30] hover:bg-[#6F1829] text-white font-semibold flex items-center gap-1.5 shadow-sm"
+                  className="px-4 py-2 rounded-xl bg-[#801C30] hover:bg-[#6F1829] text-white font-semibold flex items-center gap-1.5 shadow-sm transition-colors"
                 >
                   {isSavingEdit ? (
                     <>
@@ -1485,15 +1621,15 @@ export default function AdminDashboardPage() {
 
       {/* Enquiry Detail Modal */}
       {selectedEnquiry && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-3 sm:p-4 animate-in fade-in">
-          <div className="bg-white rounded-2xl sm:rounded-3xl border border-[#F4ABA2] w-full max-w-lg overflow-hidden shadow-2xl transition-all">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-2 sm:p-4 animate-in fade-in overflow-y-auto">
+          <div className="bg-white rounded-2xl sm:rounded-3xl border border-[#F4ABA2] w-full max-w-lg my-auto max-h-[92vh] sm:max-h-[88vh] flex flex-col shadow-2xl transition-all overflow-hidden">
             {/* Modal Header */}
-            <div className="px-5 py-4 sm:px-6 sm:py-5 border-b border-[#F4ABA2]/40 bg-[#F9CFCA]/30 flex items-center justify-between">
-              <div>
-                <h3 className="font-serif text-lg sm:text-xl font-bold text-charcoal tracking-tight">
+            <div className="px-4 py-3.5 sm:px-6 sm:py-5 border-b border-[#F4ABA2]/40 bg-[#F9CFCA]/30 flex items-center justify-between flex-shrink-0">
+              <div className="pr-2">
+                <h3 className="font-serif text-base sm:text-xl font-bold text-charcoal tracking-tight truncate max-w-[250px] sm:max-w-sm">
                   {selectedEnquiry.fullName || selectedEnquiry.fullname || "Client Enquiry"}
                 </h3>
-                <p className="text-[11px] sm:text-xs text-charcoal/60 mt-0.5">
+                <p className="text-[10px] sm:text-xs text-charcoal/60 mt-0.5">
                   Received on {new Date(selectedEnquiry.created_at).toLocaleString("en-IN", {
                     dateStyle: "medium",
                     timeStyle: "short",
@@ -1502,15 +1638,15 @@ export default function AdminDashboardPage() {
               </div>
               <button
                 onClick={() => setSelectedEnquiry(null)}
-                className="p-1.5 sm:p-2 rounded-xl bg-white text-charcoal/60 hover:text-charcoal border border-[#F4ABA2]/60 hover:border-[#801C30] transition-colors shadow-xs"
+                className="p-1.5 sm:p-2 rounded-xl bg-white text-charcoal/60 hover:text-charcoal border border-[#F4ABA2]/60 hover:border-[#801C30] transition-colors shadow-xs flex-shrink-0"
                 title="Close modal"
               >
                 <X className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
             </div>
 
-            {/* Modal Body */}
-            <div className="p-4 sm:p-6 space-y-4 text-xs max-h-[75vh] overflow-y-auto">
+            {/* Modal Body (Scrollable with bottom padding) */}
+            <div className="p-4 sm:p-6 space-y-3.5 sm:space-y-4 text-xs overflow-y-auto flex-1">
               {/* Primary Contact Details */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
                 <div className="p-3 sm:p-3.5 rounded-xl sm:rounded-2xl bg-[#FDF9F8] border border-[#F4ABA2]/40 space-y-1">
@@ -1568,7 +1704,7 @@ export default function AdminDashboardPage() {
                       Exact Wedding Dates
                     </span>
                     <div className="font-semibold text-charcoal text-xs sm:text-sm">
-                      {selectedEnquiry.weddingDates || selectedEnquiry.weddingdates || "Not finalised yet"}
+                      {formatWeddingDate(selectedEnquiry.weddingDates || selectedEnquiry.weddingdates)}
                     </div>
                   </div>
 
@@ -1630,7 +1766,7 @@ export default function AdminDashboardPage() {
 
               {/* Internal Admin Remark */}
               <div className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-amber-50/50 border border-amber-200/80 space-y-1.5">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between flex-wrap gap-1">
                   <span className="text-[10px] text-amber-800 uppercase font-bold tracking-wider block">
                     Admin Status &amp; Remark Note
                   </span>
@@ -1657,13 +1793,13 @@ export default function AdminDashboardPage() {
               </div>
             </div>
 
-            {/* Modal Footer */}
-            <div className="p-3.5 sm:p-4 bg-[#F9CFCA]/20 border-t border-[#F4ABA2]/40 flex items-center justify-between gap-2">
+            {/* Modal Footer (Sticky at bottom, always fully accessible) */}
+            <div className="p-3 sm:p-4 bg-[#F9CFCA]/20 border-t border-[#F4ABA2]/40 flex flex-wrap items-center justify-between gap-2 flex-shrink-0">
               <a
                 href={`https://wa.me/${selectedEnquiry.phone.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(`Namaskar ${selectedEnquiry.fullName || selectedEnquiry.fullname || ""}, this is from Hindavi Wedding Family regarding your wedding enquiry!`)}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-3.5 py-2 rounded-xl bg-green-50 hover:bg-green-100 text-green-700 font-semibold text-xs border border-green-300 transition-colors flex items-center gap-1.5"
+                className="px-3.5 py-2 rounded-xl bg-green-50 hover:bg-green-100 text-green-700 font-semibold text-xs border border-green-300 transition-colors flex items-center gap-1.5 shadow-xs"
               >
                 <Phone className="w-3.5 h-3.5 text-[#25D366]" />
                 <span>WhatsApp Client</span>
@@ -1674,13 +1810,13 @@ export default function AdminDashboardPage() {
                     const cur = selectedEnquiry;
                     handleOpenStatusModal(cur, cur.status);
                   }}
-                  className="px-3.5 py-2 rounded-xl bg-amber-100/70 hover:bg-amber-100 border border-amber-300 text-amber-900 font-semibold text-xs transition-colors"
+                  className="px-3 py-2 rounded-xl bg-amber-100/70 hover:bg-amber-100 border border-amber-300 text-amber-900 font-semibold text-xs transition-colors"
                 >
                   Edit Status / Remark
                 </button>
                 <button
                   onClick={() => setSelectedEnquiry(null)}
-                  className="px-5 py-2 rounded-xl bg-white border border-[#F4ABA2] hover:border-[#801C30] hover:bg-[#FDF9F8] text-charcoal font-semibold text-xs transition-colors shadow-xs"
+                  className="px-4 sm:px-5 py-2 rounded-xl bg-white border border-[#F4ABA2] hover:border-[#801C30] hover:bg-[#FDF9F8] text-charcoal font-semibold text-xs transition-colors shadow-xs"
                 >
                   Close
                 </button>

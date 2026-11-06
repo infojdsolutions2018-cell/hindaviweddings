@@ -75,14 +75,14 @@ export function SectionHeading({
         </span>
       )}
       <h2
-        className={`font-serif text-3xl sm:text-4xl lg:text-5xl tracking-tight leading-tight transition-all duration-300 ${
+        className={`font-serif text-2xl sm:text-4xl lg:text-5xl tracking-tight leading-tight transition-all duration-300 ${
           inverted ? "text-white" : "text-charcoal"
         }`}
       >
         {title}
       </h2>
       <div
-        className={`relative w-24 h-1 my-4 rounded-full overflow-hidden bg-coral/20 ${
+        className={`relative w-20 sm:w-24 h-1 my-3 sm:my-4 rounded-full overflow-hidden bg-coral/20 ${
           centered ? "mx-auto" : ""
         }`}
         aria-hidden="true"
@@ -91,7 +91,7 @@ export function SectionHeading({
       </div>
       {subtitle && (
         <p
-          className={`font-sans text-base sm:text-lg max-w-2xl mx-auto leading-relaxed ${
+          className={`font-sans text-xs sm:text-base md:text-lg max-w-2xl mx-auto leading-relaxed ${
             inverted ? "text-ivory-200" : "text-charcoal-muted"
           }`}
         >

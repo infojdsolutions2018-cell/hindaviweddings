@@ -266,7 +266,7 @@ export default function ServiceDetailPage({
   return (
     <>
       {/* Editorial Image Hero */}
-      <section className="relative min-h-[50vh] sm:min-h-[60vh] flex items-center justify-center overflow-hidden bg-charcoal text-white">
+      <section className="relative min-h-[42vh] sm:min-h-[55vh] flex items-center justify-center overflow-hidden bg-charcoal text-white">
         <div className="absolute inset-0 z-0">
           <Image
             src={service.heroImage}
@@ -279,10 +279,10 @@ export default function ServiceDetailPage({
           <div className="absolute inset-0 bg-gradient-to-t from-charcoal via-charcoal/70 to-charcoal/40" />
         </div>
 
-        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center space-y-4">
+        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-20 text-center space-y-2.5 sm:space-y-4">
           <Link
             href="/services"
-            className="inline-flex items-center space-x-1.5 text-xs uppercase tracking-widest text-gold-light hover:text-white font-sans font-semibold mb-2"
+            className="inline-flex items-center space-x-1.5 text-[11px] sm:text-xs uppercase tracking-widest text-gold-light hover:text-white font-sans font-semibold mb-1 sm:mb-2"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Back to All Services</span>
@@ -294,23 +294,23 @@ export default function ServiceDetailPage({
             </Badge>
           </div>
 
-          <h1 className="font-serif text-3xl sm:text-5xl lg:text-6xl text-white font-normal leading-tight">
+          <h1 className="font-serif text-2xl sm:text-5xl lg:text-6xl text-white font-normal leading-[1.15] sm:leading-tight">
             {service.title}
           </h1>
 
-          <p className="font-sans text-sm sm:text-base text-ivory-100 max-w-2xl mx-auto leading-relaxed">
+          <p className="font-sans text-xs sm:text-base text-ivory-100 max-w-2xl mx-auto leading-relaxed font-light">
             {service.summary}
           </p>
         </div>
       </section>
 
       {/* Main Content Sections */}
-      <Section background="white">
-        <div className="max-w-4xl mx-auto space-y-16">
+      <Section background="white" className="!py-6 sm:!py-14">
+        <div className="max-w-4xl mx-auto space-y-8 sm:space-y-16">
           {/* Scope and Inclusions */}
-          <div className="bg-ivory-50 p-8 sm:p-10 rounded-2xl border border-blush/60 shadow-sm">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
-              <h2 className="font-serif text-2xl sm:text-3xl text-charcoal">
+          <div className="bg-ivory-50 p-5 sm:p-10 rounded-xl sm:rounded-2xl border border-blush/60 shadow-sm">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4 sm:mb-6">
+              <h2 className="font-serif text-xl sm:text-3xl text-charcoal leading-snug">
                 Proposed Scope &amp; Inclusions
               </h2>
               <Badge variant="neutral" size="sm">
@@ -318,22 +318,22 @@ export default function ServiceDetailPage({
               </Badge>
             </div>
 
-            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               {service.inclusions.map((item, idx) => (
                 <li
                   key={idx}
-                  className="flex items-start space-x-3 font-sans text-sm text-charcoal/90"
+                  className="flex items-start space-x-2.5 sm:space-x-3 font-sans text-xs sm:text-sm text-charcoal/90"
                 >
-                  <span className="w-5 h-5 rounded-full bg-coral/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-coral" />
+                  <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-coral/10 flex items-center justify-center shrink-0 mt-0.5">
+                    <CheckCircle2 className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-coral" />
                   </span>
                   <span>{item}</span>
                 </li>
               ))}
             </ul>
 
-            <div className="mt-8 pt-6 border-t border-blush/40 flex items-center space-x-2 text-xs text-charcoal/70 font-sans">
-              <ShieldCheck className="w-4 h-4 text-coral flex-shrink-0" />
+            <div className="mt-5 sm:mt-8 pt-4 sm:pt-6 border-t border-blush/40 flex items-center space-x-2 text-[11px] sm:text-xs text-charcoal/70 font-sans">
+              <ShieldCheck className="w-4 h-4 text-coral shrink-0" />
               <span>
                 Final inclusions, quantities, and milestones are customized per
                 venue scale and family traditions.
@@ -345,39 +345,39 @@ export default function ServiceDetailPage({
               KEY BENEFITS & FEATURES (EXACT REFERENCE 3D CARD STYLE)
               ======================================================== */}
           {service.keyBenefits && service.keyBenefits.length > 0 && (
-            <div className="bg-white rounded-3xl border border-blush/60 p-6 sm:p-8 shadow-[0_10px_30px_rgba(242,136,123,0.08)] space-y-6">
+            <div className="bg-white rounded-2xl sm:rounded-3xl border border-blush/60 p-4 sm:p-8 shadow-[0_10px_30px_rgba(242,136,123,0.08)] space-y-4 sm:space-y-6">
               {/* Header with 3D Glossy Icon */}
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#E0F2FE] via-[#BAE6FD] to-[#38BDF8] p-0.5 shadow-[0_4px_12px_rgba(56,189,248,0.35)] flex items-center justify-center flex-shrink-0">
-                  <div className="w-full h-full rounded-[14px] bg-gradient-to-tr from-[#38BDF8] to-[#E0F2FE] flex items-center justify-center text-white shadow-inner">
-                    <Award className="w-6 h-6 text-white drop-shadow-sm fill-white/20" />
+              <div className="flex items-center gap-3 sm:gap-4">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-gradient-to-br from-[#E0F2FE] via-[#BAE6FD] to-[#38BDF8] p-0.5 shadow-[0_4px_12px_rgba(56,189,248,0.35)] flex items-center justify-center shrink-0">
+                  <div className="w-full h-full rounded-[10px] sm:rounded-[14px] bg-gradient-to-tr from-[#38BDF8] to-[#E0F2FE] flex items-center justify-center text-white shadow-inner">
+                    <Award className="w-5 h-5 sm:w-6 sm:h-6 text-white drop-shadow-sm fill-white/20" />
                   </div>
                 </div>
                 <div>
-                  <h3 className="font-sans text-lg sm:text-xl font-extrabold text-charcoal tracking-tight">
+                  <h3 className="font-sans text-base sm:text-xl font-extrabold text-charcoal tracking-tight">
                     Key Benefits &amp; Features
                   </h3>
-                  <p className="font-sans text-xs sm:text-sm text-charcoal/60">
+                  <p className="font-sans text-[11px] sm:text-sm text-charcoal/60">
                     Curated advantages tailored for this service tier
                   </p>
                 </div>
               </div>
 
               {/* Pill List matching uploaded screenshot */}
-              <div className="space-y-3">
+              <div className="space-y-2.5 sm:space-y-3">
                 {service.keyBenefits.map((benefit, idx) => (
                   <div
                     key={idx}
-                    className="p-4 rounded-2xl bg-[#F8FAFC] hover:bg-white border border-[#E2E8F0]/80 hover:border-coral/40 shadow-xs hover:shadow-md transition-all duration-300 flex items-start gap-3.5 group"
+                    className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-[#F8FAFC] hover:bg-white border border-[#E2E8F0]/80 hover:border-coral/40 shadow-xs hover:shadow-md transition-all duration-300 flex items-start gap-2.5 sm:gap-3.5 group"
                   >
-                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-[#22C55E] to-[#15803D] flex items-center justify-center flex-shrink-0 shadow-[0_2px_6px_rgba(34,197,94,0.4)] mt-0.5">
-                      <CheckCircle2 className="w-4 h-4 text-white fill-white/20" />
+                    <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-gradient-to-br from-[#22C55E] to-[#15803D] flex items-center justify-center shrink-0 shadow-[0_2px_6px_rgba(34,197,94,0.4)] mt-0.5">
+                      <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white fill-white/20" />
                     </div>
-                    <div className="space-y-0.5">
-                      <h4 className="font-sans text-sm font-bold text-charcoal/90 group-hover:text-coral transition-colors">
+                    <div className="space-y-0.5 min-w-0">
+                      <h4 className="font-sans text-xs sm:text-sm font-bold text-charcoal/90 group-hover:text-coral transition-colors">
                         {benefit.title}
                       </h4>
-                      <p className="font-sans text-xs text-charcoal/70 leading-relaxed font-normal">
+                      <p className="font-sans text-[11px] sm:text-xs text-charcoal/70 leading-relaxed font-normal">
                         {benefit.description}
                       </p>
                     </div>
@@ -391,54 +391,56 @@ export default function ServiceDetailPage({
               REQUIRED DOCUMENTS CHECKLIST (EXACT REFERENCE 3D CARD STYLE)
               ======================================================== */}
           {service.requiredDocuments && service.requiredDocuments.length > 0 && (
-            <div className="bg-white rounded-3xl border border-blush/60 p-6 sm:p-8 shadow-[0_10px_30px_rgba(242,136,123,0.08)] space-y-6">
+            <div className="bg-white rounded-2xl sm:rounded-3xl border border-blush/60 p-4 sm:p-8 shadow-[0_10px_30px_rgba(242,136,123,0.08)] space-y-4 sm:space-y-6">
               {/* Header with 3D Glossy Red/Coral Icon */}
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#FFE4E6] via-[#FECDD3] to-[#F43F5E] p-0.5 shadow-[0_4px_12px_rgba(244,63,94,0.3)] flex items-center justify-center flex-shrink-0">
-                  <div className="w-full h-full rounded-[14px] bg-gradient-to-tr from-[#E11D48] to-[#FDA4AF] flex items-center justify-center text-white shadow-inner">
-                    <FileCheck className="w-6 h-6 text-white drop-shadow-sm fill-white/20" />
+              <div className="flex items-center gap-3 sm:gap-4">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-gradient-to-br from-[#FFE4E6] via-[#FECDD3] to-[#F43F5E] p-0.5 shadow-[0_4px_12px_rgba(244,63,94,0.3)] flex items-center justify-center shrink-0">
+                  <div className="w-full h-full rounded-[10px] sm:rounded-[14px] bg-gradient-to-tr from-[#E11D48] to-[#FDA4AF] flex items-center justify-center text-white shadow-inner">
+                    <FileCheck className="w-5 h-5 sm:w-6 sm:h-6 text-white drop-shadow-sm fill-white/20" />
                   </div>
                 </div>
                 <div>
-                  <h3 className="font-sans text-lg sm:text-xl font-extrabold text-charcoal tracking-tight">
+                  <h3 className="font-sans text-base sm:text-xl font-extrabold text-charcoal tracking-tight">
                     Required Documents Checklist
                   </h3>
-                  <p className="font-sans text-xs sm:text-sm text-charcoal/60">
+                  <p className="font-sans text-[11px] sm:text-sm text-charcoal/60">
                     Keep digital or physical copies ready for planning clearance
                   </p>
                 </div>
               </div>
 
               {/* Document rows matching the uploaded image */}
-              <div className="space-y-3">
+              <div className="space-y-2.5 sm:space-y-3">
                 {service.requiredDocuments.map((doc, idx) => (
                   <div
                     key={idx}
-                    className="p-4 rounded-2xl bg-[#F8FAFC] hover:bg-white border border-[#E2E8F0]/80 hover:border-coral/40 shadow-xs hover:shadow-md transition-all duration-300 flex items-center justify-between gap-3.5 group"
+                    className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-[#F8FAFC] hover:bg-white border border-[#E2E8F0]/80 hover:border-coral/40 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3.5 group"
                   >
-                    <div className="flex items-start gap-3.5">
-                      <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#E0F2FE] to-[#BAE6FD] border border-[#7DD3FC]/50 flex items-center justify-center flex-shrink-0 text-[#0284C7] shadow-[0_2px_6px_rgba(2,132,199,0.2)] mt-0.5">
-                        <FileText className="w-4 h-4 fill-[#0284C7]/20" />
+                    <div className="flex items-start gap-2.5 sm:gap-3.5">
+                      <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-gradient-to-br from-[#E0F2FE] to-[#BAE6FD] border border-[#7DD3FC]/50 flex items-center justify-center shrink-0 text-[#0284C7] shadow-[0_2px_6px_rgba(2,132,199,0.2)] mt-0.5">
+                        <FileText className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-[#0284C7]/20" />
                       </div>
                       <div className="space-y-0.5">
-                        <h4 className="font-sans text-sm font-bold text-charcoal/90 group-hover:text-coral transition-colors">
+                        <h4 className="font-sans text-xs sm:text-sm font-bold text-charcoal/90 group-hover:text-coral transition-colors">
                           {doc.title}
                         </h4>
-                        <p className="font-sans text-xs text-charcoal/65 leading-relaxed">
+                        <p className="font-sans text-[11px] sm:text-xs text-charcoal/65 leading-relaxed">
                           {doc.description}
                         </p>
                       </div>
                     </div>
 
-                    <span
-                      className={`text-[10px] uppercase font-sans font-bold tracking-wider px-2.5 py-1 rounded-full flex-shrink-0 ${
-                        doc.isMandatory
-                          ? "bg-coral/15 text-coral-dark border border-coral/30"
-                          : "bg-charcoal/5 text-charcoal/70 border border-charcoal/10"
-                      }`}
-                    >
-                      {doc.isMandatory ? "Mandatory" : "Recommended"}
-                    </span>
+                    <div className="flex justify-end sm:justify-start">
+                      <span
+                        className={`text-[9px] sm:text-[10px] uppercase font-sans font-bold tracking-wider px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full shrink-0 ${
+                          doc.isMandatory
+                            ? "bg-coral/15 text-coral-dark border border-coral/30"
+                            : "bg-charcoal/5 text-charcoal/70 border border-charcoal/10"
+                        }`}
+                      >
+                        {doc.isMandatory ? "Mandatory" : "Recommended"}
+                      </span>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -447,25 +449,25 @@ export default function ServiceDetailPage({
 
           {/* Workflow */}
           <div>
-            <div className="text-center mb-10">
+            <div className="text-center mb-6 sm:mb-10">
               <span className="text-xs uppercase tracking-widest text-burgundy font-sans font-semibold">
                 Execution Model
               </span>
-              <h2 className="font-serif text-2xl sm:text-4xl text-charcoal-dark mt-2">
+              <h2 className="font-serif text-xl sm:text-4xl text-charcoal-dark mt-1 sm:mt-2">
                 Our Collaborative Process
               </h2>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
               {service.workflow.map((step, idx) => (
                 <div
                   key={idx}
-                  className="p-6 rounded-2xl bg-white border border-blush/60 text-center space-y-2 shadow-xs hover:shadow-lg hover:-translate-y-1 hover:border-coral/50 transition-all duration-300"
+                  className="p-4 sm:p-6 rounded-xl sm:rounded-2xl bg-white border border-blush/60 text-center space-y-1 sm:space-y-2 shadow-xs hover:shadow-lg hover:-translate-y-1 hover:border-coral/50 transition-all duration-300"
                 >
-                  <span className="font-sans text-xs uppercase tracking-widest text-coral font-bold block">
+                  <span className="font-sans text-[11px] sm:text-xs uppercase tracking-widest text-coral font-bold block">
                     Phase {idx + 1}
                   </span>
-                  <span className="font-serif text-base text-charcoal block font-medium">
+                  <span className="font-serif text-sm sm:text-base text-charcoal block font-medium">
                     {step.replace(/^\d+\.\s*/, "")}
                   </span>
                 </div>

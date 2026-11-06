@@ -21,27 +21,27 @@ export function PageHeading({
 }: PageHeadingProps) {
   return (
     <div
-      className={`py-12 md:py-16 ${
+      className={`py-8 sm:py-12 md:py-16 ${
         centered ? "text-center" : "text-left"
       } ${className}`}
     >
-      <div className="flex flex-wrap items-center gap-2 mb-3 justify-center">
+      <div className="flex flex-wrap items-center gap-2 mb-2 sm:mb-3 justify-center">
         {eyebrow && (
-          <span className="text-xs uppercase tracking-widest font-sans font-semibold text-burgundy">
+          <span className="text-[11px] sm:text-xs uppercase tracking-widest font-sans font-semibold text-burgundy">
             {eyebrow}
           </span>
         )}
         {badge && <Badge variant="gold">{badge}</Badge>}
       </div>
 
-      <h1 className="font-serif text-3xl sm:text-5xl lg:text-6xl text-charcoal-dark tracking-tight leading-tight">
+      <h1 className="font-serif text-2xl sm:text-5xl lg:text-6xl text-charcoal-dark tracking-tight leading-snug sm:leading-tight">
         {title}
       </h1>
 
       <Divider variant="ornate" centered={centered} />
 
       {subtitle && (
-        <p className="font-sans text-base sm:text-lg text-charcoal-muted max-w-2xl mx-auto leading-relaxed">
+        <p className="font-sans text-xs sm:text-base md:text-lg text-charcoal-muted max-w-2xl mx-auto leading-relaxed">
           {subtitle}
         </p>
       )}

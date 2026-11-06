@@ -96,12 +96,12 @@ export default function ServicesPage() {
           <div className="absolute inset-0 bg-gradient-to-t from-charcoal via-charcoal/70 to-black/30" />
         </div>
 
-        <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 py-10 sm:py-14 text-center space-y-3 sm:space-y-4">
-          <div className="inline-flex items-center px-3.5 py-1 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white text-[11px] uppercase tracking-[0.25em] font-sans font-bold">
+        <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-14 text-center space-y-2.5 sm:space-y-4">
+          <div className="inline-flex items-center px-3 py-0.5 sm:px-3.5 sm:py-1 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white text-[10px] sm:text-[11px] uppercase tracking-[0.2em] sm:tracking-[0.25em] font-sans font-bold">
             <span>Specialized Capabilities</span>
           </div>
 
-          <h1 className="font-serif text-3xl sm:text-5xl md:text-6xl font-normal text-white tracking-tight leading-[1.1]">
+          <h1 className="font-serif text-2xl sm:text-5xl md:text-6xl font-normal text-white tracking-tight leading-[1.15] sm:leading-[1.1]">
             Our Wedding &amp; Event Services
           </h1>
 
@@ -126,14 +126,14 @@ export default function ServicesPage() {
               background={isIvoryBg ? "ivory" : "white"}
               className="border-b border-ivory-200"
             >
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 lg:gap-16 items-center">
                 {/* Image Column */}
                 <div
                   className={`lg:col-span-6 relative ${
                     isImageLeft ? "lg:order-1" : "lg:order-2"
                   }`}
                 >
-                  <div className="relative aspect-[16/11] rounded-sm overflow-hidden shadow-2xl border-4 border-ivory group">
+                  <div className="relative aspect-[16/11] rounded-xl sm:rounded-sm overflow-hidden shadow-xl sm:shadow-2xl border-2 sm:border-4 border-ivory group">
                     <Image
                       src={srv.imageUrl}
                       alt={srv.imageAlt}
@@ -147,52 +147,52 @@ export default function ServicesPage() {
 
                 {/* Content Column */}
                 <div
-                  className={`lg:col-span-6 space-y-6 ${
+                  className={`lg:col-span-6 space-y-4 sm:space-y-6 ${
                     isImageLeft ? "lg:order-2" : "lg:order-1"
                   }`}
                 >
-                  <div className="space-y-2">
+                  <div className="space-y-1.5 sm:space-y-2">
                     <span className="text-xs uppercase tracking-[0.25em] text-burgundy font-sans font-semibold">
                       {srv.eyebrow}
                     </span>
-                    <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-charcoal-dark leading-tight">
+                    <h2 className="font-serif text-2xl sm:text-4xl lg:text-5xl text-charcoal-dark leading-snug sm:leading-tight">
                       {srv.title}
                     </h2>
-                    <p className="font-serif italic text-lg text-gold-dark font-medium">
+                    <p className="font-serif italic text-base sm:text-lg text-gold-dark font-medium">
                       {srv.tagline}
                     </p>
                   </div>
 
                   <Divider variant="ornate" centered={false} />
 
-                  <p className="font-sans text-charcoal-muted text-sm sm:text-base leading-relaxed">
+                  <p className="font-sans text-charcoal-muted text-xs sm:text-base leading-relaxed">
                     {srv.description}
                   </p>
 
-                  <div className="space-y-3 pt-2">
+                  <div className="space-y-2.5 sm:space-y-3 pt-1 sm:pt-2">
                     <span className="font-sans text-xs uppercase tracking-wider text-charcoal-dark font-semibold block">
                       Core Offerings:
                     </span>
-                    <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
                       {srv.highlights.map((highlight, idx) => (
                         <li
                           key={idx}
                           className="flex items-start space-x-2.5 font-sans text-xs text-charcoal-light"
                         >
-                          <CheckCircle2 className="w-4 h-4 text-gold flex-shrink-0 mt-0.5" />
+                          <CheckCircle2 className="w-4 h-4 text-gold shrink-0 mt-0.5" />
                           <span>{highlight}</span>
                         </li>
                       ))}
                     </ul>
                   </div>
 
-                  <div className="pt-4 flex items-center space-x-4">
-                    <Button href={`/services/${srv.slug}`} variant="primary" size="md">
+                  <div className="pt-2 sm:pt-4 flex flex-col sm:flex-row sm:items-center gap-3 sm:space-x-4">
+                    <Button href={`/services/${srv.slug}`} variant="primary" size="md" className="w-full sm:w-auto">
                       <span>View Details & Process</span>
                       <ArrowRight className="w-4 h-4 ml-1.5" />
                     </Button>
                     <span className="text-[11px] text-charcoal-muted italic">
-                      * Inclusions subject to owner confirmation
+                      * Custom inclusions tailored to venue & ceremony scale
                     </span>
                   </div>
                 </div>
@@ -206,21 +206,21 @@ export default function ServicesPage() {
           3. CELEBRATION & EVENT SPECIALTIES
           ======================================================== */}
       <Section background="ivory" className="border-t border-b border-ivory-200">
-        <div className="max-w-6xl mx-auto space-y-12">
-          <div className="text-center space-y-4 max-w-2xl mx-auto">
+        <div className="max-w-6xl mx-auto space-y-8 sm:space-y-12">
+          <div className="text-center space-y-3 sm:space-y-4 max-w-2xl mx-auto">
             <span className="text-xs uppercase tracking-[0.25em] text-burgundy font-sans font-semibold">
               Event Milestones & Celebrations
             </span>
-            <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl text-charcoal-dark leading-tight">
+            <h2 className="font-serif text-2xl sm:text-4xl md:text-5xl text-charcoal-dark leading-snug sm:leading-tight">
               Bespoke Decor & Production Across Every Ritual
             </h2>
             <Divider variant="ornate" centered={true} />
-            <p className="font-sans text-sm sm:text-base text-charcoal-muted leading-relaxed font-light">
+            <p className="font-sans text-xs sm:text-base text-charcoal-muted leading-relaxed font-light">
               From intimate family ceremonies to high-voltage milestone parties, explore our specialized styling and coordination services.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {BUSINESS_CONFIG.eventSpecialties.map((spec, i) => {
               // Explicit mapping matching the user's requested ceremonial themes:
               // 1. Haldi Ceremony -> No change (service_haldi_decor.jpg)
@@ -262,17 +262,17 @@ export default function ServicesPage() {
                     </span>
                   </div>
 
-                  <div className="p-5 flex-1 flex flex-col justify-between space-y-3">
+                  <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between space-y-2.5 sm:space-y-3">
                     <div>
-                      <h3 className="font-serif text-lg font-semibold text-charcoal group-hover:text-coral transition-colors">
+                      <h3 className="font-serif text-base sm:text-lg font-semibold text-charcoal group-hover:text-coral transition-colors">
                         {spec.title}
                       </h3>
-                      <p className="font-sans text-xs text-charcoal/70 leading-relaxed mt-1.5 font-light">
+                      <p className="font-sans text-xs text-charcoal/70 leading-relaxed mt-1 font-light">
                         {spec.description}
                       </p>
                     </div>
 
-                    <div className="pt-3 border-t border-blush/40 flex items-center justify-between text-xs text-coral font-medium">
+                    <div className="pt-2.5 sm:pt-3 border-t border-blush/40 flex items-center justify-between text-xs text-coral font-medium">
                       <span className="font-sans text-[11px] uppercase tracking-wider font-semibold">Bespoke Curation</span>
                       <span className="w-1.5 h-1.5 rounded-full bg-coral" />
                     </div>

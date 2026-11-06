@@ -99,16 +99,16 @@ export default function FAQsPage() {
           <div className="absolute inset-0 bg-gradient-to-t from-charcoal via-charcoal/70 to-black/30" />
         </div>
 
-        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center space-y-5">
-          <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white text-xs uppercase tracking-[0.25em] font-sans font-bold">
+        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-16 text-center space-y-3 sm:space-y-5">
+          <div className="inline-flex items-center px-3 py-0.5 sm:px-4 sm:py-1.5 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white text-[10px] sm:text-xs uppercase tracking-[0.2em] sm:tracking-[0.25em] font-sans font-bold">
             <span>Help &amp; Insights</span>
           </div>
 
-          <h1 className="font-serif text-4xl sm:text-6xl md:text-7xl font-normal text-white tracking-tight leading-[1.1]">
+          <h1 className="font-serif text-2xl sm:text-6xl md:text-7xl font-normal text-white tracking-tight leading-[1.15] sm:leading-[1.1]">
             Frequently Asked Questions
           </h1>
 
-          <p className="font-sans text-base sm:text-lg text-white/90 max-w-2xl mx-auto leading-relaxed font-light">
+          <p className="font-sans text-xs sm:text-base md:text-lg text-white/90 max-w-2xl mx-auto leading-relaxed font-light">
             Everything you need to know about our bespoke planning, decor curation,
             and event execution across Maharashtra.
           </p>
@@ -118,27 +118,27 @@ export default function FAQsPage() {
       {/* ========================================================
           2. FAQS ACCORDION / SECTIONS
           ======================================================== */}
-      <Section background="white">
-        <div className="max-w-4xl mx-auto space-y-16">
+      <Section background="white" className="!py-6 sm:!py-14">
+        <div className="max-w-4xl mx-auto space-y-8 sm:space-y-16">
           {FAQS_DATA.map((group, gIdx) => (
-            <div key={gIdx} className="space-y-6">
-              <div className="flex items-center space-x-3 border-b border-blush/60 pb-3">
-                <HelpCircle className="w-5 h-5 text-coral" />
-                <h2 className="font-sans text-xl sm:text-2xl font-bold uppercase tracking-wide text-charcoal">
+            <div key={gIdx} className="space-y-4 sm:space-y-6">
+              <div className="flex items-center space-x-2.5 sm:space-x-3 border-b border-blush/60 pb-2.5 sm:pb-3">
+                <HelpCircle className="w-4 h-4 sm:w-5 sm:h-5 text-coral shrink-0" />
+                <h2 className="font-sans text-lg sm:text-2xl font-bold uppercase tracking-wide text-charcoal">
                   {group.category}
                 </h2>
               </div>
 
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 {group.items.map((faq, iIdx) => (
                   <div
                     key={iIdx}
-                    className="p-6 sm:p-7 rounded-2xl bg-blush-50/70 border border-blush/60 space-y-3 transition-all hover:border-coral/60 shadow-xs"
+                    className="p-4 sm:p-7 rounded-xl sm:rounded-2xl bg-blush-50/70 border border-blush/60 space-y-2 sm:space-y-3 transition-all hover:border-coral/60 shadow-xs"
                   >
-                    <h3 className="font-sans text-base sm:text-lg font-bold text-charcoal flex items-start justify-between">
+                    <h3 className="font-sans text-sm sm:text-lg font-bold text-charcoal flex items-start justify-between leading-snug">
                       <span>{faq.question}</span>
                     </h3>
-                    <p className="font-sans text-sm sm:text-base text-charcoal/80 leading-relaxed">
+                    <p className="font-sans text-xs sm:text-base text-charcoal/80 leading-relaxed">
                       {faq.answer}
                     </p>
                   </div>
@@ -148,18 +148,18 @@ export default function FAQsPage() {
           ))}
 
           {/* Direct Support Card */}
-          <div className="p-8 sm:p-10 rounded-2xl bg-white border border-blush/80 text-center space-y-4 shadow-xs">
-            <h3 className="font-sans text-2xl font-extrabold uppercase tracking-tight text-charcoal">
+          <div className="p-5 sm:p-10 rounded-xl sm:rounded-2xl bg-white border border-blush/80 text-center space-y-3 sm:space-y-4 shadow-xs">
+            <h3 className="font-sans text-xl sm:text-2xl font-extrabold uppercase tracking-tight text-charcoal">
               Have a Specific Question?
             </h3>
-            <p className="font-sans text-sm text-charcoal/80 max-w-lg mx-auto leading-relaxed">
+            <p className="font-sans text-xs sm:text-sm text-charcoal/80 max-w-lg mx-auto leading-relaxed">
               Our wedding directors are available to discuss dates, venue logistics,
               or specialized ceremonial traditions directly.
             </p>
             <div className="pt-2">
               <Link
                 href="/contact"
-                className="inline-flex items-center space-x-2 bg-coral hover:bg-coral-dark text-white font-sans text-xs uppercase tracking-wider font-bold py-3.5 px-8 rounded-full transition-all shadow-md"
+                className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 bg-coral hover:bg-coral-dark text-white font-sans text-xs uppercase tracking-wider font-bold py-3 sm:py-3.5 px-6 sm:px-8 rounded-full transition-all shadow-md"
               >
                 <span>Ask Us Directly</span>
                 <ChevronRight className="w-4 h-4" />

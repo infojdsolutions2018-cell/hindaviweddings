@@ -6,7 +6,7 @@ export interface GalleryMediaItem {
   src: string;
   title: string;
   aspect: "square" | "tall" | "wide";
-  category: "Engagement" | "Halad" | "Sangit" | "Vidhi" | "Marriage" | "Other";
+  category: "Marriage" | "Engagement" | "Halad" | "Sangit" | "Vidhi" | "Other";
   fileId?: string;
   created_at?: string;
 }
@@ -33,34 +33,7 @@ interface MemoryStore {
 }
 
 const globalMemory: MemoryStore = {
-  enquiries: [
-    {
-      id: 1,
-      fullName: "Aniket & Snehal Deshmukh",
-      phone: "+91 98220 12345",
-      email: "aniket.deshmukh@example.com",
-      eventDate: "2026-12-14",
-      eventType: "Wedding & Reception",
-      guestCount: "450",
-      estimatedBudget: "₹15 - 25 Lakhs",
-      message: "Looking for traditional Maharashtrian Vedic mandap and reception lighting in Karad.",
-      status: "new",
-      created_at: new Date(Date.now() - 3600000 * 4).toISOString(),
-    },
-    {
-      id: 2,
-      fullName: "Rohan Patil",
-      phone: "+91 99701 54321",
-      email: "rohan.patil@example.com",
-      eventDate: "2026-11-28",
-      eventType: "Halad & Sangeet",
-      guestCount: "300",
-      estimatedBudget: "₹8 - 12 Lakhs",
-      message: "High-energy Sangeet concert trussing and festive Halad decor.",
-      status: "contacted",
-      created_at: new Date(Date.now() - 3600000 * 24).toISOString(),
-    },
-  ],
+  enquiries: [],
   customGalleryItems: [],
 };
 
@@ -273,7 +246,7 @@ export async function saveGalleryMedia(data: {
   src: string;
   title: string;
   aspect: "square" | "tall" | "wide";
-  category: "Engagement" | "Halad" | "Sangit" | "Vidhi" | "Marriage" | "Other";
+  category: "Marriage" | "Engagement" | "Halad" | "Sangit" | "Vidhi" | "Other";
   fileId?: string;
 }) {
   const startTime = Date.now();
