@@ -7,8 +7,9 @@ import {
   Users, Calendar, Mail, Phone, Clock, CheckCircle2, 
   Search, Filter, RefreshCw, Eye, ArrowLeft, Shield, AlertCircle,
   Upload, Film, ImageIcon, Plus, Check, Loader2, Trash2, ExternalLink,
-  Edit2, Save, X, Play
+  Edit2, Save, X, Play, LogOut
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { BUSINESS_CONFIG } from "@/config/business";
 
 export type MilestoneCategory = "Marriage" | "Engagement" | "Halad" | "Sangit" | "Vidhi" | "Other";
@@ -109,6 +110,8 @@ const DEFAULT_CAPTIONS: Record<MilestoneCategory, string[]> = {
 };
 
 export default function AdminDashboardPage() {
+  const router = useRouter();
+  const [authChecking, setAuthChecking] = useState(true);
   const [activeTab, setActiveTab] = useState<"enquiries" | "gallery" | "upload">("enquiries");
   
   // Enquiries state
@@ -217,6 +220,37 @@ export default function AdminDashboardPage() {
   };
 
   useEffect(() => {
+    // Check if admin is authenticated
+    const checkAuth = async () => {
+      try {
+        const res = await fetch("/api/admin/auth");
+        const data = await res.json();
+        if (!res.ok || !data.authenticated) {
+          router.replace("/admin/login");
+          return;
+        }
+        setAuthChecking(false);
+      } catch {
+        router.replace("/admin/login");
+      }
+    };
+
+    checkAuth();
+  }, [router]);
+
+  // Handle Logout
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/admin/auth", { method: "DELETE" });
+      router.replace("/admin/login");
+    } catch {
+      router.replace("/admin/login");
+    }
+  };
+
+  useEffect(() => {
+    if (authChecking) return;
+
     fetchEnquiries();
     fetchGallery();
 
@@ -227,7 +261,7 @@ export default function AdminDashboardPage() {
     }, 5000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [authChecking]);
 
   // Open Status + Remark Update Modal
   const handleOpenStatusModal = (enquiry: EnquiryItem, newStatus: string) => {
@@ -511,6 +545,16 @@ export default function AdminDashboardPage() {
     return matchesCategory && matchesType;
   });
 
+  if (authChecking) {
+    return (
+      <div className="min-h-screen bg-[#FDF9F8] flex flex-col items-center justify-center p-4">
+        <div className="w-10 h-10 border-3 border-[#801C30] border-t-transparent rounded-full animate-spin mb-4" />
+        <p className="font-serif text-lg text-charcoal">Verifying Admin Access...</p>
+        <p className="font-sans text-xs text-charcoal/60 mt-1">Checking session credentials</p>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#FDF9F8] text-charcoal font-sans selection:bg-[#F9CFCA] selection:text-[#801C30]">
       {/* Top Header styled in signature Pink / Blush Palette */}
@@ -608,10 +652,20 @@ export default function AdminDashboardPage() {
                 fetchEnquiries();
                 fetchGallery();
               }}
-              className="hidden sm:block p-2.5 rounded-xl bg-white border border-[#F4ABA2] hover:border-[#801C30] text-charcoal hover:text-[#801C30] transition-all shadow-xs flex-shrink-0"
+              className="hidden sm:block p-2.5 rounded-xl bg-white border border-[#F4ABA2] hover:border-[#801C30] text-charcoal hover:text-[#801C30] transition-all shadow-xs shrink-0"
               title="Refresh Data"
             >
               <RefreshCw className={`w-4 h-4 ${loadingEnquiries || loadingGallery ? "animate-spin text-[#801C30]" : ""}`} />
+            </button>
+
+            {/* Logout Button */}
+            <button
+              onClick={handleLogout}
+              className="p-2 sm:p-2.5 rounded-xl bg-white border border-[#F4ABA2] hover:border-red-500 text-charcoal hover:text-red-600 transition-all shadow-xs shrink-0 flex items-center gap-1.5"
+              title="Logout from Admin"
+            >
+              <LogOut className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-red-600" />
+              <span className="hidden sm:inline text-xs font-sans font-bold text-red-600">Logout</span>
             </button>
           </div>
         </div>
