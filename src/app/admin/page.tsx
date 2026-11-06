@@ -22,8 +22,6 @@ interface EnquiryItem {
   email: string;
   eventDate?: string;
   eventdate?: string;
-  eventType?: string;
-  eventtype?: string;
   tentativeMonthYear?: string;
   tentativemonthyear?: string;
   weddingDates?: string;
@@ -957,7 +955,7 @@ export default function AdminDashboardPage() {
                                 : enquiry.tentativeMonthYear || enquiry.tentativemonthyear || enquiry.eventDate || enquiry.eventdate || "Date TBD"}
                             </div>
                             <div className="text-charcoal/60 text-[11px]">
-                              {enquiry.eventType || enquiry.eventtype || "Full Wedding"}
+                              {enquiry.location || "Pune / Maharashtra"}
                             </div>
                           </td>
                           <td className="py-3.5 px-4">
@@ -1792,15 +1790,6 @@ export default function AdminDashboardPage() {
                           ? (selectedEnquiry.estimatedBudget || selectedEnquiry.estimatedbudget)
                           : `₹${selectedEnquiry.estimatedBudget || selectedEnquiry.estimatedbudget} Lakhs`
                         : "Not specified"}
-                    </div>
-                  </div>
-
-                  <div className="p-3 rounded-xl bg-[#FDF9F8] border border-[#F4ABA2]/40 space-y-1">
-                    <span className="text-[10px] text-charcoal/50 uppercase font-bold block">
-                      Event Type / Scope
-                    </span>
-                    <div className="font-semibold text-charcoal text-xs sm:text-sm">
-                      {selectedEnquiry.eventType || selectedEnquiry.eventtype || "Full Wedding Planning & Decor"}
                     </div>
                   </div>
                 </div>

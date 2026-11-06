@@ -33,7 +33,6 @@ export async function POST(req: Request) {
       phone: body.phone,
       email: body.email,
       eventDate: body.eventDate,
-      eventType: body.eventType,
       tentativeMonthYear: body.tentativeMonthYear,
       weddingDates: body.weddingDates,
       guestCount: body.guestCount,

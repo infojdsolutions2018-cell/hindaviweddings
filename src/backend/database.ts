@@ -18,7 +18,6 @@ interface MemoryStore {
     phone: string;
     email: string;
     eventDate?: string;
-    eventType?: string;
     tentativeMonthYear?: string;
     weddingDates?: string;
     guestCount?: string;
@@ -69,7 +68,6 @@ export async function initDatabaseSchema() {
         phone VARCHAR(50) NOT NULL,
         email VARCHAR(255) NOT NULL,
         eventDate VARCHAR(100),
-        eventType VARCHAR(100),
         tentativeMonthYear VARCHAR(255),
         weddingDates VARCHAR(255),
         guestCount VARCHAR(100),
@@ -143,7 +141,6 @@ export async function saveEnquiry(data: {
   phone: string;
   email: string;
   eventDate?: string;
-  eventType?: string;
   tentativeMonthYear?: string;
   weddingDates?: string;
   guestCount?: string;
@@ -158,10 +155,10 @@ export async function saveEnquiry(data: {
       await initDatabaseSchema();
       const result = await sql`
         INSERT INTO wedding_enquiries (
-          fullName, phone, email, eventDate, eventType, tentativeMonthYear, weddingDates, guestCount, estimatedBudget, location, message, status
+          fullName, phone, email, eventDate, tentativeMonthYear, weddingDates, guestCount, estimatedBudget, location, message, status
         ) VALUES (
           ${data.fullName}, ${data.phone}, ${data.email}, ${data.eventDate || null},
-          ${data.eventType || null}, ${data.tentativeMonthYear || null}, ${data.weddingDates || null},
+          ${data.tentativeMonthYear || null}, ${data.weddingDates || null},
           ${data.guestCount || null}, ${data.estimatedBudget || null}, ${data.location || null},
           ${data.message || null}, 'new'
         )
@@ -204,7 +201,6 @@ export async function getAllEnquiries() {
           phone,
           email,
           eventDate AS "eventDate",
-          eventType AS "eventType",
           tentativeMonthYear AS "tentativeMonthYear",
           weddingDates AS "weddingDates",
           guestCount AS "guestCount",
