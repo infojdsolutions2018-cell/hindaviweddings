@@ -1,11 +1,27 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { WeddingBackend } from "@backend/index";
+import { verifyAdminRequest } from "@/backend/auth";
+import { checkRateLimit, getClientIp } from "@/backend/rateLimit";
 
 export const dynamic = "force-dynamic";
 
-// POST: Upload single or multiple images, videos, and reels to ImageKit & Neon DB
+const ALLOWED_IMAGE_MIMES = new Set(["image/jpeg", "image/png", "image/webp", "image/avif"]);
+const ALLOWED_VIDEO_MIMES = new Set(["video/mp4", "video/webm", "video/quicktime"]);
+const MAX_FILE_SIZE_BYTES = 50 * 1024 * 1024; // 50MB max limit
+
+// POST: Upload single or multiple images, videos, and reels to ImageKit & Neon DB (Strictly Admin-Protected)
 export async function POST(req: Request) {
+  if (!verifyAdminRequest(req)) {
+    return NextResponse.json({ success: false, error: "Unauthorized access. Admin login required." }, { status: 401 });
+  }
+
+  const ip = getClientIp(req);
+  const rate = checkRateLimit(`upload-limit-${ip}`, 30, 60000); // 30 files/min per IP
+  if (!rate.allowed) {
+    return NextResponse.json({ success: false, error: "Upload rate limit exceeded. Please wait a moment." }, { status: 429 });
+  }
+
   const reqStartTime = Date.now();
   console.log(`[API /api/gallery/upload] POST request started at ${new Date().toISOString()}`);
 
@@ -50,10 +66,17 @@ export async function POST(req: Request) {
       console.log(`[UPLOAD] Processing file ${i + 1}/${allFiles.length}: "${file.name}" | Size: ${(file.size / 1024).toFixed(2)} KB | MIME: ${file.type}`);
 
       try {
-        const isVideo =
-          forcedMediaType === "reel" ||
-          file.type.startsWith("video/") ||
-          /\.(mp4|webm|mov)$/i.test(file.name);
+        // Enforce strict file size restrictions
+        if (file.size > MAX_FILE_SIZE_BYTES) {
+          throw new Error(`File "${file.name}" exceeds maximum allowed size of 50MB`);
+        }
+
+        const isImage = ALLOWED_IMAGE_MIMES.has(file.type);
+        const isVideo = ALLOWED_VIDEO_MIMES.has(file.type) || (forcedMediaType === "reel" && /\.(mp4|webm|mov)$/i.test(file.name));
+
+        if (!isImage && !isVideo) {
+          throw new Error(`File "${file.name}" has invalid or disallowed MIME format (${file.type || "unknown"}). Allowed formats: JPEG, PNG, WEBP, AVIF, MP4, WEBM, MOV.`);
+        }
 
         const mediaType = isVideo ? "reel" : "image";
         const aspect = isVideo ? "tall" : "square";
@@ -61,7 +84,7 @@ export async function POST(req: Request) {
         const bytes = await file.arrayBuffer();
         const buffer = Buffer.from(bytes);
 
-        const fileTitle = defaultTitle ? defaultTitle.trim() : "";
+        const fileTitle = defaultTitle ? defaultTitle.trim().slice(0, 255) : "";
 
         // 1. Upload to ImageKit CDN
         console.log(`[IMAGEKIT] Starting upload for "${file.name}" as [${mediaType}]...`);

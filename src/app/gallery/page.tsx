@@ -136,31 +136,33 @@ export default function GalleryPage() {
       <Section background="white" className="!py-6 sm:!py-10">
         <div className="max-w-5xl mx-auto space-y-6 sm:space-y-8">
           
-          {/* Main 5 Ceremonial Navigation Tabs */}
-          <div className="flex items-center justify-start sm:justify-center overflow-x-auto no-scrollbar gap-1.5 sm:gap-3 pb-2 pt-1 border-b border-blush/60 -mx-4 px-4 sm:mx-0 sm:px-0">
-            {CEREMONY_TABS.map((tab, idx) => {
-              const isActive = selectedCategory === tab.label;
-              return (
-                <button
-                  key={tab.label}
-                  type="button"
-                  onClick={() => setSelectedCategory(tab.label)}
-                  className={`shrink-0 px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl font-sans transition-all duration-300 text-left sm:text-center ${
-                    isActive
-                      ? "bg-gradient-to-r from-[#801C30] to-[#A82835] text-white shadow-md scale-102"
-                      : "bg-[#F8FAFC] text-charcoal/80 hover:bg-blush/20 hover:text-coral border border-[#E2E8F0]"
-                  }`}
-                >
-                  <span className="block text-xs sm:text-sm font-bold tracking-wide">
-                    {tab.label !== "All" && <span className="opacity-75 mr-1">{idx}.</span>}
-                    {tab.label}
-                  </span>
-                  <span className={`block text-[9px] sm:text-[10px] tracking-wider uppercase ${isActive ? "text-white/80" : "text-charcoal/50"}`}>
-                    {tab.sub}
-                  </span>
-                </button>
-              );
-            })}
+          {/* Main Ceremonial Navigation Tabs - Responsive Grid / Flex with full visibility */}
+          <div className="w-full">
+            <div className="flex items-stretch sm:justify-center overflow-x-auto no-scrollbar gap-2 sm:gap-2.5 md:gap-3 pb-3 pt-1 border-b border-blush/60 px-2 sm:px-0 scroll-smooth">
+              {CEREMONY_TABS.map((tab, idx) => {
+                const isActive = selectedCategory === tab.label;
+                return (
+                  <button
+                    key={tab.label}
+                    type="button"
+                    onClick={() => setSelectedCategory(tab.label)}
+                    className={`shrink-0 min-w-[105px] sm:min-w-[125px] md:min-w-[140px] px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl font-sans transition-all duration-200 text-center flex flex-col justify-center items-center ${
+                      isActive
+                        ? "bg-gradient-to-r from-[#801C30] to-[#A82835] text-white shadow-md shadow-[#801C30]/20 ring-2 ring-[#801C30]/30"
+                        : "bg-[#F8FAFC] text-charcoal/80 hover:bg-blush/20 hover:text-coral border border-[#E2E8F0]"
+                    }`}
+                  >
+                    <span className="block text-xs sm:text-sm font-bold tracking-wide whitespace-nowrap">
+                      {tab.label !== "All" && <span className="opacity-75 mr-1">{idx}.</span>}
+                      {tab.label}
+                    </span>
+                    <span className={`block text-[9px] sm:text-[10px] tracking-wider uppercase truncate max-w-[120px] ${isActive ? "text-white/85" : "text-charcoal/50"}`}>
+                      {tab.sub}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           {/* Subfilter: Type toggle (All / Photos / Reels) */}

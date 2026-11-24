@@ -6,7 +6,7 @@ export interface GalleryMediaItem {
   src: string;
   title: string;
   aspect: "square" | "tall" | "wide";
-  category: "Engagement" | "Halad" | "Sangit" | "Vidhi" | "Marriage" | "Other";
+  category: "Marriage" | "Engagement" | "Halad" | "Sangit" | "Vidhi" | "Other";
   fileId?: string;
   created_at?: string;
 }
@@ -18,13 +18,13 @@ interface MemoryStore {
     phone: string;
     email: string;
     eventDate?: string;
-    eventType?: string;
     tentativeMonthYear?: string;
     weddingDates?: string;
     guestCount?: string;
     estimatedBudget?: string;
     location?: string;
     message?: string;
+    remark?: string;
     status: string;
     created_at: string;
   }>;
@@ -32,34 +32,7 @@ interface MemoryStore {
 }
 
 const globalMemory: MemoryStore = {
-  enquiries: [
-    {
-      id: 1,
-      fullName: "Aniket & Snehal Deshmukh",
-      phone: "+91 98220 12345",
-      email: "aniket.deshmukh@example.com",
-      eventDate: "2026-12-14",
-      eventType: "Wedding & Reception",
-      guestCount: "450",
-      estimatedBudget: "₹15 - 25 Lakhs",
-      message: "Looking for traditional Maharashtrian Vedic mandap and reception lighting in Karad.",
-      status: "new",
-      created_at: new Date(Date.now() - 3600000 * 4).toISOString(),
-    },
-    {
-      id: 2,
-      fullName: "Rohan Patil",
-      phone: "+91 99701 54321",
-      email: "rohan.patil@example.com",
-      eventDate: "2026-11-28",
-      eventType: "Halad & Sangeet",
-      guestCount: "300",
-      estimatedBudget: "₹8 - 12 Lakhs",
-      message: "High-energy Sangeet concert trussing and festive Halad decor.",
-      status: "contacted",
-      created_at: new Date(Date.now() - 3600000 * 24).toISOString(),
-    },
-  ],
+  enquiries: [],
   customGalleryItems: [],
 };
 
@@ -95,13 +68,13 @@ export async function initDatabaseSchema() {
         phone VARCHAR(50) NOT NULL,
         email VARCHAR(255) NOT NULL,
         eventDate VARCHAR(100),
-        eventType VARCHAR(100),
         tentativeMonthYear VARCHAR(255),
         weddingDates VARCHAR(255),
         guestCount VARCHAR(100),
         estimatedBudget VARCHAR(100),
         location VARCHAR(255),
         message TEXT,
+        remark TEXT,
         status VARCHAR(50) DEFAULT 'new',
         created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
       );
@@ -118,6 +91,25 @@ export async function initDatabaseSchema() {
         file_id VARCHAR(255),
         created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
       );
+    `;
+
+    // Admin users table - managed strictly in Neon PostgreSQL database
+    await sql`
+      CREATE TABLE IF NOT EXISTS wedding_admin_users (
+        id SERIAL PRIMARY KEY,
+        mobile_number VARCHAR(50) UNIQUE NOT NULL,
+        email VARCHAR(255) UNIQUE,
+        password_hash VARCHAR(255) NOT NULL,
+        role VARCHAR(50) DEFAULT 'admin',
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        last_login TIMESTAMP WITH TIME ZONE
+      );
+    `;
+
+    // Ensure email column exists if table was created previously without it
+    await sql`
+      ALTER TABLE wedding_admin_users 
+      ADD COLUMN IF NOT EXISTS email VARCHAR(255);
     `;
 
     schemaInitialized = true;
@@ -137,7 +129,6 @@ export async function saveEnquiry(data: {
   phone: string;
   email: string;
   eventDate?: string;
-  eventType?: string;
   tentativeMonthYear?: string;
   weddingDates?: string;
   guestCount?: string;
@@ -152,10 +143,10 @@ export async function saveEnquiry(data: {
       await initDatabaseSchema();
       const result = await sql`
         INSERT INTO wedding_enquiries (
-          fullName, phone, email, eventDate, eventType, tentativeMonthYear, weddingDates, guestCount, estimatedBudget, location, message, status
+          fullName, phone, email, eventDate, tentativeMonthYear, weddingDates, guestCount, estimatedBudget, location, message, status
         ) VALUES (
           ${data.fullName}, ${data.phone}, ${data.email}, ${data.eventDate || null},
-          ${data.eventType || null}, ${data.tentativeMonthYear || null}, ${data.weddingDates || null},
+          ${data.tentativeMonthYear || null}, ${data.weddingDates || null},
           ${data.guestCount || null}, ${data.estimatedBudget || null}, ${data.location || null},
           ${data.message || null}, 'new'
         )
@@ -194,17 +185,17 @@ export async function getAllEnquiries() {
       const rows = await sql`
         SELECT
           id,
-          fullName,
+          fullName AS "fullName",
           phone,
           email,
-          eventDate,
-          eventType,
-          tentativeMonthYear,
-          weddingDates,
-          guestCount,
-          estimatedBudget,
+          eventDate AS "eventDate",
+          tentativeMonthYear AS "tentativeMonthYear",
+          weddingDates AS "weddingDates",
+          guestCount AS "guestCount",
+          estimatedBudget AS "estimatedBudget",
           location,
           message,
+          remark,
           status,
           created_at
         FROM wedding_enquiries
@@ -222,16 +213,29 @@ export async function getAllEnquiries() {
   return globalMemory.enquiries;
 }
 
-// Service: Update enquiry status
-export async function updateEnquiryStatus(id: number, status: string) {
+// Service: Update enquiry status and optional admin remark
+export async function updateEnquiryStatus(id: number, status: string, remark?: string) {
   const sql = getDatabase();
 
   if (sql) {
     try {
       await initDatabaseSchema();
-      const rows = await sql`
-        UPDATE wedding_enquiries SET status = ${status} WHERE id = ${id} RETURNING *;
-      `;
+      let rows;
+      if (typeof remark !== "undefined") {
+        rows = await sql`
+          UPDATE wedding_enquiries 
+          SET status = ${status}, remark = ${remark} 
+          WHERE id = ${id} 
+          RETURNING *;
+        `;
+      } else {
+        rows = await sql`
+          UPDATE wedding_enquiries 
+          SET status = ${status} 
+          WHERE id = ${id} 
+          RETURNING *;
+        `;
+      }
       return rows[0];
     } catch (dbErr: any) {
       console.error("Neon updateEnquiryStatus failed:", dbErr);
@@ -244,6 +248,9 @@ export async function updateEnquiryStatus(id: number, status: string) {
   const item = globalMemory.enquiries.find((e) => e.id === Number(id));
   if (item) {
     item.status = status;
+    if (typeof remark !== "undefined") {
+      item.remark = remark;
+    }
   }
   return item;
 }
@@ -254,7 +261,7 @@ export async function saveGalleryMedia(data: {
   src: string;
   title: string;
   aspect: "square" | "tall" | "wide";
-  category: "Engagement" | "Halad" | "Sangit" | "Vidhi" | "Marriage" | "Other";
+  category: "Marriage" | "Engagement" | "Halad" | "Sangit" | "Vidhi" | "Other";
   fileId?: string;
 }) {
   const startTime = Date.now();
@@ -414,5 +421,58 @@ export async function deleteEnquiry(id: number) {
   if (idx !== -1) {
     return globalMemory.enquiries.splice(idx, 1)[0];
   }
+  return null;
+}
+
+// ========================================================
+// ADMIN AUTHENTICATION SERVICES (Database Driven)
+// Supports login with Mobile Number OR Email Address
+// ========================================================
+export async function verifyAdminCredentials(identifier: string, passwordHash: string) {
+  const sql = getDatabase();
+  const cleanId = identifier.trim().toLowerCase();
+  const cleanMobile = identifier.trim().replace(/[\s-]/g, "");
+
+  if (sql) {
+    await initDatabaseSchema();
+    const rows = await sql`
+      SELECT id, mobile_number, email, role, created_at, last_login 
+      FROM wedding_admin_users 
+      WHERE (mobile_number = ${cleanMobile} OR LOWER(email) = ${cleanId})
+        AND password_hash = ${passwordHash}
+      LIMIT 1;
+    `;
+
+    if (rows && rows.length > 0) {
+      // Update last_login timestamp in database
+      await sql`
+        UPDATE wedding_admin_users 
+        SET last_login = CURRENT_TIMESTAMP 
+        WHERE id = ${rows[0].id};
+      `;
+      return rows[0];
+    }
+    return null;
+  }
+
+  return null;
+}
+
+export async function getAdminByIdentifier(identifier: string) {
+  const sql = getDatabase();
+  const cleanId = identifier.trim().toLowerCase();
+  const cleanMobile = identifier.trim().replace(/[\s-]/g, "");
+
+  if (sql) {
+    await initDatabaseSchema();
+    const rows = await sql`
+      SELECT id, mobile_number, email, role, created_at, last_login 
+      FROM wedding_admin_users 
+      WHERE mobile_number = ${cleanMobile} OR LOWER(email) = ${cleanId}
+      LIMIT 1;
+    `;
+    return rows && rows.length > 0 ? rows[0] : null;
+  }
+
   return null;
 }

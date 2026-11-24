@@ -1,62 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import { verifyAdminCredentials } from "@/backend/database";
+import { createSessionToken, verifySessionToken } from "@/backend/auth";
+import { checkRateLimit, getClientIp } from "@/backend/rateLimit";
 
 export const dynamic = "force-dynamic";
-
-// Secret key for signing session tokens from environment variable
-function getSessionSecret(): string {
-  const secret = process.env.ADMIN_SESSION_SECRET;
-  if (!secret) {
-    if (process.env.NODE_ENV === "production") {
-      throw new Error("ADMIN_SESSION_SECRET must be configured in environment variables.");
-    }
-    return "dev-local-session-secret-change-in-production";
-  }
-  return secret;
-}
-
-function createSessionToken(identifier: string): string {
-  const timestamp = Date.now();
-  const signature = crypto
-    .createHmac("sha256", getSessionSecret())
-    .update(`${identifier}:${timestamp}`)
-    .digest("hex");
-  return Buffer.from(JSON.stringify({ identifier, timestamp, signature })).toString("base64");
-}
-
-function verifySessionToken(token: string): { valid: boolean; identifier?: string; mobile?: string } {
-  try {
-    const raw = Buffer.from(token, "base64").toString("utf-8");
-    const parsed = JSON.parse(raw);
-    const identifier = parsed.identifier || parsed.mobile;
-    const { timestamp, signature } = parsed;
-    
-    // Check signature
-    const expectedSig = crypto
-      .createHmac("sha256", getSessionSecret())
-      .update(`${identifier}:${timestamp}`)
-      .digest("hex");
-
-    if (signature !== expectedSig) {
-      return { valid: false };
-    }
-
-    // 7 days token expiration
-    const maxAgeMs = 7 * 24 * 60 * 60 * 1000;
-    if (Date.now() - timestamp > maxAgeMs) {
-      return { valid: false };
-    }
-
-    return { valid: true, identifier, mobile: identifier };
-  } catch {
-    return { valid: false };
-  }
-}
 
 // POST: Admin Login (Supports Mobile Number OR Email Address)
 export async function POST(req: NextRequest) {
   try {
+    const ip = getClientIp(req);
+    // Rate limit: Max 5 login attempts per minute per IP to prevent brute-force
+    const rateLimit = checkRateLimit(`login-ip-${ip}`, 5, 60000);
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { success: false, message: "Too many login attempts. Please wait 1 minute before trying again." },
+        { status: 429, headers: { "Retry-After": "60" } }
+      );
+    }
+
     const body = await req.json();
     const identifier = body.identifier || body.mobile || body.email;
     const password = body.password;
@@ -108,9 +70,16 @@ export async function POST(req: NextRequest) {
 
     return res;
   } catch (error: any) {
-    console.error("Admin login API error:", error);
+    if (error?.message?.includes("ADMIN_SESSION_SECRET")) {
+      console.error("Admin authentication configuration error: ADMIN_SESSION_SECRET is missing or empty.");
+      return NextResponse.json(
+        { success: false, message: "Server configuration error. Contact the administrator." },
+        { status: 500 }
+      );
+    }
+    console.error("Admin login API error:", error?.message || "Internal error");
     return NextResponse.json(
-      { success: false, message: error.message || "An error occurred during authentication." },
+      { success: false, message: "An error occurred during authentication." },
       { status: 500 }
     );
   }
@@ -134,7 +103,10 @@ export async function GET(req: NextRequest) {
       mobile: verification.mobile,
       role: "admin",
     });
-  } catch {
+  } catch (error: any) {
+    if (error?.message?.includes("ADMIN_SESSION_SECRET")) {
+      console.error("Admin session verification error: ADMIN_SESSION_SECRET is missing or empty.");
+    }
     return NextResponse.json({ authenticated: false }, { status: 401 });
   }
 }

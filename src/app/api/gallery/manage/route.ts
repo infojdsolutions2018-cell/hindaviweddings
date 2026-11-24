@@ -1,11 +1,16 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { WeddingBackend } from "@backend/index";
+import { verifyAdminRequest } from "@/backend/auth";
 
 export const dynamic = "force-dynamic";
 
-// PATCH: Update category or title/description of a media item
+// PATCH: Update category or title/description of a media item (Strictly Admin-Protected)
 export async function PATCH(req: Request) {
+  if (!verifyAdminRequest(req)) {
+    return NextResponse.json({ success: false, error: "Unauthorized access" }, { status: 401 });
+  }
+
   try {
     const body = await req.json();
     const { id, title, category } = body;
@@ -18,7 +23,7 @@ export async function PATCH(req: Request) {
     }
 
     const updated = await WeddingBackend.gallery.update(id, {
-      title: title !== undefined ? String(title).trim() : undefined,
+      title: title !== undefined ? String(title).trim().slice(0, 255) : undefined,
       category: category || undefined,
     });
 
@@ -45,8 +50,12 @@ export async function PATCH(req: Request) {
   }
 }
 
-// DELETE: Delete an uploaded media item
+// DELETE: Delete an uploaded media item (Strictly Admin-Protected)
 export async function DELETE(req: Request) {
+  if (!verifyAdminRequest(req)) {
+    return NextResponse.json({ success: false, error: "Unauthorized access" }, { status: 401 });
+  }
+
   try {
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
