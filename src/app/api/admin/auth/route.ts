@@ -4,13 +4,22 @@ import { verifyAdminCredentials } from "@/backend/database";
 
 export const dynamic = "force-dynamic";
 
-// Secret salt for signing session tokens
-const SESSION_SECRET = process.env.ADMIN_SESSION_SECRET || "hindavi-royal-wedding-admin-session-salt-2026";
+// Secret key for signing session tokens from environment variable
+function getSessionSecret(): string {
+  const secret = process.env.ADMIN_SESSION_SECRET;
+  if (!secret) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error("ADMIN_SESSION_SECRET must be configured in environment variables.");
+    }
+    return "dev-local-session-secret-change-in-production";
+  }
+  return secret;
+}
 
 function createSessionToken(identifier: string): string {
   const timestamp = Date.now();
   const signature = crypto
-    .createHmac("sha256", SESSION_SECRET)
+    .createHmac("sha256", getSessionSecret())
     .update(`${identifier}:${timestamp}`)
     .digest("hex");
   return Buffer.from(JSON.stringify({ identifier, timestamp, signature })).toString("base64");
@@ -25,7 +34,7 @@ function verifySessionToken(token: string): { valid: boolean; identifier?: strin
     
     // Check signature
     const expectedSig = crypto
-      .createHmac("sha256", SESSION_SECRET)
+      .createHmac("sha256", getSessionSecret())
       .update(`${identifier}:${timestamp}`)
       .digest("hex");
 

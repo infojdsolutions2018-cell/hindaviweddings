@@ -93,7 +93,7 @@ export async function initDatabaseSchema() {
       );
     `;
 
-    // Admin users table - strictly one designated admin in database
+    // Admin users table - managed strictly in Neon PostgreSQL database
     await sql`
       CREATE TABLE IF NOT EXISTS wedding_admin_users (
         id SERIAL PRIMARY KEY,
@@ -110,18 +110,6 @@ export async function initDatabaseSchema() {
     await sql`
       ALTER TABLE wedding_admin_users 
       ADD COLUMN IF NOT EXISTS email VARCHAR(255);
-    `;
-
-    // Ensure the designated admin exists in Neon PostgreSQL
-    // Mobile: 9359108383 | Email: atharva@gmail.com | SHA-256 for Umesh@8383
-    const initialAdminHash = "4e1ceaa0fcd1a033792b5ac4fafed37c3184bce37d5a2b26b441acf659b619eb";
-    await sql`
-      INSERT INTO wedding_admin_users (mobile_number, email, password_hash, role)
-      VALUES ('9359108383', 'atharva@gmail.com', ${initialAdminHash}, 'admin')
-      ON CONFLICT (mobile_number) 
-      DO UPDATE SET 
-        email = 'atharva@gmail.com',
-        password_hash = ${initialAdminHash};
     `;
 
     schemaInitialized = true;
@@ -467,11 +455,6 @@ export async function verifyAdminCredentials(identifier: string, passwordHash: s
     return null;
   }
 
-  // Memory fallback when offline or without database
-  const fallbackHash = "4e1ceaa0fcd1a033792b5ac4fafed37c3184bce37d5a2b26b441acf659b619eb";
-  if ((cleanMobile === "9359108383" || cleanId === "atharva@gmail.com") && passwordHash === fallbackHash) {
-    return { id: 1, mobile_number: "9359108383", email: "atharva@gmail.com", role: "admin" };
-  }
   return null;
 }
 
@@ -491,8 +474,5 @@ export async function getAdminByIdentifier(identifier: string) {
     return rows && rows.length > 0 ? rows[0] : null;
   }
 
-  if (cleanMobile === "9359108383" || cleanId === "atharva@gmail.com") {
-    return { id: 1, mobile_number: "9359108383", email: "atharva@gmail.com", role: "admin" };
-  }
   return null;
 }

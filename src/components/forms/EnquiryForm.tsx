@@ -144,10 +144,8 @@ export function EnquiryForm({
     setIsSubmitting(true);
     setSubmitError(null);
 
-    // User's verified Web3Forms access key
-    const accessKey =
-      process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY ||
-      "c5458694-e524-44b8-ae53-4597b5512cf7";
+    // Verified Web3Forms access key from environment variables
+    const accessKey = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY;
 
     try {
       // 1. Immediately save to Backend Database (Neon PostgreSQL) for instant admin availability
