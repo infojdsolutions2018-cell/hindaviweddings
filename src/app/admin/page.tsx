@@ -252,13 +252,27 @@ export default function AdminDashboardPage() {
     fetchEnquiries();
     fetchGallery();
 
-    // Auto-refresh enquiries and gallery every 5 seconds so admin sees customer submissions automatically without clicking load
+    // Auto-refresh enquiries and gallery: 10 calls/hr (every 6 minutes) to preserve database quota
+    // Also refreshes immediately when the admin switches back to this tab (window focus)
     const interval = setInterval(() => {
+      // Only poll if tab is actively visible to save CPU/DB quota when tab is in background
+      if (typeof document !== "undefined" && document.visibilityState === "visible") {
+        syncEnquiriesSilent();
+        syncGallerySilent();
+      }
+    }, 360000); // 6 minutes = 10 calls per hour
+
+    const handleFocus = () => {
       syncEnquiriesSilent();
       syncGallerySilent();
-    }, 5000);
+    };
 
-    return () => clearInterval(interval);
+    window.addEventListener("focus", handleFocus);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener("focus", handleFocus);
+    };
   }, [authChecking]);
 
   // Open Status + Remark Update Modal
